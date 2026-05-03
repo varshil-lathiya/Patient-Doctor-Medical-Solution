@@ -13,6 +13,7 @@ const storage = new CloudinaryStorage({
     params: {
         folder: "pdms_reports",
         allowed_formats: ["jpg", "png", "pdf"],
+        resource_type: "auto",
     },
 });
 

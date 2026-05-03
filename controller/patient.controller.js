@@ -292,8 +292,11 @@ const updatePatientProfile = async (req, res) => {
 const patientProfilePage = async (req, res) => {
   try {
     const patientId = req.user.id;
-    const [result] = await db.execute("SELECT * FROM patients WHERE id = ?", [patientId]);
-    res.render("patient/patient_profile", { user: result[0] });
+    const [[result], [reports]] = await Promise.all([
+      db.execute("SELECT * FROM patients WHERE id = ?", [patientId]),
+      db.execute("SELECT * FROM patient_reports WHERE patient_id = ? ORDER BY upload_date DESC", [patientId]),
+    ]);
+    res.render("patient/patient_profile", { user: result[0], reports });
   } catch (error) {
     res.status(500).send("Internal Server Error");
   }
