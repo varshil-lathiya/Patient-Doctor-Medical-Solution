@@ -3,6 +3,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const mailSender = require("../utils/mail_sender");
 const { cancellationTemplate } = require("../utils/email_templates");
 const logger = require("../utils/logger");
+const { todayIST, currentTimeIST } = require("../utils/time");
 
 const receptionistDashboardPage = async (req, res) => {
   try {
@@ -317,10 +318,24 @@ const verifyPatientByEmail = async (req, res) => {
 const getSlotsForReschedule = async (req, res) => {
   const { doctor_id, date } = req.query;
   try {
-    const [slots] = await db.execute(
-      "SELECT id, slot_start FROM appointment_slots WHERE doctor_id = ? AND slot_date = ? AND status = 'is_available'",
+    const [leaves] = await db.execute(
+      "SELECT id FROM doctor_leaves WHERE doctor_id = ? AND status = 'approved' AND ? BETWEEN from_date AND to_date",
       [doctor_id, date]
     );
+
+    if (leaves.length > 0) {
+      return res.status(200).json({ slots: [], message: "Doctor is on leave for this date." });
+    }
+
+    let query = "SELECT id, slot_start FROM appointment_slots WHERE doctor_id = ? AND slot_date = ? AND status = 'is_available'";
+    const params = [doctor_id, date];
+
+    if (date === todayIST()) {
+      query += " AND slot_start >= ?";
+      params.push(currentTimeIST());
+    }
+
+    const [slots] = await db.execute(query, params);
     res.status(200).json({ slots });
   } catch (error) {
     console.error("Get slots error:", error);

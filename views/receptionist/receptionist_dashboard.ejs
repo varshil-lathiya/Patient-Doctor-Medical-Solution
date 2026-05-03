@@ -719,7 +719,8 @@
                         </button>
                     `).join('');
                     } else {
-                        slotContainer.innerHTML = '<p class="col-span-4 text-center text-red-500">No slots available</p>';
+                        const msg = data.message || 'No slots available';
+                        slotContainer.innerHTML = `<p class="col-span-4 text-center text-red-500">${msg}</p>`;
                     }
                 } catch (err) {
                     slotContainer.innerHTML = '<p class="col-span-4 text-center text-red-500">Failed to load slots</p>';
