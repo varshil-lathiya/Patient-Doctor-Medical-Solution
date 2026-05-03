@@ -1,5 +1,6 @@
-const dotenv = require("dotenv");
-dotenv.config({ path: "./.env" });
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config({ path: "./.env" });
+}
 
 const REQUIRED_ENV_VARS = [
   "DB_HOST", "DB_USER", "DB_PASSWORD", "DB_DATABASE",
