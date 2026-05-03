@@ -1,4 +1,8 @@
 const db = require("../config/db.config");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const mailSender = require("../utils/mail_sender");
+const { cancellationTemplate } = require("../utils/email_templates");
+const logger = require("../utils/logger");
 
 const receptionistDashboardPage = async (req, res) => {
   try {
@@ -219,15 +223,49 @@ const registerPatient = async (req, res) => {
 };
 
 const cancelAppointment = async (req, res) => {
-  const { slot_id } = req.body;
+  const { slot_id, reason } = req.body;
   try {
-    await db.execute(
-      "UPDATE appointment_slots SET patient_id = NULL, status = 'is_available' WHERE id = ?",
+    const [[appt]] = await db.execute(
+      `SELECT a.payment_intent_id, p.email, p.firstname, p.lastname,
+              s.firstname AS doc_first, s.lastname AS doc_last,
+              a.slot_date, a.slot_start
+       FROM appointment_slots a
+       JOIN patients p ON a.patient_id = p.id
+       JOIN staff s ON a.doctor_id = s.id
+       WHERE a.id = ? AND a.patient_id IS NOT NULL`,
       [slot_id]
     );
+
+    if (!appt) {
+      return res.status(404).json({ message: "Appointment not found or already cancelled" });
+    }
+
+    await db.execute(
+      "UPDATE appointment_slots SET patient_id = NULL, status = 'is_available', reason = ? WHERE id = ?",
+      [reason || null, slot_id]
+    );
+
+    if (appt.payment_intent_id) {
+      try {
+        await stripe.refunds.create({ payment_intent: appt.payment_intent_id });
+        logger.info("CANCEL", "Stripe refund issued", { slot_id, payment_intent: appt.payment_intent_id });
+      } catch (refundErr) {
+        logger.error("CANCEL", "Stripe refund failed", { slot_id, error: refundErr.message });
+      }
+    }
+
+    const html = cancellationTemplate({
+      patientName: `${appt.firstname} ${appt.lastname}`,
+      doctorName: `${appt.doc_first} ${appt.doc_last}`,
+      slotDate: appt.slot_date,
+      slotStart: appt.slot_start,
+      reason: reason || 'No reason provided',
+    });
+    mailSender(appt.email, "Your Appointment Has Been Cancelled – Kalp Hospital", "", html);
+
     res.status(200).json({ message: "Appointment cancelled successfully" });
   } catch (error) {
-    console.error("Cancel appointment error:", error);
+    logger.error("CANCEL", "Cancel appointment error", { error: error.message, slot_id });
     res.status(500).json({ message: "Internal server error" });
   }
 };

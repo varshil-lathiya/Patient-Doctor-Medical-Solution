@@ -131,7 +131,7 @@
                                         <i class="fas fa-heartbeat"></i> Vitals
                                     </button>
                                     <button
-                                        onclick="openRescheduleModal('<%= app.id %>', '<%= app.doctor_id %>', '<%= app.patient_id %>')"
+                                        onclick="openRescheduleModal('<%= app.id %>', '<%= app.doctor_id %>', '<%= app.patient_id %>', '<%= app.d_first %> <%= app.d_last %>', '<%= app.department %>')"
                                         class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-5 py-2.5 rounded-lg transition-all flex items-center gap-2">
                                         <i class="fas fa-calendar-alt"></i> Reschedule
                                     </button>
@@ -389,71 +389,20 @@
                     <div class="flex items-center gap-4 mb-6 p-4 bg-gray-50 rounded-xl">
                         <div
                             class="w-16 h-16 rounded-full bg-gradient-to-br from-primary-blue to-primary-teal flex items-center justify-center shadow-lg overflow-hidden">
-                            <img src="https://ui-avatars.com/api/?name=Dr+Varshil&size=64&background=0066CC&color=fff&bold=true"
-                                alt="Doctor" class="w-full h-full object-cover" />
+                            <i class="fas fa-user-md text-white text-2xl"></i>
                         </div>
                         <div>
-                            <h4 class="text-lg font-bold text-gray-900">Dr. Varshil Lathiya</h4>
-                            <p class="text-sm text-primary-teal font-medium">Ophthalmology</p>
+                            <h4 id="reschedule-doctor-name" class="text-lg font-bold text-gray-900"></h4>
+                            <p id="reschedule-doctor-dept" class="text-sm text-primary-teal font-medium"></p>
                         </div>
                     </div>
                     <div class="mb-6">
                         <h5 class="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">Select Date</h5>
-                        <div class="grid grid-cols-7 gap-2">
-                            <button
-                                class="date-btn bg-primary-teal text-white px-4 py-3 rounded-lg font-semibold text-sm hover:bg-primary-blue transition-all">
-                                <div>Sun</div>
-                                <div class="text-xs">26</div>
-                            </button>
-                            <button
-                                class="date-btn bg-slate-700 text-white px-4 py-3 rounded-lg font-semibold text-sm hover:bg-slate-800 transition-all">
-                                <div>Mon</div>
-                                <div class="text-xs">27</div>
-                            </button>
-                            <button
-                                class="date-btn bg-slate-700 text-white px-4 py-3 rounded-lg font-semibold text-sm hover:bg-slate-800 transition-all">
-                                <div>Tue</div>
-                                <div class="text-xs">28</div>
-                            </button>
-                            <button
-                                class="date-btn bg-slate-700 text-white px-4 py-3 rounded-lg font-semibold text-sm hover:bg-slate-800 transition-all">
-                                <div>Wed</div>
-                                <div class="text-xs">29</div>
-                            </button>
-                            <button
-                                class="date-btn bg-slate-700 text-white px-4 py-3 rounded-lg font-semibold text-sm hover:bg-slate-800 transition-all">
-                                <div>Thu</div>
-                                <div class="text-xs">30</div>
-                            </button>
-                            <button
-                                class="date-btn bg-slate-700 text-white px-4 py-3 rounded-lg font-semibold text-sm hover:bg-slate-800 transition-all">
-                                <div>Fri</div>
-                                <div class="text-xs">31</div>
-                            </button>
-                            <button
-                                class="date-btn bg-slate-700 text-white px-4 py-3 rounded-lg font-semibold text-sm hover:bg-slate-800 transition-all">
-                                <div>Sat</div>
-                                <div class="text-xs">1</div>
-                            </button>
-                        </div>
+                        <div id="reschedule-date-grid" class="grid grid-cols-7 gap-2"></div>
                     </div>
                     <div class="mb-6">
-                        <h5 class="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">Available Slots
-                        </h5>
-                        <div class="grid grid-cols-4 gap-3">
-                            <button
-                                class="slot-btn bg-white border-2 border-primary-teal text-primary-teal font-semibold px-4 py-3 rounded-lg hover:bg-primary-teal hover:text-white transition-all">10:00
-                                AM</button>
-                            <button
-                                class="slot-btn bg-white border-2 border-primary-teal text-primary-teal font-semibold px-4 py-3 rounded-lg hover:bg-primary-teal hover:text-white transition-all">11:00
-                                AM</button>
-                            <button
-                                class="slot-btn bg-white border-2 border-primary-teal text-primary-teal font-semibold px-4 py-3 rounded-lg hover:bg-primary-teal hover:text-white transition-all">2:00
-                                PM</button>
-                            <button
-                                class="slot-btn bg-white border-2 border-primary-teal text-primary-teal font-semibold px-4 py-3 rounded-lg hover:bg-primary-teal hover:text-white transition-all">3:00
-                                PM</button>
-                        </div>
+                        <h5 class="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">Available Slots</h5>
+                        <div id="reschedule-slot-grid" class="grid grid-cols-4 gap-3"></div>
                     </div>
                     <div class="mb-6">
                         <label for="reschedule-reason" class="block text-sm font-semibold text-gray-700 mb-2">Reason
@@ -709,19 +658,51 @@
                 }
             }
 
-            async function openRescheduleModal(slotId, doctorId, patientId) {
+            function openRescheduleModal(slotId, doctorId, patientId, doctorName, doctorDept) {
                 currentSlotId = slotId;
                 currentDoctorId = doctorId;
                 currentPatientId = patientId;
+                selectedNewSlotId = null;
+
+                document.getElementById('reschedule-doctor-name').textContent = 'Dr. ' + doctorName;
+                document.getElementById('reschedule-doctor-dept').textContent = doctorDept;
+
+                generateDateButtons();
                 showModal('reschedule-modal');
 
-                // Logic to fetch slots for today (default)
                 const today = new Date().toISOString().split('T')[0];
-                fetchSlots(today);
+                fetchSlotsForDate(document.querySelector('#reschedule-date-grid .date-btn'), today);
+            }
+
+            function generateDateButtons() {
+                const grid = document.getElementById('reschedule-date-grid');
+                const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                const today = new Date();
+                grid.innerHTML = '';
+                for (let i = 0; i < 7; i++) {
+                    const d = new Date(today);
+                    d.setDate(today.getDate() + i);
+                    const dateStr = d.toISOString().split('T')[0];
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = `date-btn ${i === 0 ? 'bg-primary-teal' : 'bg-slate-700'} text-white px-4 py-3 rounded-lg font-semibold text-sm hover:bg-primary-blue transition-all`;
+                    btn.innerHTML = `<div>${days[d.getDay()]}</div><div class="text-xs">${d.getDate()}</div>`;
+                    btn.addEventListener('click', () => fetchSlotsForDate(btn, dateStr));
+                    grid.appendChild(btn);
+                }
+            }
+
+            function fetchSlotsForDate(btn, date) {
+                document.querySelectorAll('#reschedule-date-grid .date-btn').forEach(b => {
+                    b.classList.remove('bg-primary-teal');
+                    b.classList.add('bg-slate-700');
+                });
+                if (btn) { btn.classList.remove('bg-slate-700'); btn.classList.add('bg-primary-teal'); }
+                fetchSlots(date);
             }
 
             async function fetchSlots(date) {
-                const slotContainer = document.querySelector('#reschedule-modal .grid.grid-cols-4');
+                const slotContainer = document.getElementById('reschedule-slot-grid');
                 slotContainer.innerHTML = '<p class="col-span-4 text-center text-gray-500">Loading slots...</p>';
 
                 try {
@@ -877,32 +858,6 @@
                 }
             }
 
-
-            // Redirect functions (placeholders)
-
-            // Date button selection
-            document.querySelectorAll('.date-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    document.querySelectorAll('.date-btn').forEach(b => {
-                        b.classList.remove('bg-primary-teal');
-                        b.classList.add('bg-slate-700');
-                    });
-                    this.classList.remove('bg-slate-700');
-                    this.classList.add('bg-primary-teal');
-                });
-            });
-
-            // Slot button selection
-            document.querySelectorAll('.slot-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    document.querySelectorAll('.slot-btn').forEach(b => {
-                        b.classList.remove('bg-primary-teal', 'text-white');
-                        b.classList.add('text-primary-teal');
-                    });
-                    this.classList.add('bg-primary-teal', 'text-white');
-                    this.classList.remove('text-primary-teal');
-                });
-            });
 
             // Close modals when clicking outside
             document.querySelectorAll('[id$="-modal"]').forEach(modal => {

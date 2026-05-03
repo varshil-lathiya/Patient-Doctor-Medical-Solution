@@ -163,17 +163,17 @@ DB_DATABASE=patient_doctor_management_system
 PORT=3001
 
 # Cloudinary (patient report uploads)
-CLOUD_NAME=dutzlkwvc
-CLOUDINARY_KEY=634683326928957
-CLOUDINARY_SECRET=orblm1jQxwvrHkXRtIvZAc0z4q8
+CLOUD_NAME=<your_cloud_name>
+CLOUDINARY_KEY=<your_cloudinary_key>
+CLOUDINARY_SECRET=<your_cloudinary_secret>
 
 # Gmail SMTP (system notifications + OTP)
-SYSTEM_MAIL_ID=pdms2402@gmail.com
-SYSTEM_MAIL_PASS=memz bmgp mble wusa
+SYSTEM_MAIL_ID=<your_gmail_address>
+SYSTEM_MAIL_PASS=<your_gmail_app_password>
 
 # JWT
-JWT_SECRET=pdms_secret_jwt
-DOC_SET_PASS_SECRET=pdms_secret_jwt
+JWT_SECRET=<your_jwt_secret>
+DOC_SET_PASS_SECRET=<your_doc_set_pass_secret>
 
 # Stripe (test keys)
 STRIPE_PUBLISHABLE_KEY=pk_test_51T554t...

@@ -24,8 +24,8 @@ const handleStripeWebhook = async (req, res) => {
 
   try {
     const [result] = await db.execute(
-      "UPDATE appointment_slots SET patient_id = ?, status = 'is_occupied' WHERE id = ? AND status = 'is_available'",
-      [patient_id, slot_id]
+      "UPDATE appointment_slots SET patient_id = ?, status = 'is_occupied', payment_intent_id = ? WHERE id = ? AND status = 'is_available'",
+      [patient_id, session.payment_intent, slot_id]
     );
 
     if (result.affectedRows === 0) {
