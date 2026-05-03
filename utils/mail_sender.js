@@ -1,13 +1,4 @@
-const nodemailer = require('nodemailer');
 const logger = require('./logger');
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.SYSTEM_MAIL_ID,
-    pass: process.env.SYSTEM_MAIL_PASS,
-  },
-});
 
 function maskEmail(email) {
   const [user, domain] = email.split('@');
@@ -19,14 +10,28 @@ async function mailSender(to, subject, text, html) {
   logger.info('MAIL', 'Sending email', { to: masked, subject });
 
   try {
-    const info = await transporter.sendMail({
-      from: `PDMS <${process.env.SYSTEM_MAIL_ID}>`,
-      to,
-      subject,
-      text: text || '',
-      html: html || '',
+    const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'api-key': process.env.BREVO_API_KEY,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        sender: { name: 'PDMS', email: process.env.SYSTEM_MAIL_ID },
+        to: [{ email: to }],
+        subject,
+        htmlContent: html || '',
+        textContent: text || '',
+      }),
     });
-    logger.info('MAIL', 'Email delivered', { to: masked, subject, messageId: info.messageId });
+
+    if (!res.ok) {
+      const err = await res.json();
+      logger.error('MAIL', 'Failed to send email', { to: masked, subject, error: err.message });
+    } else {
+      const data = await res.json();
+      logger.info('MAIL', 'Email delivered', { to: masked, subject, messageId: data.messageId });
+    }
   } catch (error) {
     logger.error('MAIL', 'Failed to send email', { to: masked, subject, error: error.message });
   }
