@@ -2,7 +2,9 @@ const nodemailer = require('nodemailer');
 
 function mailSender(to,subject,text,html){
   const transporter = nodemailer.createTransport({
-    service:'gmail',
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
     auth:{
       user: process.env.SYSTEM_MAIL_ID ? process.env.SYSTEM_MAIL_ID.replace(/['"\s]/g, '') : '',
       pass: process.env.SYSTEM_MAIL_PASS ? process.env.SYSTEM_MAIL_PASS.replace(/['"\s]/g, '') : ''

@@ -410,7 +410,6 @@ const patientEmailVerification = async (req, res) => {
     if (result.length > 0) return res.status(400).json({ message: "Email already exists" });
 
     const otp = generateOTP();
-    console.log("the patient opt is >>>>>>>>>>", otp);
     const hashedOTP = await bcrypt.hash(otp.toString(), 10);
 
     const subject = "Your OTP for Patient Registration";
@@ -448,7 +447,6 @@ const loginPatientEmailVerification = async (req, res) => {
     if (result.length === 0) return res.status(400).json({ message: "Email does not exist" });
 
     const otp = generateOTP();
-    console.log("the patient opt is lp >>>>>>>>>>", otp);
 
     const hashedOTP = await bcrypt.hash(otp.toString(), 10);
 
