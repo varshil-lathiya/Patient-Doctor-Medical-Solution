@@ -1,6 +1,16 @@
 const dotenv = require("dotenv");
 dotenv.config({ path: "./.env" });
 
+const REQUIRED_ENV_VARS = [
+  "DB_HOST", "DB_USER", "DB_PASSWORD", "DB_DATABASE",
+  "JWT_SECRET", "STRIPE_SECRET_KEY"
+];
+const missing = REQUIRED_ENV_VARS.filter((key) => !process.env[key]);
+if (missing.length > 0) {
+  console.error('Missing required environment variables: ${missing.join(", ")}');
+  process.exit(1);
+}
+
 const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
@@ -25,10 +35,10 @@ app.use(cookieParser());
 
 // Global cache-control to prevent serving stale bfcache pages, specifically when using browser back button
 app.use((req, res, next) => {
-    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-    res.set('Pragma', 'no-cache');
-    res.set('Expires', '0');
-    next();
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  next();
 });
 
 app.use("/", authRoutes);
