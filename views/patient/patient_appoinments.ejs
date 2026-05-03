@@ -28,6 +28,63 @@
       }
     }
   </script>
+  <style>
+    @media (max-width: 1023px) {
+      body > aside {
+        display: none !important;
+      }
+
+      #right-section {
+        margin-left: 0 !important;
+        padding: 1rem !important;
+      }
+
+      .appointments-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+
+      .appointments-tabs {
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      .appointments-tabs button {
+        flex: 1 0 auto;
+      }
+
+      .appointment-card-past {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+      }
+
+      .appointment-card-past > div {
+        text-align: left;
+      }
+
+      .appointment-actions {
+        width: 100%;
+      }
+
+      .appointment-actions button {
+        width: 100%;
+      }
+
+      .modal-panel-padding {
+        padding: 1rem;
+      }
+
+      .appointment-title-wrap {
+        overflow-wrap: anywhere;
+      }
+
+      #reschedule-slots-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
 </head>
 
 <body class="bg-gray-50 min-h-screen">
@@ -48,13 +105,13 @@
       </div>
 
       <!-- Page Header -->
-      <div class="mb-8 flex items-center justify-between">
+      <div class="appointments-header mb-8 flex items-center justify-between">
         <div>
-          <h1 class="text-3xl font-bold text-gray-900 mb-1">My Appointments</h1>
+          <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">My Appointments</h1>
           <p class="text-gray-600">Track and manage your medical consultations</p>
         </div>
 
-        <div class="flex gap-2 bg-white p-1 rounded-xl shadow-sm border border-gray-100">
+        <div class="appointments-tabs flex gap-2 bg-white p-1 rounded-xl shadow-sm border border-gray-100">
           <button onclick="showUpcoming()" id="upcoming-tab"
             class="px-6 py-2.5 rounded-lg font-bold text-sm transition-all bg-primary-teal text-white">Upcoming</button>
           <button onclick="showPast()" id="past-tab"
@@ -79,7 +136,7 @@
                   alt="Doctor" class="w-full h-full object-cover" />
               </div>
               <div>
-                <h3 class="text-lg font-bold text-gray-900">Dr. <%= appt.d_first %>
+                <h3 class="appointment-title-wrap text-lg font-bold text-gray-900">Dr. <%= appt.d_first %>
                     <%= appt.d_last %>
                 </h3>
                 <p class="text-primary-teal font-bold text-sm uppercase">
@@ -105,7 +162,7 @@
               </div>
             </div>
 
-            <div class="flex gap-2">
+            <div class="appointment-actions flex gap-2">
               <button
                 onclick="openRescheduleModal('<%= appt.id %>', '<%= appt.doctor_id %>', '<%= appt.d_first %> <%= appt.d_last %>', '<%= appt.department %>', '<%= appt.profile_pic %>')"
                 class="flex-1 md:flex-none bg-blue-50 text-primary-blue hover:bg-primary-blue hover:text-white font-bold px-5 py-2.5 rounded-xl transition-all text-sm">
@@ -132,7 +189,7 @@
           past.forEach(appt => {
           %>
           <div
-            class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center justify-between transition-all duration-300">
+            class="appointment-card-past bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center justify-between transition-all duration-300">
             <div class="flex items-center gap-4">
               <div class="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center overflow-hidden">
                 <img
@@ -140,7 +197,7 @@
                   alt="Doctor" class="w-full h-full object-cover" />
               </div>
               <div>
-                <h3 class="text-lg font-bold text-gray-900">Dr. <%= appt.d_first %>
+                <h3 class="appointment-title-wrap text-lg font-bold text-gray-900">Dr. <%= appt.d_first %>
                     <%= appt.d_last %>
                 </h3>
                 <p class="text-gray-500 font-bold text-xs uppercase">
@@ -185,13 +242,13 @@
     <div id="reschedule-modal"
       class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="sticky top-0 bg-white border-b border-gray-100 px-8 py-5 flex items-center justify-between z-10">
-          <h3 class="text-2xl font-bold text-gray-900">Reschedule Appointment</h3>
+        <div class="sticky top-0 bg-white border-b border-gray-100 px-4 sm:px-8 py-5 flex items-center justify-between gap-4 z-10">
+          <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Reschedule Appointment</h3>
           <button onclick="closeRescheduleModal()"
             class="text-gray-400 hover:text-red-500 transition-colors bg-gray-100 w-10 h-10 rounded-full flex items-center justify-center text-xl">×</button>
         </div>
 
-        <div class="p-8">
+        <div class="modal-panel-padding p-8">
           <div class="flex items-center gap-5 mb-8 p-5 bg-blue-50/50 rounded-2xl border border-blue-100">
             <div
               class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-blue to-primary-teal flex items-center justify-center shadow-md overflow-hidden">
@@ -222,7 +279,7 @@
           </div>
         </div>
 
-        <div class="sticky bottom-0 bg-white border-t border-gray-100 p-8">
+        <div class="sticky bottom-0 bg-white border-t border-gray-100 p-4 sm:p-8">
           <button id="reschedule-confirm-btn" onclick="submitReschedule()" disabled
             class="w-full bg-primary-teal text-white font-bold py-4 rounded-2xl transition-all text-lg shadow-lg disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none hover:bg-slate-800">
             Confirm Reschedule
@@ -235,7 +292,7 @@
     <div id="cancel-modal"
       class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full">
-        <div class="p-8">
+        <div class="modal-panel-padding p-8">
           <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <i class="fas fa-exclamation-triangle text-4xl text-red-500"></i>
           </div>
@@ -251,7 +308,7 @@
               placeholder="Optional reason..."></textarea>
           </div>
 
-          <div class="flex gap-4">
+          <div class="flex flex-col sm:flex-row gap-4">
             <button onclick="closeCancelModal()"
               class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-4 rounded-2xl transition-all">Go
               Back</button>

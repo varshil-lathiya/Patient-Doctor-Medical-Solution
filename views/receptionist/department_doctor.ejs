@@ -30,6 +30,31 @@
             }
         }
     </script>
+    <style>
+        @media (max-width: 1023px) {
+            body > aside {
+                display: none !important;
+            }
+
+            #right-section {
+                margin-left: 0 !important;
+                padding: 1rem !important;
+            }
+
+            .department-header {
+                align-items: flex-start;
+            }
+
+            .doctor-card-title,
+            .department-title {
+                overflow-wrap: anywhere;
+            }
+
+            #slots-container {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+    </style>
 </head>
 
 <body class="bg-gray-50 min-h-screen">
@@ -42,7 +67,7 @@
 
             <!-- Breadcrumb -->
             <nav class="mb-6">
-                <ol class="flex items-center gap-2 text-sm">
+                <ol class="flex flex-wrap items-center gap-2 text-sm">
                     <li>
                         <a href="/receptionist/dashboard"
                             class="text-primary-blue hover:text-primary-teal transition-colors flex items-center gap-1">
@@ -69,13 +94,13 @@
                     <i class="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
                     Back to Specialties
                 </a>
-                <div class="flex items-center gap-4 mb-3">
+                <div class="department-header flex items-center gap-4 mb-3">
                     <div
                         class="w-16 h-16 bg-gradient-to-br from-primary-blue to-primary-teal rounded-xl flex items-center justify-center shadow-lg">
                         <i class="fas fa-hospital text-3xl text-white"></i>
                     </div>
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-900">
+                        <h1 class="department-title text-2xl sm:text-3xl font-bold text-gray-900">
                             <%= departmentName %>
                         </h1>
                         <p class="text-gray-600">Select a doctor to book an appointment</p>
@@ -108,7 +133,7 @@
                                             </div>
                                         </div>
                                         <div class="flex-1">
-                                            <h3 class="text-xl font-bold text-gray-900 mb-1">Dr. <%= doc.firstname %>
+                                            <h3 class="doctor-card-title text-xl font-bold text-gray-900 mb-1">Dr. <%= doc.firstname %>
                                                     <%= doc.lastname %>
                                             </h3>
                                             <div
@@ -186,7 +211,7 @@
                     <div class="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
                         <h5 class="text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Patient Verification
                         </h5>
-                        <div class="flex gap-2">
+                        <div class="flex flex-col sm:flex-row gap-2">
                             <input type="text" id="patientEmail" placeholder="Patient Email ID"
                                 class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-teal focus:border-transparent" />
                             <button type="button" onclick="verifyPatient()"
@@ -209,7 +234,7 @@
                         <h5 class="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">Available Slots
                         </h5>
                         <div id="slots-container" class="grid grid-cols-4 gap-3">
-                            <p class="col-span-4 text-center text-gray-500 text-sm italic">Select a date to see slots
+                            <p class="col-span-full text-center text-gray-500 text-sm italic">Select a date to see slots
                             </p>
                         </div>
                     </div>
@@ -253,7 +278,7 @@
 
             async function fetchSlots(date) {
                 const container = document.getElementById('slots-container');
-                container.innerHTML = '<p class="col-span-4 text-center text-gray-500 text-sm">Loading slots...</p>';
+                container.innerHTML = '<p class="col-span-full text-center text-gray-500 text-sm">Loading slots...</p>';
 
                 try {
                     const response = await fetch(`/receptionist/get-slots?doctor_id=${currentDoctorId}&date=${date}`);
@@ -266,10 +291,10 @@
                         </button>
                     `).join('');
                     } else {
-                        container.innerHTML = '<p class="col-span-4 text-center text-red-500 text-sm">No slots available</p>';
+                        container.innerHTML = '<p class="col-span-full text-center text-red-500 text-sm">No slots available</p>';
                     }
                 } catch (err) {
-                    container.innerHTML = '<p class="col-span-4 text-center text-red-500 text-sm">Error loading slots</p>';
+                    container.innerHTML = '<p class="col-span-full text-center text-red-500 text-sm">Error loading slots</p>';
                 }
             }
 

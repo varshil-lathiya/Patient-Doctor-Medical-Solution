@@ -30,6 +30,35 @@
             }
         }
     </script>
+    <style>
+        @media (max-width: 1023px) {
+            body > aside {
+                display: none !important;
+            }
+
+            #right-section {
+                margin-left: 0 !important;
+                padding: 1rem !important;
+            }
+
+            .department-header {
+                align-items: flex-start;
+            }
+
+            .doctor-card-title,
+            .department-title {
+                overflow-wrap: anywhere;
+            }
+
+            .modal-body-padding {
+                padding: 1rem;
+            }
+
+            #slots-container {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+    </style>
 </head>
 
 <body class="bg-gray-50 min-h-screen">
@@ -51,7 +80,7 @@
 
             <!-- Breadcrumb -->
             <nav class="mb-6">
-                <ol class="flex items-center gap-2 text-sm">
+                <ol class="flex flex-wrap items-center gap-2 text-sm">
                     <li>
                         <a href="/patient/dashboard"
                             class="text-primary-blue hover:text-primary-teal transition-colors flex items-center gap-1">
@@ -68,13 +97,13 @@
 
             <!-- Department Header -->
             <div class="mb-8">
-                <div class="flex items-center gap-4 mb-3">
+                <div class="department-header flex items-center gap-4 mb-3">
                     <div
                         class="w-16 h-16 bg-gradient-to-br from-primary-blue to-primary-teal rounded-xl flex items-center justify-center shadow-lg">
                         <i class="fas fa-hospital text-3xl text-white"></i>
                     </div>
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-900 uppercase tracking-tight">
+                        <h1 class="department-title text-2xl sm:text-3xl font-bold text-gray-900 uppercase tracking-tight">
                             <%= departmentName %>
                         </h1>
                         <p class="text-gray-600">Select a doctor to schedule your consultation</p>
@@ -107,7 +136,7 @@
                                             </div>
                                         </div>
                                         <div class="flex-1">
-                                            <h3 class="text-lg font-bold text-gray-900 mb-0.5">Dr. <%= doc.firstname %>
+                                            <h3 class="doctor-card-title text-lg font-bold text-gray-900 mb-0.5">Dr. <%= doc.firstname %>
                                                     <%= doc.lastname %>
                                             </h3>
                                             <div class="flex items-center gap-1 mb-2">
@@ -175,13 +204,13 @@
             class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
                 <div
-                    class="sticky top-0 bg-white border-b border-gray-100 px-8 py-5 flex items-center justify-between z-10">
-                    <h3 class="text-2xl font-bold text-gray-900">Select Time Slot</h3>
+                    class="sticky top-0 bg-white border-b border-gray-100 px-4 sm:px-8 py-5 flex items-center justify-between gap-4 z-10">
+                    <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Select Time Slot</h3>
                     <button onclick="closeSlotModal()"
                         class="text-gray-400 hover:text-red-500 transition-colors bg-gray-100 w-10 h-10 rounded-full flex items-center justify-center text-xl">×</button>
                 </div>
 
-                <div class="p-8">
+                <div class="modal-body-padding p-8">
                     <div class="flex items-center gap-5 mb-8 p-5 bg-blue-50/50 rounded-2xl border border-blue-100">
                         <div
                             class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-blue to-primary-teal flex items-center justify-center shadow-md overflow-hidden">
@@ -212,7 +241,7 @@
                     </div>
                 </div>
 
-                <div class="sticky bottom-0 bg-white border-t border-gray-100 p-8">
+                <div class="sticky bottom-0 bg-white border-t border-gray-100 p-4 sm:p-8">
                     <button id="book-btn" onclick="bookAppointment()" disabled
                         class="w-full bg-primary-teal text-white font-bold py-4 rounded-2xl transition-all text-lg shadow-lg disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none hover:bg-slate-800">
                         Confirm Booking

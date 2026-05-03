@@ -31,6 +31,22 @@
             }
         }
     </script>
+    <style>
+        @media (max-width: 1023px) {
+            body > aside {
+                display: none !important;
+            }
+
+            #right-section {
+                margin-left: 0 !important;
+                padding: 1rem !important;
+            }
+
+            .department-card-title {
+                overflow-wrap: anywhere;
+            }
+        }
+    </style>
 </head>
 
 <body class="bg-gray-50 min-h-screen overflow-x-hidden">
@@ -48,7 +64,7 @@
                     <i class="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
                     Back to Dashboard
                 </a>
-                <h1 class="text-3xl font-bold text-primary-teal mb-1">All Departments</h1>
+                <h1 class="text-2xl sm:text-3xl font-bold text-primary-teal mb-1">All Departments</h1>
                 <p class="text-gray-600">Select a department to view available doctors and book appointments</p>
             </div>
 
@@ -106,7 +122,7 @@
                                         <i class="fa-solid <%= config.icon %> fa-fw text-3xl text-white"></i>
                                     <% } %>
                                 </div>
-                                <h3 class="text-xl font-bold text-gray-900 <%= config.hover %> transition-colors">
+                                <h3 class="department-card-title text-xl font-bold text-gray-900 <%= config.hover %> transition-colors">
                                     <%= spec.department %>
                                 </h3>
                             </div>
@@ -143,7 +159,7 @@
                 </div>
                 <div class="p-6">
                     <form id="patient-verify-form" class="mb-4">
-                        <div class="flex gap-2">
+                        <div class="flex flex-col sm:flex-row gap-2">
                             <input type="text" id="patientEmail" placeholder="Patient Email Id"
                                 class="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-teal focus:border-transparent" />
                             <button type="button" onclick="verifyPatient()"
