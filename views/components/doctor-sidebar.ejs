@@ -1,4 +1,62 @@
-<div class="w-80 bg-gradient-to-br from-teal-600 to-cyan-500 text-white flex flex-col shadow-2xl">
+<!-- Mobile Menu Button -->
+<button type="button" onclick="openDoctorMobileMenu()"
+    class="lg:hidden fixed top-4 left-4 z-[70] w-11 h-11 rounded-xl bg-teal-600 text-white shadow-lg flex items-center justify-center">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+    </svg>
+</button>
+
+<!-- Mobile Sidebar Drawer -->
+<div id="doctor-mobile-menu" class="lg:hidden hidden fixed inset-0 z-[80]">
+    <button type="button" onclick="closeDoctorMobileMenu()" class="absolute inset-0 bg-black/40"></button>
+    <aside class="relative h-full w-80 max-w-[85vw] bg-gradient-to-br from-teal-600 to-cyan-500 text-white flex flex-col shadow-2xl">
+        <div class="p-6 bg-white/10 backdrop-blur-sm flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-md">
+                    <img src="/assets/favicon.png" alt="Logo" class="w-10 h-10">
+                </div>
+                <span class="text-2xl font-bold">PDMS</span>
+            </div>
+            <button type="button" onclick="closeDoctorMobileMenu()" class="w-9 h-9 rounded-lg bg-white/10 text-white flex items-center justify-center text-2xl leading-none">×</button>
+        </div>
+
+        <div class="p-6 text-center border-b border-white/20">
+            <div class="w-20 h-20 mx-auto mb-3 rounded-full border-4 border-white shadow-lg overflow-hidden">
+                <img src="<%= user.profile_pic || 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=200&h=200&fit=crop' %>"
+                    alt="Doctor" class="w-full h-full object-cover">
+            </div>
+            <h4 class="text-lg font-semibold">Dr. <%= user.firstname %> <%= user.lastname %></h4>
+            <p class="text-teal-100 text-sm mt-1"><%= user.department %></p>
+        </div>
+
+        <nav class="flex-1 p-6 space-y-2">
+            <button onclick="window.location.href='/doctor/dashboard'"
+                class="w-full text-left px-4 py-3 rounded-lg <%= currentPage === 'dashboard' ? 'bg-white text-teal-600 font-medium shadow-md' : 'hover:bg-white/10 font-medium transition' %>">
+                Dashboard
+            </button>
+            <button onclick="window.location.href='/doctor/appoinments'"
+                class="w-full text-left px-4 py-3 rounded-lg <%= currentPage === 'appointments' ? 'bg-white text-teal-600 font-medium shadow-md' : 'hover:bg-white/10 font-medium transition' %>">
+                Appointments
+            </button>
+            <button onclick="window.location.href='/doctor/profilePage'"
+                class="w-full text-left px-4 py-3 rounded-lg <%= currentPage === 'profile' ? 'bg-white text-teal-600 font-medium shadow-md' : 'hover:bg-white/10 font-medium transition' %>">
+                Profile
+            </button>
+            <button onclick="window.location.href='/doctor/leaves'"
+                class="w-full text-left px-4 py-3 rounded-lg <%= currentPage === 'leaves' ? 'bg-white text-teal-600 font-medium shadow-md' : 'hover:bg-white/10 font-medium transition' %>">
+                Leave Application
+            </button>
+        </nav>
+
+        <div class="p-6 border-t border-white/20">
+            <button onclick="logout()" class="w-full px-4 py-3 bg-red-500 hover:bg-red-600 rounded-lg font-medium transition shadow-lg">
+                Logout
+            </button>
+        </div>
+    </aside>
+</div>
+
+<div class="hidden lg:flex w-80 bg-gradient-to-br from-teal-600 to-cyan-500 text-white flex-col shadow-2xl">
     <!-- Logo Section -->
     <div class="p-6 bg-white/10 backdrop-blur-sm">
         <div class="flex items-center gap-3">
@@ -91,3 +149,15 @@
         </button>
     </div>
 </div>
+
+<script>
+    function openDoctorMobileMenu() {
+        document.getElementById('doctor-mobile-menu')?.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDoctorMobileMenu() {
+        document.getElementById('doctor-mobile-menu')?.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+</script>

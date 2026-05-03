@@ -1,3 +1,51 @@
+<!-- Mobile Menu Button -->
+<button type="button" onclick="openAdminMobileMenu()"
+    class="lg:hidden fixed top-4 left-4 z-[70] w-11 h-11 rounded-xl bg-indigo-600 text-white shadow-lg flex items-center justify-center">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+    </svg>
+</button>
+
+<!-- Mobile Sidebar Drawer -->
+<div id="admin-mobile-menu" class="lg:hidden hidden fixed inset-0 z-[80]">
+    <button type="button" onclick="closeAdminMobileMenu()" class="absolute inset-0 bg-black/40"></button>
+    <aside class="relative h-full w-64 bg-[#0f172a] shadow-2xl flex flex-col border-r border-slate-800/50">
+        <div class="p-6 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                    <i class="fas fa-hospital-alt text-white text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-white text-2xl font-bold tracking-tight leading-none">PDMS</h1>
+                    <p class="text-slate-500 text-[12px] uppercase font-semibold tracking-widest mt-1">Admin Panel</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeAdminMobileMenu()" class="w-9 h-9 rounded-lg bg-white/5 text-white flex items-center justify-center text-2xl leading-none">×</button>
+        </div>
+
+        <nav class="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
+            <a href="/admin/dashboard" class="flex items-center space-x-3 px-4 py-3 rounded-xl font-semibold <%= active === 'dashboard' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-400 hover:text-white hover:bg-white/5' %>">
+                <i class="fas fa-th-large text-sm"></i><span class="text-base">Dashboard</span>
+            </a>
+            <a href="/admin/doctors" class="flex items-center space-x-3 px-4 py-3 rounded-xl font-semibold <%= active === 'doctors' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-400 hover:text-white hover:bg-white/5' %>">
+                <i class="fas fa-user-doctor text-sm"></i><span class="text-base">Medical Staff</span>
+            </a>
+            <a href="/admin/receptionist" class="flex items-center space-x-3 px-4 py-3 rounded-xl font-semibold <%= active === 'receptionist' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-400 hover:text-white hover:bg-white/5' %>">
+                <i class="fas fa-users-cog text-sm"></i><span class="text-base">Receptionists</span>
+            </a>
+            <a href="/admin/manage-leaves" class="flex items-center space-x-3 px-4 py-3 rounded-xl font-semibold <%= active === 'leaves' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-400 hover:text-white hover:bg-white/5' %>">
+                <i class="fas fa-calendar-alt text-sm"></i><span class="text-base">Leave Requests</span>
+            </a>
+        </nav>
+
+        <div class="p-6 mt-auto">
+            <a href="javascript:void(0)" onclick="logout()" class="flex items-center space-x-3 px-4 py-3 text-slate-400 hover:text-rose-400">
+                <i class="fas fa-sign-out-alt text-sm"></i><span class="text-base font-semibold">Logout</span>
+            </a>
+        </div>
+    </aside>
+</div>
+
 <aside class="w-64 bg-[#0f172a] shadow-2xl hidden lg:block z-20 shrink-0 border-r border-slate-800/50">
     <div class="h-full flex flex-col">
         <!-- Brand Area -->
@@ -67,3 +115,15 @@
     .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
 </style>
+
+<script>
+    function openAdminMobileMenu() {
+        document.getElementById('admin-mobile-menu')?.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeAdminMobileMenu() {
+        document.getElementById('admin-mobile-menu')?.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+</script>
