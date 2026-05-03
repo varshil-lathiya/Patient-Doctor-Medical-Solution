@@ -1,6 +1,6 @@
 const db = require("../config/db.config");
 const mailSender = require("../utils/mail_sender");
-const { otpTemplate, cancellationTemplate } = require("../utils/email_templates");
+const { otpTemplate, cancellationTemplate, rescheduleTemplate } = require("../utils/email_templates");
 const { todayIST, currentTimeIST } = require("../utils/time");
 const bcrypt = require("bcrypt");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
@@ -289,24 +289,75 @@ const cancelAppointment = async (req, res) => {
 };
 
 const rescheduleAppointment = async (req, res) => {
+  let transactionStarted = false;
+
   try {
     const { old_slot_id, new_slot_id, reason } = req.body;
     const patientId = req.user.id;
 
-    // 1. Cancel old
-    await db.execute(
-      "UPDATE appointment_slots SET status = 'is_available', patient_id = NULL, reason = ? WHERE id = ?",
-      ["Rescheduled: " + reason, old_slot_id]
+    const [[oldSlot]] = await db.execute(
+      `SELECT a.slot_date, a.slot_start, a.doctor_id,
+              p.email, p.firstname, p.lastname,
+              s.firstname AS doc_first, s.lastname AS doc_last,
+              dd.department
+       FROM appointment_slots a
+       JOIN patients p ON a.patient_id = p.id
+       JOIN staff s ON a.doctor_id = s.id
+       JOIN doctor_details dd ON s.id = dd.doctor_id
+       WHERE a.id = ? AND a.patient_id = ?`,
+      [old_slot_id, patientId]
     );
 
-    // 2. Book new
+    if (!oldSlot) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    const [[newSlot]] = await db.execute(
+      `SELECT slot_date, slot_start
+       FROM appointment_slots
+       WHERE id = ? AND doctor_id = ? AND status = 'is_available'`,
+      [new_slot_id, oldSlot.doctor_id]
+    );
+
+    if (!newSlot) {
+      return res.status(400).json({ message: "Selected slot is no longer available" });
+    }
+
+    await db.beginTransaction();
+    transactionStarted = true;
+
     await db.execute(
-      "UPDATE appointment_slots SET patient_id = ?, status = 'is_occupied' WHERE id = ?",
+      "UPDATE appointment_slots SET status = 'is_available', patient_id = NULL, reason = ? WHERE id = ? AND patient_id = ?",
+      [reason ? `Rescheduled: ${reason}` : "Rescheduled by patient", old_slot_id, patientId]
+    );
+
+    const [newSlotUpdate] = await db.execute(
+      "UPDATE appointment_slots SET patient_id = ?, status = 'is_occupied', reason = NULL WHERE id = ? AND status = 'is_available'",
       [patientId, new_slot_id]
     );
 
+    if (newSlotUpdate.affectedRows === 0) {
+      throw new Error("Selected slot is no longer available");
+    }
+
+    await db.commit();
+    transactionStarted = false;
+
+    const html = rescheduleTemplate({
+      patientName: `${oldSlot.firstname} ${oldSlot.lastname}`,
+      doctorName: `${oldSlot.doc_first} ${oldSlot.doc_last}`,
+      department: oldSlot.department,
+      newSlotDate: newSlot.slot_date,
+      newSlotStart: newSlot.slot_start,
+      oldSlotDate: oldSlot.slot_date,
+      oldSlotStart: oldSlot.slot_start,
+    });
+
+    await mailSender(oldSlot.email, "Your Appointment Has Been Rescheduled – Kalp Hospital", "", html);
+
     res.json({ success: true, message: "Appointment rescheduled successfully" });
   } catch (error) {
+    if (transactionStarted) await db.rollback();
     console.error("Reschedule appointment error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
