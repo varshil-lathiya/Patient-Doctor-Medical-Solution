@@ -1,4 +1,15 @@
+const { google } = require('googleapis');
 const logger = require('./logger');
+
+const oauth2Client = new google.auth.OAuth2(
+  process.env.GMAIL_CLIENT_ID,
+  process.env.GMAIL_CLIENT_SECRET,
+  'https://developers.google.com/oauthplayground'
+);
+
+oauth2Client.setCredentials({
+  refresh_token: process.env.GMAIL_REFRESH_TOKEN,
+});
 
 function maskEmail(email) {
   const [user, domain] = email.split('@');
@@ -10,28 +21,30 @@ async function mailSender(to, subject, text, html) {
   logger.info('MAIL', 'Sending email', { to: masked, subject });
 
   try {
-    const res = await fetch('https://api.brevo.com/v3/smtp/email', {
-      method: 'POST',
-      headers: {
-        'api-key': process.env.BREVO_API_KEY,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        sender: { name: 'PDMS', email: process.env.SYSTEM_MAIL_ID },
-        to: [{ email: to }],
-        subject,
-        htmlContent: html || '',
-        textContent: text || 'Please view this email in an HTML-capable client.',
-      }),
+    const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
+
+    const message = [
+      `From: PDMS <${process.env.SYSTEM_MAIL_ID}>`,
+      `To: ${to}`,
+      `Subject: ${subject}`,
+      'MIME-Version: 1.0',
+      'Content-Type: text/html; charset=utf-8',
+      '',
+      html || text || '',
+    ].join('\n');
+
+    const encoded = Buffer.from(message)
+      .toString('base64')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+
+    const res = await gmail.users.messages.send({
+      userId: 'me',
+      requestBody: { raw: encoded },
     });
 
-    if (!res.ok) {
-      const err = await res.json();
-      logger.error('MAIL', 'Failed to send email', { to: masked, subject, error: err.message });
-    } else {
-      const data = await res.json();
-      logger.info('MAIL', 'Email delivered', { to: masked, subject, messageId: data.messageId });
-    }
+    logger.info('MAIL', 'Email delivered', { to: masked, subject, messageId: res.data.id });
   } catch (error) {
     logger.error('MAIL', 'Failed to send email', { to: masked, subject, error: error.message });
   }
