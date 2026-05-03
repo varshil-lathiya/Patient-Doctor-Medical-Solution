@@ -26,7 +26,7 @@ async function mailSender(to, subject, text, html) {
     const message = [
       `From: PDMS <${process.env.SYSTEM_MAIL_ID}>`,
       `To: ${to}`,
-      `Subject: ${subject}`,
+      `Subject: =?UTF-8?B?${Buffer.from(subject).toString('base64')}?=`,
       'MIME-Version: 1.0',
       'Content-Type: text/html; charset=utf-8',
       '',
