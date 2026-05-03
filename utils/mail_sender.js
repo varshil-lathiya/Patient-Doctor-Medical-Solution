@@ -1,7 +1,13 @@
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 const logger = require('./logger');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.SYSTEM_MAIL_ID,
+    pass: process.env.SYSTEM_MAIL_PASS,
+  },
+});
 
 function maskEmail(email) {
   const [user, domain] = email.split('@');
@@ -12,18 +18,17 @@ async function mailSender(to, subject, text, html) {
   const masked = maskEmail(to);
   logger.info('MAIL', 'Sending email', { to: masked, subject });
 
-  const { data, error } = await resend.emails.send({
-    from: process.env.SYSTEM_MAIL_FROM || 'PDMS <onboarding@resend.dev>',
-    to,
-    subject,
-    text: text || '',
-    html: html || '',
-  });
-
-  if (error) {
+  try {
+    const info = await transporter.sendMail({
+      from: `PDMS <${process.env.SYSTEM_MAIL_ID}>`,
+      to,
+      subject,
+      text: text || '',
+      html: html || '',
+    });
+    logger.info('MAIL', 'Email delivered', { to: masked, subject, messageId: info.messageId });
+  } catch (error) {
     logger.error('MAIL', 'Failed to send email', { to: masked, subject, error: error.message });
-  } else {
-    logger.info('MAIL', 'Email delivered', { to: masked, subject, messageId: data.id });
   }
 }
 
