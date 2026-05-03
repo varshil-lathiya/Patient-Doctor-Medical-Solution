@@ -332,18 +332,18 @@
         document.getElementById('upcoming-section').classList.remove('hidden');
         document.getElementById('past-section').classList.add('hidden');
         document.getElementById('upcoming-tab').classList.add('bg-primary-teal', 'text-white');
-        document.getElementById('upcoming-tab').classList.remove('text-gray-500');
+        document.getElementById('upcoming-tab').classList.remove('text-gray-500', 'hover:bg-gray-50');
         document.getElementById('past-tab').classList.remove('bg-primary-teal', 'text-white');
-        document.getElementById('past-tab').classList.add('text-gray-500');
+        document.getElementById('past-tab').classList.add('text-gray-500', 'hover:bg-gray-50');
       }
 
       function showPast() {
         document.getElementById('upcoming-section').classList.add('hidden');
         document.getElementById('past-section').classList.remove('hidden');
         document.getElementById('past-tab').classList.add('bg-primary-teal', 'text-white');
-        document.getElementById('past-tab').classList.remove('text-gray-500');
+        document.getElementById('past-tab').classList.remove('text-gray-500', 'hover:bg-gray-50');
         document.getElementById('upcoming-tab').classList.remove('bg-primary-teal', 'text-white');
-        document.getElementById('upcoming-tab').classList.add('text-gray-500');
+        document.getElementById('upcoming-tab').classList.add('text-gray-500', 'hover:bg-gray-50');
       }
 
       // Reschedule Logic
