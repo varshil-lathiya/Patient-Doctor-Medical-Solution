@@ -21,7 +21,7 @@ async function mailSender(to, subject, text, html) {
         to: [{ email: to }],
         subject,
         htmlContent: html || '',
-        textContent: text || '',
+        textContent: text || 'Please view this email in an HTML-capable client.',
       }),
     });
 
