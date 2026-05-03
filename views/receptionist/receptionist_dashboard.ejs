@@ -685,7 +685,7 @@
                     const dateStr = d.toISOString().split('T')[0];
                     const btn = document.createElement('button');
                     btn.type = 'button';
-                    btn.className = `date-btn ${i === 0 ? 'bg-primary-teal' : 'bg-slate-700'} text-white px-4 py-3 rounded-lg font-semibold text-sm hover:bg-primary-blue transition-all`;
+                    btn.className = `date-btn border-2 ${i === 0 ? 'bg-primary-teal border-primary-teal text-white' : 'bg-white border-gray-200 text-gray-700'} px-4 py-3 rounded-lg font-semibold text-sm transition-all`;
                     btn.innerHTML = `<div>${days[d.getDay()]}</div><div class="text-xs">${d.getDate()}</div>`;
                     btn.addEventListener('click', () => fetchSlotsForDate(btn, dateStr));
                     grid.appendChild(btn);
@@ -694,10 +694,13 @@
 
             function fetchSlotsForDate(btn, date) {
                 document.querySelectorAll('#reschedule-date-grid .date-btn').forEach(b => {
-                    b.classList.remove('bg-primary-teal');
-                    b.classList.add('bg-slate-700');
+                    b.classList.remove('bg-primary-teal', 'border-primary-teal', 'text-white');
+                    b.classList.add('bg-white', 'border-gray-200', 'text-gray-700');
                 });
-                if (btn) { btn.classList.remove('bg-slate-700'); btn.classList.add('bg-primary-teal'); }
+                if (btn) {
+                    btn.classList.remove('bg-white', 'border-gray-200', 'text-gray-700');
+                    btn.classList.add('bg-primary-teal', 'border-primary-teal', 'text-white');
+                }
                 fetchSlots(date);
             }
 
