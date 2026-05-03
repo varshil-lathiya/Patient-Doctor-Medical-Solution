@@ -124,6 +124,11 @@
 </head>
 
 <body class="bg-[#f8fafc] min-h-screen">
+    <%
+        const doctorProfileAvatarName = `Dr ${user.firstname || ''} ${user.lastname || ''}`.trim() || 'Doctor';
+        const doctorProfileAvatarFallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(doctorProfileAvatarName)}&size=256&background=0D9488&color=fff&bold=true`;
+        const doctorProfileAvatar = user.profile_pic || doctorProfileAvatarFallback;
+    %>
     <div class="flex">
         <!-- Sidebar Navigation -->
         <%- include('../components/doctor-sidebar', { currentPage: 'profile' }) %>
@@ -157,13 +162,8 @@
                            <div class="absolute top-0 left-0 w-full h-2 gradient-bg"></div>
                             <div class="relative inline-block mt-4">
                                 <div class="w-48 h-48 rounded-[2rem] border-8 border-white shadow-2xl overflow-hidden mx-auto transform transition-transform group-hover:scale-105 duration-500">
-                                    <% if (user.profile_pic) { %>
-                                        <img src="<%= user.profile_pic %>" alt="Doctor Profile" class="w-full h-full object-cover">
-                                    <% } else { %>
-                                        <div class="w-full h-full bg-gradient-to-br from-primary-teal to-primary-blue flex items-center justify-center text-white text-5xl font-black select-none">
-                                            <%= user.firstname[0].toUpperCase() %><%= user.lastname[0].toUpperCase() %>
-                                        </div>
-                                    <% } %>
+                                    <img src="<%= doctorProfileAvatar %>" alt="Doctor Profile" class="w-full h-full object-cover"
+                                        onerror="this.onerror=null;this.src='<%= doctorProfileAvatarFallback %>';">
                                 </div>
                             </div>
                             <h2 class="doctor-profile-text-wrap text-2xl font-extrabold text-gray-800 mt-6 tracking-tight">Dr. <%= user.firstname %> <%= user.lastname %></h2>
