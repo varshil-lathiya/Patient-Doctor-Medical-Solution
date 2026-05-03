@@ -210,16 +210,17 @@
                     document.getElementById('modal-conclusion').textContent = record.conclusion || 'No conclusion recorded.';
 
                     if (record.summary_text && !record.observation) {
-                        document.getElementById('modal-observation').innerHTML = `<span class="italic text-gray-500">Summary:</span><br>${record.summary_text.replace(/\n/g, '<br>')}`;
+                        const obs = document.getElementById('modal-observation');
+                        obs.innerHTML = '<span class="italic text-gray-500">Summary:</span><br>';
+                        const summaryNode = document.createTextNode(record.summary_text);
+                        obs.appendChild(summaryNode);
                     }
 
                     const prescContainer = document.getElementById('modal-prescription');
                     if (record.medicine) {
-                        prescContainer.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                        <p class="text-gray-900 font-bold text-sm mb-2">Prescribed Medicines</p>
-                        <p class="text-gray-600 text-sm whitespace-pre-line">${record.medicine}</p>
-                        <p class="text-gray-400 text-xs mt-3">Dosage: ${record.dosage || '-'}</p>
-                    </div>`;
+                        prescContainer.innerHTML = '<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100"><p class="text-gray-900 font-bold text-sm mb-2">Prescribed Medicines</p><p class="text-gray-600 text-sm whitespace-pre-line" id="modal-med-name"></p><p class="text-gray-400 text-xs mt-3" id="modal-med-dose"></p></div>';
+                        document.getElementById('modal-med-name').textContent = record.medicine;
+                        document.getElementById('modal-med-dose').textContent = `Dosage: ${record.dosage || '-'}`;
                     } else {
                         prescContainer.innerHTML = '<p class="text-gray-400 italic text-sm">No medicine prescribed.</p>';
                     }

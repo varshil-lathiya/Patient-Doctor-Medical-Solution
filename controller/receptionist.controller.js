@@ -426,23 +426,6 @@ const startConsultation = async (req, res) => {
   }
 };
 
-module.exports = {
-  receptionistDashboardPage,
-  receptionistAppoinmentPage,
-  receptionistDoctorPage,
-  receptionistPatientsPage,
-  receptionistProfilePage,
-  addReportPage,
-  bookAppointment,
-  updateVitals,
-  uploadReport,
-  verifyPatientByEmail,
-  getSlotsForReschedule,
-  registerPatient,
-  startConsultation,
-  updatePatient
-};
-
 const getDoctorsByDepartment = async (req, res) => {
   try {
     const { department } = req.params;

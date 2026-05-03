@@ -99,27 +99,35 @@ const setAvailability = async (req, res) => {
       [doctor_id, start_time, end_time, duration, start_time, end_time, duration]
     );
 
-    // 2. Clear existing available slots for this date to avoid duplicates
-    await db.execute(
-      "DELETE FROM appointment_slots WHERE doctor_id = ? AND slot_date = ? AND status = 'is_available'",
-      [doctor_id, slot_date]
-    );
-
-    // 3. Generate Slots
-    let current = new Date(`${slot_date}T${start_time}`);
-    const end = new Date(`${slot_date}T${end_time}`);
-
-    while (current < end) {
-      const slot_start = current.toTimeString().split(' ')[0];
-      current.setMinutes(current.getMinutes() + parseInt(duration));
-      const slot_end = current.toTimeString().split(' ')[0];
-
-      if (current > end) break;
-
+    await db.beginTransaction();
+    try {
+      // 2. Clear existing available slots for this date to avoid duplicates
       await db.execute(
-        "INSERT INTO appointment_slots (doctor_id, slot_date, slot_start, slot_end, status) VALUES (?, ?, ?, ?, 'is_available')",
-        [doctor_id, slot_date, slot_start, slot_end]
+        "DELETE FROM appointment_slots WHERE doctor_id = ? AND slot_date = ? AND status = 'is_available'",
+        [doctor_id, slot_date]
       );
+
+      // 3. Generate Slots
+      let current = new Date(`${slot_date}T${start_time}`);
+      const end = new Date(`${slot_date}T${end_time}`);
+
+      while (current < end) {
+        const slot_start = current.toTimeString().split(' ')[0];
+        current.setMinutes(current.getMinutes() + parseInt(duration));
+        const slot_end = current.toTimeString().split(' ')[0];
+
+        if (current > end) break;
+
+        await db.execute(
+          "INSERT INTO appointment_slots (doctor_id, slot_date, slot_start, slot_end, status) VALUES (?, ?, ?, ?, 'is_available')",
+          [doctor_id, slot_date, slot_start, slot_end]
+        );
+      }
+
+      await db.commit();
+    } catch (txError) {
+      await db.rollback();
+      throw txError;
     }
 
     res.status(200).json({ message: "Slots generated successfully" });
@@ -160,8 +168,8 @@ const recordConsultation = async (req, res) => {
 
     // 2. Update Slot Status
     await db.execute(
-      "UPDATE appointment_slots SET status = 'is_fulfilled' WHERE id = ?",
-      [slot_id]
+      "UPDATE appointment_slots SET status = 'is_fulfilled' WHERE id = ? AND doctor_id = ?",
+      [slot_id, doctor_id]
     );
 
     res.status(200).json({ message: "Consultation recorded successfully" });
@@ -193,6 +201,12 @@ const doctorProfile = async (req, res) => {
 const patient_history = async (req, res) => {
   const { patient_id, slot_id } = req.params;
   try {
+    const [[access]] = await db.execute(
+      "SELECT id FROM appointment_slots WHERE doctor_id = ? AND patient_id = ? LIMIT 1",
+      [req.user.id, patient_id]
+    );
+    if (!access) return res.status(403).send("Forbidden");
+
     // 1. Get Patient Details
     const [[patient]] = await db.execute("SELECT * FROM patients WHERE id = ?", [patient_id]);
 

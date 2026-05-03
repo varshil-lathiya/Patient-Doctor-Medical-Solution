@@ -26,7 +26,7 @@ const getUserDetails = async () => {
             document.getElementById('profile-email-display').innerHTML = user.email;
         }
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
 };
 
@@ -69,7 +69,7 @@ async function profile_detail_update() {
         }
     } catch (error) {
         closeModal('spinner-modal');
-        console.log(error);
+        console.error(error);
         Swal.fire('Error', 'An error occurred while updating profile', 'error');
     }
 }

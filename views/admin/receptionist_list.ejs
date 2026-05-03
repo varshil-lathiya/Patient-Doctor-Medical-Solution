@@ -155,9 +155,14 @@
             class="w-full px-6 py-4 bg-slate-50 border-0 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:bg-white outline-none transition-all font-semibold">
         </div>
         <div class="space-y-2" id="password-group">
-          <label class="text-[12px] font-bold text-slate-400 uppercase tracking-normal ml-1">Account Password</label>
-          <input type="text" name="password" id="staff-password" value="pdms@123"
-            class="w-full px-6 py-4 bg-slate-50 border-0 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:bg-white outline-none transition-all font-semibold">
+          <label class="text-[12px] font-bold text-slate-400 uppercase tracking-normal ml-1" id="password-label">Account Password</label>
+          <div class="relative">
+            <input type="password" name="password" id="staff-password" value="pdms@123" placeholder="Leave blank to keep current password"
+              class="w-full px-6 py-4 pr-14 bg-slate-50 border-0 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:bg-white outline-none transition-all font-semibold">
+            <button type="button" onclick="togglePassVisibility('staff-password', 'staff-pass-eye')" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors w-8 h-8 flex items-center justify-center rounded-xl hover:bg-slate-200">
+              <i class="fas fa-eye text-sm" id="staff-pass-eye"></i>
+            </button>
+          </div>
         </div>
         <div class="space-y-2">
           <label class="text-[12px] font-bold text-slate-400 uppercase tracking-normal ml-1">Mobile Access</label>
@@ -204,8 +209,11 @@
       document.getElementById('staff-id').value = '';
       document.getElementById('staff-email').disabled = false;
       document.getElementById('password-group').style.display = 'block';
-      document.getElementById('staff-password').value = 'pdms@123';
+      document.getElementById('staff-password').type = 'password';
+      document.getElementById('staff-pass-eye').classList.replace('fa-eye-slash', 'fa-eye');
+      document.getElementById('password-label').textContent = 'Account Password';
       document.getElementById('staff-form').reset();
+      document.getElementById('staff-password').value = 'pdms@123';
       openModal('staff-modal');
     }
 
@@ -218,7 +226,11 @@
           document.getElementById('modal-title').textContent = 'Modify Access';
           document.getElementById('staff-id').value = data.id;
           document.getElementById('staff-email').disabled = true;
-          document.getElementById('password-group').style.display = 'none';
+          document.getElementById('password-group').style.display = 'block';
+          document.getElementById('staff-password').value = '';
+          document.getElementById('staff-password').type = 'password';
+          document.getElementById('staff-pass-eye').classList.replace('fa-eye-slash', 'fa-eye');
+          document.getElementById('password-label').textContent = 'New Password (leave blank to keep current)';
 
           const form = document.getElementById('staff-form');
           form.firstname.value = data.firstname;
@@ -236,10 +248,26 @@
       }
     }
 
+    function togglePassVisibility(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+      }
+    }
+
     document.getElementById('staff-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const formData = new FormData(e.target);
       const data = Object.fromEntries(formData.entries());
+      if (data.password !== undefined) {
+        data.password = data.password.trim();
+        if (!data.password) delete data.password;
+      }
       const id = data.id;
 
       const url = id ? `/admin/update-staff/${id}` : '/admin/add-staff';

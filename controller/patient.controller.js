@@ -127,15 +127,13 @@ const bookAppointment = async (req, res) => {
     const { slot_id } = req.body;
     const patientId = req.user.id;
 
-    const [slot] = await db.execute("SELECT status FROM appointment_slots WHERE id = ?", [slot_id]);
-    if (slot.length === 0 || slot[0].status !== 'is_available') {
-      return res.status(400).json({ message: "Slot no longer available" });
-    }
-
-    await db.execute(
-      "UPDATE appointment_slots SET patient_id = ?, status = 'is_occupied' WHERE id = ?",
+    const [result] = await db.execute(
+      "UPDATE appointment_slots SET patient_id = ?, status = 'is_occupied' WHERE id = ? AND status = 'is_available'",
       [patientId, slot_id]
     );
+    if (result.affectedRows === 0) {
+      return res.status(400).json({ message: "Slot no longer available" });
+    }
 
     res.json({ success: true, message: "Appointment booked successfully" });
   } catch (error) {
