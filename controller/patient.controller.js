@@ -1,6 +1,6 @@
 const db = require("../config/db.config");
 const mailSender = require("../utils/mail_sender");
-const { otpTemplate } = require("../utils/email_templates");
+const { otpTemplate, cancellationTemplate } = require("../utils/email_templates");
 const { todayIST, currentTimeIST } = require("../utils/time");
 const bcrypt = require("bcrypt");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
@@ -255,15 +255,35 @@ const cancelAppointment = async (req, res) => {
     const patientId = req.user.id;
 
     // Verify ownership
-    const [appt] = await db.execute("SELECT * FROM appointment_slots WHERE id = ? AND patient_id = ?", [slot_id, patientId]);
-    if (appt.length === 0) return res.status(403).json({ message: "Unauthorized" });
+    const [[appt]] = await db.execute(
+      `SELECT a.slot_date, a.slot_start,
+              p.email, p.firstname, p.lastname,
+              s.firstname AS doc_first, s.lastname AS doc_last
+       FROM appointment_slots a
+       JOIN patients p ON a.patient_id = p.id
+       JOIN staff s ON a.doctor_id = s.id
+       WHERE a.id = ? AND a.patient_id = ?`,
+      [slot_id, patientId]
+    );
+    if (!appt) return res.status(403).json({ message: "Unauthorized" });
 
     await db.execute(
-      "UPDATE appointment_slots SET status = 'cancelled', patient_id = NULL, reason = ? WHERE id = ?",
-      [reason, slot_id]
+      "UPDATE appointment_slots SET status = 'is_available', patient_id = NULL, reason = ? WHERE id = ?",
+      [reason || null, slot_id]
     );
 
-    res.json({ success: true, message: "Appointment cancelled" });
+    const html = cancellationTemplate({
+      patientName: `${appt.firstname} ${appt.lastname}`,
+      doctorName: `${appt.doc_first} ${appt.doc_last}`,
+      slotDate: appt.slot_date,
+      slotStart: appt.slot_start,
+      reason: reason || 'Cancelled by patient',
+      message: 'Your appointment cancellation request has been confirmed. If a payment was made, a refund will be processed to your original payment method.',
+    });
+
+    await mailSender(appt.email, "Your Appointment Has Been Cancelled – Kalp Hospital", "", html);
+
+    res.json({ success: true, message: "Appointment cancelled successfully" });
   } catch (error) {
     console.error("Cancel appointment error:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -277,7 +297,7 @@ const rescheduleAppointment = async (req, res) => {
 
     // 1. Cancel old
     await db.execute(
-      "UPDATE appointment_slots SET status = 'cancelled', patient_id = NULL, reason = ? WHERE id = ?",
+      "UPDATE appointment_slots SET status = 'is_available', patient_id = NULL, reason = ? WHERE id = ?",
       ["Rescheduled: " + reason, old_slot_id]
     );
 

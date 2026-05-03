@@ -199,7 +199,7 @@ function receiptTemplate({ patientName, doctorName, department, slotDate, slotSt
 </html>`;
 }
 
-function cancellationTemplate({ patientName, doctorName, slotDate, slotStart, reason }) {
+function cancellationTemplate({ patientName, doctorName, slotDate, slotStart, reason, message }) {
   const formattedDate = new Date(slotDate).toLocaleDateString('en-IN', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   });
@@ -240,8 +240,7 @@ function cancellationTemplate({ patientName, doctorName, slotDate, slotStart, re
           <td style="background:#ffffff;padding:40px 40px 32px;">
             <p style="margin:0 0 28px;font-size:15px;color:#374151;line-height:1.6;">
               Hello <strong>${patientName}</strong>,<br/>
-              Your appointment has been cancelled by the hospital. No further action is required on your part.
-              If a payment was made, a refund will be processed to your original payment method.
+              ${message || 'Your appointment has been cancelled. If a payment was made, a refund will be processed to your original payment method.'}
             </p>
 
             <!-- Details table -->
