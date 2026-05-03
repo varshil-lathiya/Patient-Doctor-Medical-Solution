@@ -735,10 +735,10 @@
                 selectedNewSlotId = id;
                 document.querySelectorAll('.slot-btn').forEach(b => {
                     b.classList.remove('bg-primary-teal', 'text-white');
-                    b.classList.add('text-primary-teal');
+                    b.classList.add('bg-white', 'text-primary-teal');
                 });
+                btn.classList.remove('bg-white', 'text-primary-teal');
                 btn.classList.add('bg-primary-teal', 'text-white');
-                btn.classList.remove('text-primary-teal');
             }
 
             async function bookSlot() {
