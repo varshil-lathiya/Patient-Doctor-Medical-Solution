@@ -273,30 +273,25 @@ const cancelAppointment = async (req, res) => {
 
 const rescheduleAppointment = async (req, res) => {
   const { old_slot_id, new_slot_id, patient_id } = req.body;
-  const connection = await db.getConnection();
   try {
-    await connection.beginTransaction();
+    await db.beginTransaction();
 
-    // 1. Free the old slot
-    await connection.execute(
+    await db.execute(
       "UPDATE appointment_slots SET patient_id = NULL, status = 'is_available' WHERE id = ?",
       [old_slot_id]
     );
 
-    // 2. Book the new slot
-    await connection.execute(
+    await db.execute(
       "UPDATE appointment_slots SET patient_id = ?, status = 'is_occupied' WHERE id = ? AND status = 'is_available'",
       [patient_id, new_slot_id]
     );
 
-    await connection.commit();
+    await db.commit();
     res.status(200).json({ message: "Appointment rescheduled successfully" });
   } catch (error) {
-    await connection.rollback();
+    await db.rollback();
     console.error("Reschedule appointment error:", error);
     res.status(500).json({ message: "Internal server error" });
-  } finally {
-    connection.release();
   }
 };
 
