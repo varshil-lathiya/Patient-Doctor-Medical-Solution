@@ -54,7 +54,7 @@
 
             <!-- Departments Grid -->
             <section id="departments" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <% const deptConfig={ 'Cardiology' : { icon: 'fa-heartbeat' , color: 'from-red-400 to-red-600' ,
+                <% const deptConfig={ 'Cardiology' : { icon: 'fa-heart-pulse' , color: 'from-red-400 to-red-600' ,
                     hover: 'group-hover:text-red-600' , btn: 'from-red-500 to-red-600' ,
                     description: 'Diagnosis and treatment of heart and vascular conditions.' }, 'Neurology' : {
                     icon: 'fa-brain' , color: 'from-purple-400 to-purple-600' , hover: 'group-hover:text-purple-600' ,
@@ -73,7 +73,7 @@
                     description: 'Treatment of lung and respiratory tract disorders.' }, 'Rheumatology' : {
                     icon: 'fa-hands' , color: 'from-lime-400 to-lime-600' , hover: 'group-hover:text-lime-600' ,
                     btn: 'from-lime-500 to-lime-600' , description: 'Care for autoimmune and inflammatory diseases.'
-                    }, 'Gastroenterology' : { icon: 'fa-stomach' , color: 'from-emerald-400 to-emerald-600' ,
+                    }, 'Gastroenterology' : { logo: 'https://img.icons8.com/?size=100&id=9498&format=png&color=ffffff' , color: 'from-emerald-400 to-emerald-600' ,
                     hover: 'group-hover:text-emerald-600' , btn: 'from-emerald-500 to-emerald-600' ,
                     description: 'Treatment related to digestive system disorders.' }, 'Ophthalmology' : {
                     icon: 'fa-eye' , color: 'from-sky-400 to-sky-600' , hover: 'group-hover:text-sky-600' ,
@@ -81,16 +81,16 @@
                     }, 'Nephrology' : { icon: 'fa-vials' , color: 'from-cyan-400 to-cyan-600' ,
                     hover: 'group-hover:text-cyan-600' , btn: 'from-cyan-500 to-cyan-600' ,
                     description: 'Treatment for kidney-related conditions.' }, 'Otorhinolaryngology (ENT)' : {
-                    icon: 'fa-head-side-ear' , color: 'from-violet-400 to-violet-600' ,
+                    logo: 'https://img.icons8.com/?size=100&id=BOELoM6usUUR&format=png&color=ffffff' , color: 'from-violet-400 to-violet-600' ,
                     hover: 'group-hover:text-violet-600' , btn: 'from-violet-500 to-violet-600' ,
-                    description: 'Care for ear, nose, and throat conditions.' }, 'Emergency' : { icon: 'fa-ambulance' ,
+                    description: 'Care for ear, nose, and throat conditions.' }, 'Emergency' : { icon: 'fa-truck-medical' ,
                     color: 'from-red-600 to-red-800' , hover: 'group-hover:text-red-800' ,
                     btn: 'from-red-600 to-red-700' ,
                     description: 'Immediate medical care for acute illnesses and injuries.' } }; if (specialties &&
                     specialties.length> 0) {
                     specialties.forEach(spec => {
                     const config = deptConfig[spec.department] || {
-                    icon: 'fa-hospital',
+                    icon: 'fa-user-doctor',
                     color: 'from-gray-400 to-gray-600',
                     hover: 'group-hover:text-gray-600',
                     btn: 'from-gray-500 to-gray-600',
@@ -103,7 +103,11 @@
                             <div class="flex items-center gap-4 mb-4">
                                 <div
                                     class="w-16 h-16 bg-gradient-to-br <%= config.color %> rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                                    <i class="fa-solid <%= config.icon %> fa-fw text-3xl text-white"></i>
+                                    <% if (config.logo) { %>
+                                        <img src="<%= config.logo %>" alt="<%= spec.department %>" class="w-8 h-8 object-contain" />
+                                    <% } else { %>
+                                        <i class="fa-solid <%= config.icon %> fa-fw text-3xl text-white"></i>
+                                    <% } %>
                                 </div>
                                 <h3 class="text-xl font-bold text-gray-900 <%= config.hover %> transition-colors">
                                     <%= spec.department %>

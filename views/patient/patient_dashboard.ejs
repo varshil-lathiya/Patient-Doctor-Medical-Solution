@@ -11,7 +11,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
     <!-- Custom Tailwind Config -->
     <script>
@@ -107,7 +107,7 @@
 
                 <!-- Specialties Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    <% const deptConfig={ 'Cardiology' : { icon: 'fa-heartbeat' , color: 'bg-red-50' ,
+                    <% const deptConfig={ 'Cardiology' : { icon: 'fa-heart-pulse' , color: 'bg-red-50' ,
                         hover: '' , iconColor: 'text-red-500' }, 'Neurology' : { icon: 'fa-brain'
                         , color: 'bg-purple-50' , hover: '' ,
                         iconColor: 'text-purple-500' }, 'Orthopedics' : { icon: 'fa-bone' ,
@@ -129,13 +129,13 @@
                         iconColor: 'text-cyan-500' }, 'Otorhinolaryngology (ENT)' : { 
                         logo: 'https://img.icons8.com/?size=100&id=BOELoM6usUUR&format=png&color=8B5CF6',
                         color: 'bg-violet-50' , hover: '' ,
-                        iconColor: 'text-violet-500' }, 'Emergency' : { icon: 'fa-ambulance' ,
+                        iconColor: 'text-violet-500' }, 'Emergency' : { icon: 'fa-truck-medical' ,
                         color: 'bg-red-50' , hover: '' ,
                         iconColor: 'text-red-600' } }; %>
                         <% if (specialties && specialties.length> 0) { %>
                             <% specialties.forEach(spec=> {
                                 const config = deptConfig[spec.department] || {
-                                icon: 'fa-user-md',
+                                icon: 'fa-user-doctor',
                                 color: 'bg-blue-50',
                                 hover: '',
                                 iconColor: 'text-primary-blue'
