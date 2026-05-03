@@ -21,6 +21,42 @@
             }
         }
     </script>
+    <style>
+        @media (max-width: 1023px) {
+            #right-section {
+                margin-left: 0 !important;
+                padding: 1rem !important;
+                padding-top: 5rem !important;
+            }
+
+            .history-header,
+            .history-record-meta,
+            .modal-remark-card,
+            .feedback-actions {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .history-record-body {
+                padding-left: 0;
+                padding-right: 0;
+            }
+
+            .history-actions {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .history-actions button {
+                flex: 1 1 10rem;
+            }
+
+            .history-text-wrap {
+                overflow-wrap: anywhere;
+            }
+        }
+    </style>
 </head>
 
 <body class="bg-gray-50 min-h-screen">
@@ -36,9 +72,9 @@
                 </a>
             </div>
 
-            <div class="mb-8 flex items-center justify-between">
+            <div class="history-header mb-8 flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900 mb-1">Medical History</h1>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">Medical History</h1>
                     <p class="text-gray-600">Review your past consultations and prescriptions</p>
                 </div>
             </div>
@@ -55,7 +91,7 @@
                                         alt="Doctor" class="w-full h-full object-cover" />
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-bold text-gray-900">Dr. <%= record.d_first %>
+                                    <h3 class="history-text-wrap text-lg font-bold text-gray-900">Dr. <%= record.d_first %>
                                             <%= record.d_last %>
                                     </h3>
                                     <p class="text-gray-500 font-bold text-xs uppercase">
@@ -64,20 +100,20 @@
                                 </div>
                             </div>
 
-                            <div class="flex-1 px-8 md:border-l md:border-r border-gray-100">
-                                <div class="flex items-center justify-between mb-2">
+                            <div class="history-record-body flex-1 px-8 md:border-l md:border-r border-gray-100">
+                                <div class="history-record-meta flex items-center justify-between mb-2">
                                     <p class="text-sm font-bold text-gray-400 uppercase tracking-widest">Diagnosis</p>
                                     <p class="text-xs font-bold text-gray-400">
                                         <%= new Date(record.slot_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %> • <%= record.slot_start
                                                 %>
                                     </p>
                                 </div>
-                                <p class="text-gray-900 font-bold line-clamp-1">
+                                <p class="history-text-wrap text-gray-900 font-bold line-clamp-1">
                                     <%= record.diagnosis || record.summary_text || 'Consultation completed' %>
                                 </p>
                             </div>
 
-                            <div class="flex gap-2">
+                            <div class="history-actions flex gap-2">
                                 <button data-record="<%= JSON.stringify(record).replace(/" /g, '&quot;' ) %>"
                                     onclick="openSummaryModal(this)" class="bg-primary-teal text-white
                                     hover:bg-slate-800 font-bold px-6 py-2.5 rounded-xl transition-all text-sm
@@ -103,13 +139,13 @@
             class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                 <div
-                    class="sticky top-0 bg-white border-b border-gray-100 px-8 py-5 flex items-center justify-between z-10">
-                    <h3 class="text-2xl font-bold text-gray-900">Consultation Summary</h3>
+                    class="sticky top-0 bg-white border-b border-gray-100 px-4 sm:px-8 py-5 flex items-center justify-between gap-4 z-10">
+                    <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Consultation Summary</h3>
                     <button onclick="closeModal('summary-modal')"
                         class="text-gray-400 hover:text-red-500 transition-colors bg-gray-100 w-10 h-10 rounded-full flex items-center justify-center text-xl">×</button>
                 </div>
 
-                <div class="p-8">
+                <div class="p-4 sm:p-8">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                         <div class="space-y-6">
                             <div class="bg-blue-50/50 p-6 rounded-2xl border border-blue-100">
@@ -129,7 +165,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-gray-900 rounded-2xl p-6 text-white flex items-center justify-between">
+                    <div class="modal-remark-card bg-gray-900 rounded-2xl p-6 text-white flex items-center justify-between">
                         <div>
                             <p class="text-gray-400 text-xs font-bold uppercase mb-1">Doctor's Remark</p>
                             <p id="modal-remark" class="font-medium italic">"Follow the prescription strictly and rest
@@ -139,7 +175,7 @@
                     </div>
                 </div>
 
-                <div class="p-8 border-t border-gray-100 text-center">
+                <div class="p-4 sm:p-8 border-t border-gray-100 text-center">
                     <button onclick="window.print()"
                         class="text-primary-blue font-bold hover:underline flex items-center gap-2 mx-auto">
                         <i class="fas fa-print"></i> Download PDF Summary
@@ -152,7 +188,7 @@
         <div id="feedback-modal"
             class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full">
-                <div class="p-10 text-center">
+                <div class="p-6 sm:p-10 text-center">
                     <div class="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
                         <i class="fas fa-star text-3xl text-yellow-500"></i>
                     </div>
@@ -172,7 +208,7 @@
                         class="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl focus:ring-2 focus:ring-yellow-400 outline-none transition-all resize-none mb-6"
                         placeholder="Any additional comments?"></textarea>
 
-                    <div class="flex gap-4">
+                    <div class="feedback-actions flex gap-4">
                         <button type="button" onclick="closeModal('feedback-modal')"
                             class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-4 rounded-2xl transition-all">Cancel</button>
                         <button type="button" onclick="submitFeedback()"
