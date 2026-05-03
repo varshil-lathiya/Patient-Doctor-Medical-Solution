@@ -1,0 +1,279 @@
+<%- include('./components/header', { title: 'Kalp Hospital - Premier Healthcare Excellence', page: 'home' }) %>
+
+<!-- Hero Section -->
+<section class="bg-gradient-to-br from-blue-50 via-white to-cyan-50 pt-8 sm:pt-12 md:pt-16 lg:pt-20 pb-12 sm:pb-16 md:pb-20 lg:pb-28 min-h-screen flex items-center" id="home">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-12 xl:px-20">
+    <div class="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
+      <!-- Hero Content -->
+      <div class="space-y-4 sm:space-y-6 md:space-y-8 animate-slideInLeft text-center lg:text-left">
+        <div class="inline-block">
+          <span class="bg-blue-100 text-primary-blue px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold">
+            <i class="fas fa-star text-yellow-500 mr-1 sm:mr-2"></i>Rated #1 Hospital in Western India
+          </span>
+        </div>
+
+        <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-bold leading-tight text-gray-900 font-display">
+          Excellence in
+          <span class="block text-transparent bg-clip-text bg-gradient-to-r from-primary-blue to-primary-teal">
+            Healthcare Innovation
+          </span>
+        </h1>
+
+        <p class="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+          Welcome to Kalp Hospital, a beacon of healthcare excellence in Ahmedabad. We combine cutting-edge medical technology with compassionate care to deliver exceptional patient outcomes.
+        </p>
+
+        <div class="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center lg:justify-start">
+          <a href="/patient/login" class="bg-gradient-to-r from-primary-blue to-primary-teal hover:-translate-y-0.5 transition-all duration-300 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-sm sm:text-base lg:text-lg shadow-xl flex items-center justify-center">
+            <i class="fas fa-calendar-check mr-2 sm:mr-3"></i>Book Appointment
+          </a>
+          <button class="bg-white text-primary-blue px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-sm sm:text-base lg:text-lg shadow-xl border-2 border-primary-blue hover:bg-blue-50 transition-all duration-300 flex items-center justify-center">
+            <i class="fas fa-phone-alt mr-2 sm:mr-3"></i><span class="hidden sm:inline">Emergency:</span> +91 234 567 890
+          </button>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-3 gap-4 sm:gap-6 pt-6 sm:pt-8">
+          <div class="text-center">
+            <div class="text-2xl sm:text-3xl font-bold text-primary-blue font-display">25+</div>
+            <div class="text-xs sm:text-sm text-gray-600 mt-1">Specialties</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl sm:text-3xl font-bold text-primary-teal font-display">500+</div>
+            <div class="text-xs sm:text-sm text-gray-600 mt-1">Expert Doctors</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl sm:text-3xl font-bold text-accent-green font-display">50K+</div>
+            <div class="text-xs sm:text-sm text-gray-600 mt-1">Happy Patients</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Image -->
+      <div class="animate-slideInRight mt-8 lg:mt-0">
+        <div class="relative">
+          <div class="absolute -inset-2 sm:-inset-4 bg-gradient-to-r from-primary-blue to-primary-teal rounded-2xl sm:rounded-3xl blur-2xl opacity-20 animate-pulse"></div>
+          <img class="relative w-full h-64 sm:h-80 md:h-96 lg:h-[500px] object-cover rounded-2xl sm:rounded-3xl shadow-2xl" src="https://media.istockphoto.com/id/1476261444/photo/young-pharmaceutic-seller-explaining-something-to-doctor-in-hospital.jpg?s=612x612&w=0&k=20&c=pEJ7PefqTUcR5hPhB3jLIvAUOzPA6FVPlw391Oxqnrw=" alt="Healthcare Excellence" />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-12 sm:py-16 md:py-20 bg-white" id="stats">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-12 xl:px-20">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+      <div class="text-center p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 hover:-translate-y-2 transition-all duration-300 shadow-lg">
+        <div class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary-blue to-primary-teal font-display">500+</div>
+        <div class="text-gray-700 font-semibold mt-2 text-xs sm:text-sm md:text-base">Beds Available</div>
+      </div>
+      <div class="text-center p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl bg-gradient-to-br from-teal-50 to-teal-100 hover:-translate-y-2 transition-all duration-300 shadow-lg">
+        <div class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary-blue to-primary-teal font-display">24/7</div>
+        <div class="text-gray-700 font-semibold mt-2 text-xs sm:text-sm md:text-base">Emergency Care</div>
+      </div>
+      <div class="text-center p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl bg-gradient-to-br from-green-50 to-green-100 hover:-translate-y-2 transition-all duration-300 shadow-lg">
+        <div class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary-blue to-primary-teal font-display">98%</div>
+        <div class="text-gray-700 font-semibold mt-2 text-xs sm:text-sm md:text-base">Success Rate</div>
+      </div>
+      <div class="text-center p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl bg-gradient-to-br from-cyan-50 to-cyan-100 hover:-translate-y-2 transition-all duration-300 shadow-lg">
+        <div class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary-blue to-primary-teal font-display">15+</div>
+        <div class="text-gray-700 font-semibold mt-2 text-xs sm:text-sm md:text-base">Years Experience</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- About Section -->
+<section class="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-gray-50 to-blue-50" id="about">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-12 xl:px-20">
+    <div class="text-center mb-10 sm:mb-12 md:mb-16 animate-fadeInUp">
+      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4 font-display">About Our Hospital</h2>
+      <div class="w-20 sm:w-24 h-1 sm:h-1.5 bg-gradient-to-r from-primary-blue to-primary-teal mx-auto rounded-full mb-4 sm:mb-6"></div>
+      <p class="text-sm sm:text-base md:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed px-4">
+        Kalp Hospital in Ahmedabad is a multi-super specialty facility known for its patient-friendly approach and modern infrastructure. We offer comprehensive healthcare services with advanced treatments in cardiology, neurology, and more.
+      </p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 gap-6 sm:gap-8">
+      <%- include('components/about-card', {
+          icon: 'fas fa-bullseye',
+          title: 'Our Mission',
+          description: 'To create a patient-centric environment that prioritizes high-quality healthcare and compassionate service. We enhance patient outcomes through advanced medical technology and unwavering commitment to excellence in all aspects of care.',
+          iconBgFrom: 'primary-blue',
+          iconBgTo: 'blue-600',
+          borderColor: 'blue-100'
+      }) %>
+
+      <%- include('components/about-card', {
+          icon: 'fas fa-eye',
+          title: 'Our Vision',
+          description: 'To be recognized nationally and internationally as a premier healthcare institution that exceeds patient expectations while contributing to the broader healthcare landscape through innovation, education, and research.',
+          iconBgFrom: 'primary-teal',
+          iconBgTo: 'teal-600',
+          borderColor: 'teal-100'
+      }) %>
+
+      <%- include('components/about-card', {
+          icon: 'fas fa-microscope',
+          title: 'Latest Technology',
+          description: 'We proudly lead in healthcare innovation, standing at the forefront of the latest medical technologies. Our commitment to cutting-edge advancements ensures patients receive the highest standard of care with precision and excellence.',
+          iconBgFrom: 'accent-green',
+          iconBgTo: 'green-600',
+          borderColor: 'green-100'
+      }) %>
+
+      <%- include('components/about-card', {
+          icon: 'fas fa-heart',
+          title: 'Care, Compassion and Commitment',
+          description: 'We embody a culture of Care, Compassion, and Commitment, prioritizing each patient well-being. Our dedicated team ensures a healing environment where personalized attention and unwavering support define our healthcare commitment.',
+          iconBgFrom: 'secondary-cyan',
+          iconBgTo: 'cyan-600',
+          borderColor: 'cyan-100'
+      }) %>
+    </div>
+  </div>
+</section>
+
+<!-- Departments Section -->
+<section class="py-12 sm:py-16 md:py-20 bg-white" id="departments">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-12 xl:px-20">
+    <div class="text-center mb-10 sm:mb-12 md:mb-16 animate-fadeInUp">
+      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4 font-display">Our Departments</h2>
+      <div class="w-20 sm:w-24 h-1 sm:h-1.5 bg-gradient-to-r from-primary-blue to-primary-teal mx-auto rounded-full mb-4 sm:mb-6"></div>
+      <p class="text-sm sm:text-base md:text-lg text-gray-600 max-w-3xl mx-auto px-4">
+        Comprehensive medical services across multiple specialties with state-of-the-art facilities and expert care
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+      <%- include('components/department-card', {
+          icon: 'https://img.icons8.com/?size=100&id=qKPOUJrVBorG&format=png&color=0066CC',
+          title: 'Cardiology',
+          description: 'Diagnosis and treatment of heart and vascular conditions',
+          colorFrom: 'blue-50',
+          colorTo: 'white',
+          borderColor: 'blue-100'
+      }) %>
+
+      <%- include('components/department-card', {
+          icon: 'https://img.icons8.com/?size=100&id=tBwVH3f61ZWb&format=png&color=008B8B',
+          title: 'Neurology',
+          description: 'Expert care for nervous system and brain disorders',
+          colorFrom: 'teal-50',
+          colorTo: 'white',
+          borderColor: 'teal-100'
+      }) %>
+
+      <%- include('components/department-card', {
+          icon: 'https://img.icons8.com/?size=100&id=11732&format=png&color=00A86B',
+          title: 'Orthopedics',
+          description: 'Treatment of musculoskeletal system disorders',
+          colorFrom: 'green-50',
+          colorTo: 'white',
+          borderColor: 'green-100'
+      }) %>
+
+      <%- include('components/department-card', {
+          icon: 'https://img.icons8.com/?size=100&id=24428&format=png&color=00CED1',
+          title: 'Oncology',
+          description: 'Comprehensive cancer diagnosis and treatment',
+          colorFrom: 'cyan-50',
+          colorTo: 'white',
+          borderColor: 'cyan-100'
+      }) %>
+
+      <%- include('components/department-card', {
+          icon: 'https://img.icons8.com/?size=100&id=88183&format=png&color=9333EA',
+          title: 'Pediatrics',
+          description: 'Specialized healthcare for infants and children',
+          colorFrom: 'purple-50',
+          colorTo: 'white',
+          borderColor: 'purple-100'
+      }) %>
+
+      <%- include('components/department-card', {
+          icon: 'https://img.icons8.com/?size=100&id=42888&format=png&color=4F46E5',
+          title: 'Pulmonology',
+          description: 'Treatment of respiratory and lung disorders',
+          colorFrom: 'indigo-50',
+          colorTo: 'white',
+          borderColor: 'indigo-100'
+      }) %>
+
+      <%- include('components/department-card', {
+          icon: 'https://img.icons8.com/?size=100&id=65260&format=png&color=EC4899',
+          title: 'Rheumatology',
+          description: 'Care for autoimmune and inflammatory diseases',
+          colorFrom: 'pink-50',
+          colorTo: 'white',
+          borderColor: 'pink-100'
+      }) %>
+
+      <%- include('components/department-card', {
+          icon: 'https://img.icons8.com/?size=100&id=Kk9m0TkXlUPO&format=png&color=F97316',
+          title: 'Gastroenterology',
+          description: 'Treatment of digestive system disorders',
+          colorFrom: 'orange-50',
+          colorTo: 'white',
+          borderColor: 'orange-100'
+      }) %>
+
+      <%- include('components/department-card', {
+          icon: 'https://img.icons8.com/?size=100&id=113881&format=png&color=EAB308',
+          title: 'Ophthalmology',
+          description: 'Comprehensive eye care and vision services',
+          colorFrom: 'yellow-50',
+          colorTo: 'white',
+          borderColor: 'yellow-100'
+      }) %>
+
+      <%- include('components/department-card', {
+          icon: 'https://img.icons8.com/?size=100&id=V6nNP8AGjjcH&format=png&color=EF4444',
+          title: 'Nephrology',
+          description: 'Expert treatment for kidney conditions',
+          colorFrom: 'red-50',
+          colorTo: 'white',
+          borderColor: 'red-100'
+      }) %>
+
+      <%- include('components/department-card', {
+          icon: 'https://img.icons8.com/?size=100&id=BOELoM6usUUR&format=png&color=10B981',
+          title: 'Otorhinolaryngology',
+          description: 'Care for ear, nose, and throat conditions',
+          colorFrom: 'emerald-50',
+          colorTo: 'white',
+          borderColor: 'emerald-100'
+      }) %>
+
+      <%- include('components/department-card', {
+          icon: 'https://img.icons8.com/?size=100&id=43743&format=png&color=F43F5E',
+          title: 'Emergency Care',
+          description: '24/7 emergency medical services available',
+          colorFrom: 'rose-50',
+          colorTo: 'white',
+          borderColor: 'rose-100'
+      }) %>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-12 sm:py-16 md:py-20 bg-gradient-to-r from-primary-blue via-primary-teal to-secondary-cyan text-white">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-12 xl:px-20 text-center">
+    <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 font-display">Ready to Experience World-Class Healthcare?</h2>
+    <p class="text-sm sm:text-base md:text-lg lg:text-xl mb-6 sm:mb-8 md:mb-10 max-w-3xl mx-auto opacity-90 px-4">
+      Book your appointment today and take the first step towards better health with our expert medical team
+    </p>
+    <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4">
+      <a href="/patient/login" class="bg-white text-primary-blue px-6 sm:px-8 md:px-10 py-3 sm:py-4 rounded-lg font-semibold text-sm sm:text-base lg:text-lg shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 transition-all duration-300 w-full sm:w-auto flex items-center justify-center">
+        <i class="fas fa-calendar-alt mr-2 sm:mr-3"></i>Book Appointment
+      </a>
+      <button class="bg-transparent border-2 border-white text-white px-6 sm:px-8 md:px-10 py-3 sm:py-4 rounded-lg font-semibold text-sm sm:text-base lg:text-lg hover:bg-white hover:text-primary-blue transition-all duration-300 w-full sm:w-auto">
+        <i class="fas fa-phone mr-2 sm:mr-3"></i>Contact Us
+      </button>
+    </div>
+  </div>
+</section>
+
+<%- include('./components/footer') %>

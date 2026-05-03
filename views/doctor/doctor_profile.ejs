@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDMS - Doctor Profile</title>
+    <link rel="icon" href="/assets/favicon.png" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+        * {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%);
+        }
+
+        .profile-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInScale 0.6s ease-out forwards;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .detail-row {
+            padding: 1rem;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .detail-row:hover {
+            background: rgba(13, 148, 136, 0.05);
+        }
+
+        .modal-backdrop {
+            backdrop-filter: blur(8px);
+        }
+
+        .input-premium {
+            transition: all 0.3s ease;
+            border: 2px solid #e5e7eb;
+        }
+
+        .input-premium:focus {
+            border-color: #0d9488;
+            box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #0d9488;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body class="bg-[#f8fafc] min-h-screen">
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <%- include('../components/doctor-sidebar', { currentPage: 'profile' }) %>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 max-h-screen overflow-y-auto">
+            <!-- Top Navigation Bar -->
+            <div class="sticky top-0 z-10 p-6 glass-morphism border-b border-gray-100 flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-extrabold text-gray-800 tracking-tight">Doctor Profile</h1>
+                    <p class="text-gray-500 font-medium">Manage your professional presence and availability</p>
+                </div>
+                <div class="flex gap-4">
+                    <button onclick="window.location.href='/doctor/dashboard'"
+                        class="px-5 py-2.5 rounded-xl border-2 border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition-all flex items-center gap-2">
+                        <i class="fas fa-arrow-left"></i> Dashboard
+                    </button>
+                    <button onclick="openEditModal()"
+                        class="px-6 py-2.5 gradient-bg text-white font-bold rounded-xl shadow-lg shadow-teal-200 hover:shadow-teal-300 transform hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                        <i class="fas fa-user-edit"></i> Edit Profile
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-8 space-y-8 max-w-7xl mx-auto">
+                <!-- Hero Profile Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Left: Profile Image & Status -->
+                    <div class="lg:col-span-1 space-y-8">
+                        <div class="profile-card glass-morphism rounded-[2.5rem] p-8 text-center shadow-xl relative overflow-hidden group">
+                           <div class="absolute top-0 left-0 w-full h-2 gradient-bg"></div>
+                            <div class="relative inline-block mt-4">
+                                <div class="w-48 h-48 rounded-[2rem] border-8 border-white shadow-2xl overflow-hidden mx-auto transform transition-transform group-hover:scale-105 duration-500">
+                                    <img src="<%= user.profile_pic || 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&h=400&fit=crop' %>"
+                                        alt="Doctor Profile" class="w-full h-full object-cover" id="main-profile-pic">
+                                </div>
+                                <label for="profile-upload" class="absolute bottom-2 right-2 w-12 h-12 gradient-bg rounded-2xl border-4 border-white text-white flex items-center justify-center cursor-pointer shadow-lg hover:scale-110 transition-all">
+                                    <i class="fas fa-camera text-lg"></i>
+                                    <input type="file" id="profile-upload" accept="image/*" class="hidden">
+                                </label>
+                            </div>
+                            <h2 class="text-2xl font-extrabold text-gray-800 mt-6 tracking-tight">Dr. <%= user.firstname %> <%= user.lastname %></h2>
+                            <span class="px-4 py-1.5 gradient-bg text-white text-sm font-black rounded-full uppercase tracking-widest inline-block mt-2 shadow-sm">
+                                <%= user.department %>
+                            </span>
+                            
+                            <div class="grid grid-cols-2 gap-4 mt-8 border-t border-gray-100 pt-8">
+                                <div class="text-center p-3 rounded-2xl bg-teal-50">
+                                    <p class="text-xs font-bold text-teal-600 uppercase tracking-widest">Experience</p>
+                                    <p class="text-xl font-black text-teal-800"><%= user.experience %> Yrs</p>
+                                </div>
+                                <div class="text-center p-3 rounded-2xl bg-cyan-50">
+                                    <p class="text-xs font-bold text-cyan-600 uppercase tracking-widest">Rating</p>
+                                    <p class="text-xl font-black text-cyan-800 flex items-center justify-center gap-1">
+                                        <%= user.rating || '4.9' %> <i class="fas fa-star text-sm text-yellow-400"></i>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ID Badge Card -->
+                        <div class="profile-card bg-gray-900 rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden">
+                            <i class="fas fa-id-badge absolute -right-4 -bottom-4 text-8xl text-white/5 transform rotate-12"></i>
+                            <p class="text-teal-400 font-black text-xs uppercase tracking-[0.25em] mb-2">Digital Identity</p>
+                            <h3 class="text-xl font-bold mb-4">Verification Badge</h3>
+                            <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10">
+                                <div class="w-12 h-12 bg-teal-500 rounded-xl flex items-center justify-center text-2xl">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-400">System ID</p>
+                                    <p class="text-lg font-black tracking-widest">#D-DOC-<%= user.id.toString().padStart(4, '0') %></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Detailed Information -->
+                    <div class="lg:col-span-2 space-y-8">
+                        <!-- Information Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <!-- Professional Info -->
+                            <div class="profile-card glass-morphism rounded-[2.5rem] p-8 shadow-xl">
+                                <h3 class="text-xl font-extrabold text-gray-800 mb-6 flex items-center gap-3">
+                                    <i class="fas fa-stethoscope text-teal-600"></i> Professional Details
+                                </h3>
+                                <div class="space-y-4">
+                                    <div class="detail-row">
+                                        <p class="text-xs font-bold text-teal-600 uppercase tracking-widest mb-1">Degree & Education</p>
+                                        <p class="text-gray-900 font-bold text-lg"><%= user.degree || 'MBBS, MD' %></p>
+                                    </div>
+                                    <div class="detail-row">
+                                        <p class="text-xs font-bold text-teal-600 uppercase tracking-widest mb-1">Specialization</p>
+                                        <p class="text-gray-900 font-bold text-lg"><%= user.qualification %></p>
+                                    </div>
+                                    <div class="detail-row">
+                                        <p class="text-xs font-bold text-teal-600 uppercase tracking-widest mb-1">Member Since</p>
+                                        <p class="text-gray-900 font-bold text-lg"><%= user.created_at ? new Date(user.created_at).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) : 'N/A' %></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Personal Info -->
+                            <div class="profile-card glass-morphism rounded-[2.5rem] p-8 shadow-xl">
+                                <h3 class="text-xl font-extrabold text-gray-800 mb-6 flex items-center gap-3">
+                                    <i class="fas fa-user-circle text-cyan-600"></i> Personal Info
+                                </h3>
+                                <div class="space-y-4">
+                                    <div class="detail-row">
+                                        <p class="text-xs font-bold text-cyan-600 uppercase tracking-widest mb-1">Contact Number</p>
+                                        <p class="text-gray-900 font-bold text-lg"><%= user.mobile %></p>
+                                    </div>
+                                    <div class="detail-row">
+                                        <p class="text-xs font-bold text-cyan-600 uppercase tracking-widest mb-1">Email Address</p>
+                                        <p class="text-gray-900 font-bold text-lg truncate"><%= user.email %></p>
+                                    </div>
+                                    <div class="detail-row">
+                                        <p class="text-xs font-bold text-cyan-600 uppercase tracking-widest mb-1">Gender / DOB</p>
+                                        <p class="text-gray-900 font-bold text-lg"><%= user.gender %> • <%= new Date(user.dob).toLocaleDateString() %></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Full Width Address Section -->
+                        <div class="profile-card glass-morphism rounded-[2.5rem] p-8 shadow-xl">
+                            <h3 class="text-xl font-extrabold text-gray-800 mb-4 flex items-center gap-3">
+                                <i class="fas fa-map-marked-alt text-teal-600"></i> Workplace & Address
+                            </h3>
+                            <div class="p-4 bg-teal-50/50 rounded-2xl border border-teal-100">
+                                <p class="text-gray-700 leading-relaxed font-medium">
+                                    <%= user.address %>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Availability Slots Section -->
+                        <div class="profile-card glass-morphism rounded-[2.5rem] p-8 shadow-xl">
+                            <div class="flex items-center justify-between mb-8">
+                                <h3 class="text-xl font-extrabold text-gray-800 flex items-center gap-3">
+                                    <i class="fas fa-clock text-amber-500"></i> Consultation Schedule
+                                </h3>
+                                <span class="px-4 py-1.5 bg-teal-50 text-teal-700 rounded-full font-black text-xs tracking-widest uppercase">
+                                    Active Schedule
+                                </span>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <% if (slots && slots.length > 0) { 
+                                    const slot = slots[0];
+                                %>
+                                    <!-- Morning Shift -->
+                                    <div class="p-6 bg-white rounded-3xl border-2 border-gray-100 hover:border-teal-500 transition-all group relative overflow-hidden">
+                                        <div class="absolute -right-4 -bottom-4 text-6xl text-amber-500/10 transform -rotate-12">
+                                            <i class="fas fa-sun"></i>
+                                        </div>
+                                        <div class="flex items-center gap-4 mb-4">
+                                            <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-xl">
+                                                <i class="fas fa-sun"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs font-black text-amber-600 uppercase tracking-widest">Morning Shift</p>
+                                                <p class="text-xl font-black text-gray-800">Available Session</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-end justify-between">
+                                            <div>
+                                                <p class="text-sm font-bold text-gray-400">Time Range</p>
+                                                <p class="text-2xl font-black text-teal-600"><%= slot.morning_start ? slot.morning_start.substring(0, 5) : 'N/A' %> - <%= slot.morning_end ? slot.morning_end.substring(0, 5) : 'N/A' %></p>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="text-xs font-bold text-gray-400 uppercase">Duration</p>
+                                                <p class="text-base font-black text-gray-700"><%= slot.duration %> Min</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Evening Shift -->
+                                    <div class="p-6 bg-white rounded-3xl border-2 border-gray-100 hover:border-teal-500 transition-all group relative overflow-hidden">
+                                        <div class="absolute -right-4 -bottom-4 text-6xl text-indigo-500/10 transform rotate-12">
+                                            <i class="fas fa-moon"></i>
+                                        </div>
+                                        <div class="flex items-center gap-4 mb-4">
+                                            <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center text-xl">
+                                                <i class="fas fa-moon"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs font-black text-indigo-600 uppercase tracking-widest">Evening Shift</p>
+                                                <p class="text-xl font-black text-gray-800">Available Session</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-end justify-between">
+                                            <div>
+                                                <p class="text-sm font-bold text-gray-400">Time Range</p>
+                                                <p class="text-2xl font-black text-teal-600"><%= slot.evening_start ? slot.evening_start.substring(0, 5) : 'N/A' %> - <%= slot.evening_end ? slot.evening_end.substring(0, 5) : 'N/A' %></p>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="text-xs font-bold text-gray-400 uppercase">Duration</p>
+                                                <p class="text-base font-black text-gray-700"><%= slot.duration %> Min</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% } else { %>
+                                    <div class="col-span-2 text-center py-12 bg-gray-50 rounded-[2rem] border-2 border-dashed border-gray-200">
+                                        <i class="far fa-calendar-times text-4xl text-gray-300 mb-4 block"></i>
+                                        <p class="text-xl font-bold text-gray-400">No consultation schedule defined</p>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="edit-modal" class="hidden fixed inset-0 z-50 transition-all duration-300 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 py-12">
+            <div class="fixed inset-0 bg-gray-900/60 modal-backdrop opacity-0 transition-opacity duration-300" id="modal-overlay" onclick="closeEditModal()"></div>
+
+            <div class="relative bg-white rounded-[3rem] shadow-2xl transform scale-95 opacity-0 transition-all duration-300 max-w-4xl w-full overflow-hidden" id="modal-content">
+                <!-- Modal Header -->
+                <div class="gradient-bg px-10 py-8 relative">
+                    <button onclick="closeEditModal()" class="absolute top-8 right-8 text-white/80 hover:text-white transition-all text-2xl">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <h3 class="text-3xl font-black text-white tracking-tight">Professional Profile</h3>
+                    <p class="text-teal-100 font-medium mt-1">Update your professional details and display information</p>
+                </div>
+
+                <!-- Modal Body -->
+                <form id="edit-form" class="p-10">
+                    <div class="max-h-[60vh] overflow-y-auto pr-4 space-y-8">
+                        <!-- Name & Contact -->
+                        <div class="space-y-6">
+                            <h4 class="text-xs font-black text-teal-600 uppercase tracking-widest border-l-4 border-teal-500 pl-3">Identity & Contact</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <label class="text-sm font-bold text-gray-700 ml-1">First Name</label>
+                                    <input type="text" name="firstname" value="<%= user.firstname %>" class="w-full px-6 py-4 rounded-2xl input-premium font-medium" placeholder="E.g. John">
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-sm font-bold text-gray-700 ml-1">Last Name</label>
+                                    <input type="text" name="lastname" value="<%= user.lastname %>" class="w-full px-6 py-4 rounded-2xl input-premium font-medium" placeholder="E.g. Doe">
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-sm font-bold text-gray-700 ml-1">Email Address</label>
+                                    <input type="email" name="email" value="<%= user.email %>" class="w-full px-6 py-4 rounded-2xl input-premium font-medium" placeholder="john.doe@hospital.com">
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-sm font-bold text-gray-700 ml-1">Phone Number</label>
+                                    <input type="tel" name="mobile" value="<%= user.mobile %>" class="w-full px-6 py-4 rounded-2xl input-premium font-medium" placeholder="+91 00000 00000">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Professional Background -->
+                        <div class="space-y-6">
+                            <h4 class="text-xs font-black text-teal-600 uppercase tracking-widest border-l-4 border-teal-500 pl-3">Professional Background</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <label class="text-sm font-bold text-gray-700 ml-1">Department</label>
+                                    <select name="department" class="w-full px-6 py-4 rounded-2xl input-premium font-bold bg-white cursor-pointer">
+                                        <option value="Cardiology" <%=user.department==='Cardiology' ? 'selected' : '' %>>Cardiology</option>
+                                        <option value="Neurology" <%=user.department==='Neurology' ? 'selected' : '' %>>Neurology</option>
+                                        <option value="Ophthalmology" <%=user.department==='Ophthalmology' ? 'selected' : '' %>>Ophthalmology</option>
+                                        <option value="Orthopedics" <%=user.department==='Orthopedics' ? 'selected' : '' %>>Orthopedics</option>
+                                        <option value="Dental" <%=user.department==='Dental' ? 'selected' : '' %>>Dental</option>
+                                    </select>
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-sm font-bold text-gray-700 ml-1">Highest Degree</label>
+                                    <input type="text" name="degree" value="<%= user.degree %>" class="w-full px-6 py-4 rounded-2xl input-premium font-medium" placeholder="E.g. MBBS, MD (Cardiology)">
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-sm font-bold text-gray-700 ml-1">Specialization</label>
+                                    <input type="text" name="qualification" value="<%= user.qualification %>" class="w-full px-6 py-4 rounded-2xl input-premium font-medium" placeholder="E.g. Interventional Cardiologist">
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-sm font-bold text-gray-700 ml-1">Years of Experience</label>
+                                    <input type="number" name="experience" value="<%= user.experience %>" class="w-full px-6 py-4 rounded-2xl input-premium font-medium" placeholder="E.g. 10">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Personal Details -->
+                        <div class="space-y-6">
+                            <h4 class="text-xs font-black text-teal-600 uppercase tracking-widest border-l-4 border-teal-500 pl-3">Personal & Address</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <label class="text-sm font-bold text-gray-700 ml-1">Date of Birth</label>
+                                    <input type="date" name="dob" value="<%= new Date(user.dob).toISOString().split('T')[0] %>" class="w-full px-6 py-4 rounded-2xl input-premium font-medium">
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-sm font-bold text-gray-700 ml-1">Gender</label>
+                                    <div class="flex gap-4">
+                                        <% ['Male', 'Female', 'Other'].forEach(gender => { %>
+                                            <label class="flex-1">
+                                                <input type="radio" name="gender" value="<%= gender %>" <%= user.gender === gender ? 'checked' : '' %> class="hidden peer">
+                                                <div class="p-4 text-center rounded-2xl border-2 border-gray-100 font-bold text-gray-500 peer-checked:border-teal-500 peer-checked:bg-teal-50 peer-checked:text-teal-700 cursor-pointer transition-all">
+                                                    <%= gender %>
+                                                </div>
+                                            </label>
+                                        <% }) %>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm font-bold text-gray-700 ml-1">Practice Location / Address</label>
+                                <textarea name="address" rows="3" class="w-full px-6 py-4 rounded-2xl input-premium font-medium resize-none"><%= user.address %></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Consultation Availability -->
+                        <div class="space-y-6">
+                            <h4 class="text-xs font-black text-teal-600 uppercase tracking-widest border-l-4 border-teal-500 pl-3">Consultation Availability</h4>
+                            <% 
+                                const avail = (slots && slots.length > 0) ? slots[0] : {};
+                            %>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div class="space-y-4">
+                                    <p class="text-sm font-black text-amber-600 uppercase tracking-widest"><i class="fas fa-sun mr-2"></i>Morning Shift</p>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="space-y-2">
+                                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest ml-1">Start Time</label>
+                                            <input type="time" name="morning_start" value="<%= avail.morning_start ? avail.morning_start.substring(0,5) : '10:00' %>" class="w-full px-6 py-4 rounded-2xl input-premium font-bold">
+                                        </div>
+                                        <div class="space-y-2">
+                                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest ml-1">End Time</label>
+                                            <input type="time" name="morning_end" value="<%= avail.morning_end ? avail.morning_end.substring(0,5) : '13:00' %>" class="w-full px-6 py-4 rounded-2xl input-premium font-bold">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-y-4">
+                                    <p class="text-sm font-black text-indigo-600 uppercase tracking-widest"><i class="fas fa-moon mr-2"></i>Evening Shift</p>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="space-y-2">
+                                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest ml-1">Start Time</label>
+                                            <input type="time" name="evening_start" value="<%= avail.evening_start ? avail.evening_start.substring(0,5) : '15:00' %>" class="w-full px-6 py-4 rounded-2xl input-premium font-bold">
+                                        </div>
+                                        <div class="space-y-2">
+                                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest ml-1">End Time</label>
+                                            <input type="time" name="evening_end" value="<%= avail.evening_end ? avail.evening_end.substring(0,5) : '18:00' %>" class="w-full px-6 py-4 rounded-2xl input-premium font-bold">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-sm font-bold text-gray-700 ml-1">Slot Duration (Minutes)</label>
+                                    <input type="number" name="duration" value="<%= avail.duration || 30 %>" class="w-full px-6 py-4 rounded-2xl input-premium font-bold">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer Actions -->
+                    <div class="flex gap-4 pt-10 mt-8 border-t border-gray-100">
+                        <button type="button" onclick="closeEditModal()" class="flex-1 py-4 bg-gray-100 text-gray-500 font-black rounded-2xl hover:bg-gray-200 transition-all">
+                            Discard Changes
+                        </button>
+                        <button type="button" onclick="updateProfile()" class="flex-[2] py-4 gradient-bg text-white font-black rounded-2xl shadow-xl shadow-teal-200 hover:shadow-teal-300 transform active:scale-95 transition-all">
+                            Save Profile Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Initialization & Logic -->
+    <script>
+        function openEditModal() {
+            const modal = document.getElementById('edit-modal');
+            const overlay = document.getElementById('modal-overlay');
+            const content = document.getElementById('modal-content');
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                overlay.classList.add('opacity-100');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeEditModal() {
+            const overlay = document.getElementById('modal-overlay');
+            const content = document.getElementById('modal-content');
+            
+            overlay.classList.remove('opacity-100');
+            content.classList.remove('scale-100', 'opacity-100');
+            
+            setTimeout(() => {
+                document.getElementById('edit-modal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }, 300);
+        }
+
+        async function updateProfile() {
+            // Loader UI could be added here
+            const form = document.getElementById('edit-form');
+            const formData = {
+                firstname: form.querySelector('[name="firstname"]').value,
+                lastname: form.querySelector('[name="lastname"]').value,
+                email: form.querySelector('[name="email"]').value,
+                mobile: form.querySelector('[name="mobile"]').value,
+                dob: form.querySelector('[name="dob"]').value,
+                gender: form.querySelector('input[name="gender"]:checked').value,
+                address: form.querySelector('[name="address"]').value,
+                department: form.querySelector('[name="department"]').value,
+                qualification: form.querySelector('[name="qualification"]').value,
+                degree: form.querySelector('[name="degree"]').value,
+                experience: form.querySelector('[name="experience"]').value,
+                morning_start: form.querySelector('[name="morning_start"]').value,
+                morning_end: form.querySelector('[name="morning_end"]').value,
+                evening_start: form.querySelector('[name="evening_start"]').value,
+                evening_end: form.querySelector('[name="evening_end"]').value,
+                duration: form.querySelector('[name="duration"]').value
+            };
+
+            try {
+                const response = await fetch('/doctor/update-profile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Your profile has been updated professionally.',
+                        icon: 'success',
+                        confirmButtonColor: '#0d9488'
+                    }).then(() => window.location.reload());
+                } else {
+                    Swal.fire('Error', result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Update profile error:', error);
+                Swal.fire('Error', 'An integrated system error occurred.', 'error');
+            }
+        }
+
+        // Professional File Upload Handler
+        document.getElementById('profile-upload').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    document.getElementById('main-profile-pic').src = event.target.result;
+                    // Optimization: Sync with sidebar if exists
+                    const sidebarPic = document.getElementById('sidebar-profile-pic');
+                    if (sidebarPic) sidebarPic.src = event.target.result;
+                    
+                    Swal.fire({
+                        title: 'Profile Picture Updated',
+                        text: 'Image previewed successfully. Note: Backend upload implementation required for persistence.',
+                        icon: 'info',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+    <%- include('../components/doctor-modals') %>
+</body>
+
+</html>

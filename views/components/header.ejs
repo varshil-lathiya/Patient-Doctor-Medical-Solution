@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= typeof title !== 'undefined' ? title : 'Kalp Hospital - Premier Healthcare Excellence' %></title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#0066CC',
+                        'primary-teal': '#008B8B',
+                        'secondary-cyan': '#00CED1',
+                        'accent-green': '#00A86B',
+                        'dark-navy': '#001F3F',
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                        'display': ['Poppins', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .animate-fadeInUp { animation: fadeInUp 0.8s ease-out forwards; }
+        .animate-slideInLeft { animation: slideInLeft 0.8s ease-out forwards; }
+        .animate-slideInRight { animation: slideInRight 0.8s ease-out forwards; }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #0066CC; border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: #008B8B; }
+        
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .mobile-menu.active {
+            max-height: 500px;
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden bg-gray-50 font-sans">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-effect shadow-md transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-12 xl:px-20">
+            <div class="flex justify-between items-center py-3 sm:py-4">
+                <!-- Logo -->
+                <div class="logo animate-slideInLeft">
+                    <a href="/">
+                        <img src="/assets/logo.png" alt="Kalp Hospital" class="h-12 sm:h-14 md:h-16 lg:h-20 w-auto">
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden lg:block animate-fadeInUp">
+                    <ul class="flex space-x-6 xl:space-x-8 text-base xl:text-lg font-medium">
+                        <li>
+                            <a href="/" class="text-gray-700 hover:text-primary-blue transition-colors duration-300 relative group <%= typeof page !== 'undefined' && page === 'home' ? 'text-primary-blue' : '' %>">
+                                Home
+                                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-blue group-hover:w-full transition-all duration-300 <%= typeof page !== 'undefined' && page === 'home' ? 'w-full' : '' %>"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/#about" class="text-gray-700 hover:text-primary-blue transition-colors duration-300 relative group">
+                                About
+                                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-blue group-hover:w-full transition-all duration-300"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/#departments" class="text-gray-700 hover:text-primary-blue transition-colors duration-300 relative group">
+                                Departments
+                                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-blue group-hover:w-full transition-all duration-300"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/#stats" class="text-gray-700 hover:text-primary-blue transition-colors duration-300 relative group">
+                                Our Impact
+                                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-blue group-hover:w-full transition-all duration-300"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <!-- Desktop CTA Buttons -->
+                <div class="hidden md:flex items-center space-x-2 sm:space-x-3 lg:space-x-4 animate-slideInRight">
+                    <a href="/patient/login" class="bg-gradient-to-r from-primary-blue to-primary-teal hover:-translate-y-0.5 transition-all duration-300 text-white px-4 sm:px-5 lg:px-7 py-2 sm:py-2.5 lg:py-3 rounded-lg font-semibold text-xs sm:text-sm lg:text-base shadow-lg flex items-center" id="patient-login-btn">
+                        <i class="fas fa-sign-in-alt mr-1 sm:mr-2"></i><span class="hidden sm:inline">Log In</span><span class="sm:hidden">Login</span>
+                    </a>
+                    <a href="/patient/signup/email" class="bg-gradient-to-r from-accent-green to-secondary-cyan hover:-translate-y-0.5 transition-all duration-300 text-white px-4 sm:px-5 lg:px-7 py-2 sm:py-2.5 lg:py-3 rounded-lg font-semibold text-xs sm:text-sm lg:text-base shadow-lg flex items-center" id="patient-register-btn">
+                        <i class="fas fa-user-plus mr-1 sm:mr-2"></i>Register
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button class="lg:hidden text-gray-700 focus:outline-none" id="mobile-menu-btn">
+                    <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div class="mobile-menu lg:hidden" id="mobile-menu">
+                <nav class="py-4 space-y-3">
+                    <a href="/" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-primary-blue rounded-lg transition-colors duration-300 <%= typeof page !== 'undefined' && page === 'home' ? 'bg-blue-50 text-primary-blue' : '' %>">
+                        <i class="fas fa-home mr-3"></i>Home
+                    </a>
+                    <a href="/#about" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-primary-blue rounded-lg transition-colors duration-300">
+                        <i class="fas fa-info-circle mr-3"></i>About
+                    </a>
+                    <a href="/#departments" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-primary-blue rounded-lg transition-colors duration-300">
+                        <i class="fas fa-hospital mr-3"></i>Departments
+                    </a>
+                    <a href="/#stats" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-primary-blue rounded-lg transition-colors duration-300">
+                        <i class="fas fa-chart-line mr-3"></i>Our Impact
+                    </a>
+                    <div class="flex flex-col space-y-2 pt-3 px-4 md:hidden">
+                        <a href="/patient/login" class="bg-gradient-to-r from-primary-blue to-primary-teal text-white px-6 py-2.5 rounded-lg font-semibold text-sm shadow-lg w-full flex items-center justify-center" id="patient-login-btn-mobile">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Log In
+                        </a>
+                        <a href="/patient/signup/email" class="bg-gradient-to-r from-accent-green to-secondary-cyan text-white px-6 py-2.5 rounded-lg font-semibold text-sm shadow-lg w-full flex items-center justify-center" id="patient-register-btn-mobile">
+                            <i class="fas fa-user-plus mr-2"></i>Register
+                        </a>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Add padding to body content to account for fixed header -->
+    <div class="pt-16 sm:pt-20 md:pt-24">

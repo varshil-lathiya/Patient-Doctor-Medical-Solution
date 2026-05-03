@@ -1,0 +1,341 @@
+<%- include('../components/header', { 
+    title: 'Patient Login -  Kalp Hospital', 
+    page: 'login',
+}) %>
+
+
+<section class="relative min-h-screen py-16 lg:py-20 overflow-hidden">
+   
+    <div class="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-cyan-50">
+     
+        <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(circle at 1px 1px, #0066CC 1px, transparent 1px); background-size: 40px 40px;"></div>
+        
+        <div class="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-primary-blue/20 to-primary-teal/20 rounded-full blur-3xl animate-float"></div>
+        <div class="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-accent-green/20 to-secondary-cyan/20 rounded-full blur-3xl animate-float" style="animation-delay: 2s;"></div>
+    </div>
+
+    <div class="relative container mx-auto px-4 sm:px-6 lg:px-12 xl:px-20">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                
+                <!-- Left Side - Login Form -->
+                <div class="order-2 lg:order-1">
+                    <!-- Main Login Card -->
+                    <div class="relative">
+                        <!-- Decorative Background -->
+                        <div class="absolute -inset-4 bg-gradient-to-r from-primary-blue/10 via-primary-teal/10 to-accent-green/10 rounded-3xl blur-2xl"></div>
+                        
+                        <!-- Card Content -->
+                        <div class="relative bg-white rounded-3xl shadow-2xl p-8 sm:p-10 lg:p-12 border border-gray-100">
+                            
+                            <!-- Header Section -->
+                            <div class="text-center mb-8">
+                                <!-- Icon with Gradient Background -->
+                                <div class="relative inline-block mb-6">
+                                    <div class="absolute inset-0 bg-gradient-to-br from-primary-blue to-primary-teal rounded-2xl blur-lg opacity-50"></div>
+                                    <div class="relative bg-gradient-to-br from-primary-blue to-primary-teal p-5 rounded-2xl shadow-lg">
+                                        <i class="fas fa-user-md text-white text-4xl"></i>
+                                    </div>
+                                </div>
+                                
+                                <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3 font-display">
+                                    Welcome Back
+                                </h1>
+                                <p class="text-gray-600 text-lg">
+                                    Sign in to access your patient portal
+                                </p>
+                            </div>
+
+                            <!-- Login Form -->
+                            <form id="login_form" class="space-y-6">
+                                
+                                <!-- Email Input Group -->
+                                <div>
+                                    <label for="email" class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
+                                        Email Address
+                                    </label>
+                                    <div class="relative group">
+                                        <!-- Glow Effect on Focus -->
+                                        <div class="absolute -inset-0.5 bg-gradient-to-r from-primary-blue to-primary-teal rounded-xl opacity-0 group-focus-within:opacity-20 blur transition duration-300"></div>
+                                        
+                                        <!-- Input Field -->
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                                <i class="fas fa-envelope text-gray-400 text-lg"></i>
+                                            </div>
+                                            <input 
+                                                type="email" 
+                                                id="email" 
+                                                name="email"
+                                                placeholder="yourname@example.com"
+                                                class="relative w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-gray-200 rounded-xl focus:bg-white focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20 outline-none transition-all duration-300 text-gray-900 placeholder:text-gray-400"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                    <p id="emailError" class="text-red-600 text-sm font-medium mt-2 hidden flex items-center">
+                                        <i class="fas fa-exclamation-circle mr-2"></i>
+                                        <span></span>
+                                    </p>
+                                </div>
+
+                                <!-- Send OTP Button -->
+                                <button 
+                                onclick="verification()" 
+                                    type="button" 
+                                    id="btn-send-otp"
+                                    class="group relative w-full overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                                >
+                                    <!-- Gradient Background -->
+                                    <div class="absolute inset-0 bg-gradient-to-r from-primary-blue to-primary-teal"></div>
+                                    <div class="absolute inset-0 bg-gradient-to-r from-primary-teal to-accent-green opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                    
+                                    <!-- Button Content -->
+                                    <div class="relative flex items-center justify-center gap-3 py-4 text-white font-bold text-lg">
+                                        <i class="fas fa-paper-plane text-xl group-hover:translate-x-1 transition-transform duration-300"></i>
+                                        <span>Send Verification Code</span>
+                                    </div>
+                                </button>
+
+                                <!-- OTP Error -->
+                                <div id="otpError" class="text-center text-red-600 text-sm font-medium hidden"></div>
+
+                                <!-- Info Box -->
+                                <div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-50 to-cyan-50 p-5 border border-blue-100">
+                                    <div class="flex items-start gap-4">
+                                        <div class="flex-shrink-0">
+                                            <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
+                                                <i class="fas fa-shield-alt text-primary-blue text-lg"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-gray-900 mb-1">Secure Authentication</p>
+                                            <p class="text-sm text-gray-600 leading-relaxed">
+                                                We'll send a one-time verification code to your registered email address for secure access
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Divider -->
+                                <div class="relative flex items-center py-4">
+                                    <div class="flex-grow border-t-2 border-gray-200"></div>
+                                    <span class="flex-shrink mx-4 text-gray-500 font-semibold text-sm">OR</span>
+                                    <div class="flex-grow border-t-2 border-gray-200"></div>
+                                </div>
+
+                                <!-- Register Button -->
+                                <a 
+                                    href="/patient/signup/email" 
+                                    class="group block w-full text-center py-4 border-2 border-primary-blue text-primary-blue font-bold rounded-xl hover:bg-primary-blue hover:text-white transition-all duration-300 shadow-sm hover:shadow-lg"
+                                >
+                                    <i class="fas fa-user-plus mr-2 text-lg"></i>
+                                    Create New Account
+                                    <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform duration-300"></i>
+                                </a>
+
+                                <!-- Back to Home -->
+                                <div class="text-center pt-2">
+                                    <a 
+                                        href="/" 
+                                        class="inline-flex items-center gap-2 text-gray-600 hover:text-primary-blue transition-colors text-sm font-semibold group"
+                                    >
+                                        <i class="fas fa-arrow-left group-hover:-translate-x-1 transition-transform duration-300"></i>
+                                        <span>Back to Homepage</span>
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Security Features -->
+                    <div class="grid grid-cols-3 gap-4 mt-8">
+                        <div class="bg-white rounded-2xl p-4 shadow-lg border border-gray-100 text-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-lock text-primary-blue text-xl"></i>
+                            </div>
+                            <p class="text-xs font-bold text-gray-700">SSL Encrypted</p>
+                        </div>
+                        <div class="bg-white rounded-2xl p-4 shadow-lg border border-gray-100 text-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                            <div class="w-12 h-12 bg-gradient-to-br from-teal-100 to-teal-200 rounded-xl flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-clock text-primary-teal text-xl"></i>
+                            </div>
+                            <p class="text-xs font-bold text-gray-700">24/7 Available</p>
+                        </div>
+                        <div class="bg-white rounded-2xl p-4 shadow-lg border border-gray-100 text-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                            <div class="w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-user-shield text-accent-green text-xl"></i>
+                            </div>
+                            <p class="text-xs font-bold text-gray-700">HIPAA Secure</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side - Image & Features -->
+                <div class="order-1 lg:order-2 space-y-6">
+                    
+                    <!-- Hero Image Card -->
+                    <div class="relative group">
+                        <div class="absolute -inset-4 bg-gradient-to-r from-primary-blue/20 to-primary-teal/20 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-500"></div>
+                        <div class="relative rounded-3xl overflow-hidden shadow-2xl">
+                            <img 
+                                src="https://media.istockphoto.com/id/1476261444/photo/young-pharmaceutic-seller-explaining-something-to-doctor-in-hospital.jpg?s=612x612&w=0&k=20&c=pEJ7PefqTUcR5hPhB3jLIvAUOzPA6FVPlw391Oxqnrw=" 
+                                alt="Healthcare Professional" 
+                                class="w-full h-96 lg:h-[450px] object-cover"
+                            />
+                            <div class="absolute inset-0 bg-gradient-to-t from-gray-900/70 via-gray-900/20 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 right-0 p-8">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="w-2 h-2 bg-accent-green rounded-full animate-pulse"></div>
+                                    <span class="text-white text-sm font-semibold uppercase tracking-wider">Trusted Healthcare</span>
+                                </div>
+                                <h3 class="text-3xl lg:text-4xl font-bold text-white mb-2 font-display">Expert Medical Care</h3>
+                                <p class="text-gray-200 text-lg">Serving over 50,000 patients nationwide</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feature Cards -->
+                    <div class="space-y-4">
+                        <!-- Feature 1 -->
+                        <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+                            <div class="flex items-start gap-5">
+                                <div class="flex-shrink-0">
+                                    <div class="w-14 h-14 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+                                        <i class="fas fa-laptop-medical text-primary-blue text-2xl"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="font-bold text-gray-900 text-lg mb-2">Digital Health Records</h3>
+                                    <p class="text-gray-600 text-sm leading-relaxed">
+                                        Access your complete medical history, prescriptions, and lab results instantly from any device
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Feature 2 -->
+                        <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+                            <div class="flex items-start gap-5">
+                                <div class="flex-shrink-0">
+                                    <div class="w-14 h-14 bg-gradient-to-br from-teal-100 to-teal-200 rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+                                        <i class="fas fa-calendar-check text-primary-teal text-2xl"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="font-bold text-gray-900 text-lg mb-2">Easy Appointment Booking</h3>
+                                    <p class="text-gray-600 text-sm leading-relaxed">
+                                        Schedule consultations with top specialists and receive automated appointment reminders
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Feature 3 -->
+                        <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+                            <div class="flex items-start gap-5">
+                                <div class="flex-shrink-0">
+                                    <div class="w-14 h-14 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+                                        <i class="fas fa-heartbeat text-accent-green text-2xl"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="font-bold text-gray-900 text-lg mb-2">Real-Time Health Monitoring</h3>
+                                    <p class="text-gray-600 text-sm leading-relaxed">
+                                        Track vitals, medications, and treatment progress with our advanced monitoring system
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section  -->
+<section class="relative bg-gradient-to-r from-primary-blue via-primary-teal to-accent-green text-white py-16 overflow-hidden">
+    
+    <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 1px); background-size: 32px 32px;"></div>
+    
+    <div class="relative container mx-auto px-4 sm:px-6 lg:px-12 xl:px-20">
+        <div class="max-w-6xl mx-auto">
+            <!-- Section Header -->
+            <div class="text-center mb-12">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-3 font-display">Trusted by Thousands</h2>
+                <p class="text-blue-100 text-lg">Join our growing family of satisfied patients</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8">
+                <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-white/20 hover:bg-white/20 hover:scale-105 transition-all duration-300">
+                    <div class="text-5xl font-bold mb-2 font-display">50K+</div>
+                    <p class="text-blue-100 font-semibold">Happy Patients</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-white/20 hover:bg-white/20 hover:scale-105 transition-all duration-300">
+                    <div class="text-5xl font-bold mb-2 font-display">500+</div>
+                    <p class="text-blue-100 font-semibold">Expert Doctors</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-white/20 hover:bg-white/20 hover:scale-105 transition-all duration-300">
+                    <div class="text-5xl font-bold mb-2 font-display">24/7</div>
+                    <p class="text-blue-100 font-semibold">Emergency Care</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-white/20 hover:bg-white/20 hover:scale-105 transition-all duration-300">
+                    <div class="text-5xl font-bold mb-2 font-display">98%</div>
+                    <p class="text-blue-100 font-semibold">Success Rate</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<%- include('../components/footer') %>
+
+ <script>
+    // Verification function
+    async function verification() {
+        try {
+        const email = document.getElementById('email').value.trim();
+
+        document.getElementById('emailError').classList.add('hidden');
+        document.getElementById('otpError').classList.add('hidden');
+
+        try {
+            const response = await fetch('/patient/login/emailVerification', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
+
+            const data = await response.json();
+
+            if (response.status === 200) {
+                // OTP sent successfully, redirect to OTP verification page
+                window.location.href = '/patient/login/otpVerificationPage';
+            } else if (response.status === 400) {
+                // Show specific error under input box
+                const emailError = document.getElementById('emailError');
+                emailError.querySelector('span').textContent = data.message;
+                emailError.classList.remove('hidden');
+            } else {
+                // Other errors
+                const otpError = document.getElementById('otpError');
+                otpError.textContent = data.message || 'Something went wrong. Please try again.';
+                otpError.classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error('Error sending OTP:', error);
+            const otpError = document.getElementById('otpError');
+            otpError.textContent = 'An error occurred while sending the OTP. Please try again later.';
+            otpError.classList.remove('hidden');
+        }
+        } catch (error) {
+            console.error('Verification error:', error);
+        }
+    }
+
+</script>

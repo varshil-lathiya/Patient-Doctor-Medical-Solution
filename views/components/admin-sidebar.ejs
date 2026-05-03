@@ -1,0 +1,69 @@
+<aside class="w-64 bg-[#0f172a] shadow-2xl hidden lg:block z-20 shrink-0 border-r border-slate-800/50">
+    <div class="h-full flex flex-col">
+        <!-- Brand Area -->
+        <div class="p-6">
+            <div class="flex items-center space-x-3 mb-8">
+                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                    <i class="fas fa-hospital-alt text-white text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-white text-2xl font-bold tracking-tight leading-none">PDMS</h1>
+                    <p class="text-slate-500 text-[12px] uppercase font-semibold tracking-widest mt-1">Admin Panel</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
+            <div class="px-4 py-4">
+                <p class="text-[12px] font-bold text-slate-500 uppercase tracking-[0.2em]">Management</p>
+            </div>
+            
+            <a href="/admin/dashboard" class="flex items-center space-x-3 px-4 py-3 rounded-xl font-semibold transition-all duration-200 <%= active === 'dashboard' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-400 hover:text-white hover:bg-white/5' %> group">
+                <div class="w-5 h-5 flex items-center justify-center">
+                    <i class="fas fa-th-large text-sm"></i>
+                </div>
+                <span class="text-base">Dashboard</span>
+            </a>
+
+            <a href="/admin/doctors" class="flex items-center space-x-3 px-4 py-3 rounded-xl font-semibold transition-all duration-200 <%= active === 'doctors' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-400 hover:text-white hover:bg-white/5' %> group">
+                <div class="w-5 h-5 flex items-center justify-center">
+                    <i class="fas fa-user-md text-sm"></i>
+                </div>
+                <span class="text-base">Medical Staff</span>
+            </a>
+
+            <a href="/admin/receptionist" class="flex items-center space-x-3 px-4 py-3 rounded-xl font-semibold transition-all duration-200 <%= active === 'receptionist' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-400 hover:text-white hover:bg-white/5' %> group">
+                <div class="w-5 h-5 flex items-center justify-center">
+                    <i class="fas fa-users-cog text-sm"></i>
+                </div>
+                <span class="text-base">Receptionists</span>
+            </a>
+
+            <a href="/admin/manage-leaves" class="flex items-center space-x-3 px-4 py-3 rounded-xl font-semibold transition-all duration-200 <%= active === 'leaves' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-400 hover:text-white hover:bg-white/5' %> group">
+                <div class="w-5 h-5 flex items-center justify-center">
+                    <i class="fas fa-calendar-alt text-sm"></i>
+                </div>
+                <span class="text-base">Leave Requests</span>
+            </a>
+        </nav>
+
+        <!-- Footer / Logout -->
+        <div class="p-6 mt-auto">
+            <a href="javascript:void(0)" onclick="logout()" 
+               class="flex items-center space-x-3 px-4 py-3 text-slate-400 hover:text-rose-400 transition-all duration-200 group">
+                <div class="w-5 h-5 flex items-center justify-center">
+                    <i class="fas fa-sign-out-alt text-sm group-hover:-translate-x-1 transition-transform"></i>
+                </div>
+                <span class="text-base font-semibold">Logout</span>
+            </a>
+        </div>
+    </div>
+</aside>
+
+<style>
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+</style>

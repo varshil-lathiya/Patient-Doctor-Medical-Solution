@@ -1,0 +1,123 @@
+<!-- components/receptionist-sidebar.ejs -->
+<!-- <script src="/js/receptionist/receptionist_navbar.js"></script> -->
+
+<!-- Sidebar Navigation -->
+<aside class="fixed left-0 top-0 h-screen w-64 bg-white shadow-xl z-50 flex flex-col border-r border-gray-200">
+    <!-- Logo Section -->
+    <div class="p-4 border-b border-gray-200">
+        <div class="flex items-center justify-center">
+            <img src="/assets/logo.png" alt="PDMS Logo" class="h-12 w-auto" />
+        </div>
+    </div>
+
+    <!-- Profile Section -->
+    <div class="px-6 py-3 border-b border-gray-200">
+        <div class="flex flex-col items-center">
+            <div class="w-16 h-16 rounded-full overflow-hidden border-4 border-primary-teal shadow-lg mb-1">
+                <img id="profile-pic"
+                    src="<%= user.profile_pic || `https://ui-avatars.com/api/?name=${user.firstname}+${user.lastname}&size=80&background=008B8B&color=fff&bold=true` %>"
+                    alt="Profile" class="w-full h-full object-cover" />
+            </div>
+            <h4 id="recep_name" class="text-gray-900 font-bold text-center text-sm">
+                <%= user.firstname %>
+                    <%= user.lastname %>
+            </h4>
+        </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="flex-1 px-3 py-4 overflow-y-auto">
+        <div class="mb-4">
+            <h4 class="text-slate-700 text-[10px] font-bold uppercase tracking-wider mb-2 px-3">
+                Menu
+            </h4>
+            <div class="space-y-1">
+                <!-- Schedule -->
+                <a id="nav-schedule" href="/receptionist/dashboard"
+                    class="nav-item w-full flex items-center gap-3 px-4 py-2 rounded-xl text-gray-700 font-semibold transition-all duration-300 hover:bg-primary-teal hover:text-white group">
+                    <i class="fas fa-calendar-alt text-lg"></i>
+                    <span>Schedule</span>
+                </a>
+
+                <!-- Appointments -->
+                <a id="nav-appointments" href="/receptionist/appointments"
+                    class="nav-item w-full flex items-center gap-3 px-4 py-2 rounded-xl text-gray-700 font-semibold transition-all duration-300 hover:bg-primary-teal hover:text-white group">
+                    <i class="fas fa-calendar-check text-lg"></i>
+                    <span>Appointments</span>
+                </a>
+
+                <!-- Doctors -->
+                <a id="nav-doctors" href="/receptionist/doctors"
+                    class="nav-item w-full flex items-center gap-3 px-4 py-2 rounded-xl text-gray-700 font-semibold transition-all duration-300 hover:bg-primary-teal hover:text-white group">
+                    <i class="fas fa-user-md text-lg"></i>
+                    <span>Doctors</span>
+                </a>
+
+                <!-- Patients -->
+                <a id="nav-patients" href="/receptionist/patients"
+                    class="nav-item w-full flex items-center gap-3 px-4 py-2 rounded-xl text-gray-700 font-semibold transition-all duration-300 hover:bg-primary-teal hover:text-white group">
+                    <i class="fas fa-users text-lg"></i>
+                    <span>Patients</span>
+                </a>
+
+                <!-- Add Report -->
+                <a id="nav-add-report" href="/receptionist/addReport"
+                    class="nav-item w-full flex items-center gap-3 px-4 py-2 rounded-xl text-gray-700 font-semibold transition-all duration-300 hover:bg-primary-teal hover:text-white group">
+                    <i class="fas fa-file-medical text-lg"></i>
+                    <span>Add Report</span>
+                </a>
+
+                <!-- Profile -->
+                <a id="nav-profile" href="/receptionist/profile"
+                    class="nav-item w-full flex items-center gap-3 px-4 py-2 rounded-xl text-gray-700 font-semibold transition-all duration-300 hover:bg-primary-teal hover:text-white group">
+                    <i class="fas fa-user-circle text-lg"></i>
+                    <span>Profile</span>
+                </a>
+
+                <!-- Leave Application -->
+                <a id="nav-leaves" href="/receptionist/leaves"
+                    class="nav-item w-full flex items-center gap-3 px-4 py-2 rounded-xl text-gray-700 font-semibold transition-all duration-300 hover:bg-primary-teal hover:text-white group">
+                    <i class="fas fa-calendar-times text-lg"></i>
+                    <span>Leave Application</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Logout Section -->
+    <div class="p-4 border-t border-gray-200">
+        <button onclick="logout()"
+            class="btn-logout w-full flex items-center justify-center gap-3 px-4 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition-all duration-300 group">
+            <i class="fas fa-sign-out-alt text-lg group-hover:translate-x-1 transition-transform"></i>
+            <span>Logout</span>
+        </button>
+    </div>
+
+</aside>
+
+<style>
+    /* Active navigation item */
+    .nav-item.active {
+        background: linear-gradient(135deg, #008B8B, #00B4D8);
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(0, 139, 139, 0.3);
+    }
+
+    .nav-item.active i {
+        transform: scale(1.1);
+    }
+
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    aside::-webkit-scrollbar,
+    nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Hide scrollbar for IE, Edge and Firefox */
+    aside,
+    nav {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+
+</style>

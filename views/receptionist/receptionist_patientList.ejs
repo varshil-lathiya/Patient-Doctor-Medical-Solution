@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDMS - Patient List</title>
+  <link rel="icon" href="/assets/favicon.png" type="image/x-icon" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Tailwind Custom Colors -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "primary-blue": "#0066CC",
+            "primary-teal": "#008B8B",
+            "secondary-cyan": "#00B4D8",
+            "accent-green": "#00A86B",
+          },
+        },
+      },
+    };
+  </script>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+
+  <!-- Receptionist Sidebar -->
+  <%- include('../components/receptionist-sidebar') %>
+
+    <!-- Main Content Area -->
+    <main class="ml-64 min-h-screen p-8" id="right-section">
+
+      <!-- Page Header -->
+      <div class="mb-8">
+        <a href="/receptionist/dashboard"
+          class="mb-4 inline-flex items-center gap-2 text-primary-teal hover:text-slate-800 font-bold transition-all group">
+          <i class="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
+          Back to Dashboard
+        </a>
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <h1 class="text-3xl font-bold text-primary-teal mb-1">Patient Management</h1>
+            <p class="text-gray-600">View, search, and manage registered patients</p>
+          </div>
+          <div class="bg-primary-teal/10 px-6 py-4 rounded-2xl border border-primary-teal/20 text-center">
+            <span class="block text-sm font-bold text-primary-teal uppercase tracking-widest mb-1">Total Patients</span>
+            <span class="text-3xl font-black text-primary-teal"><%= totalPatients %></span>
+          </div>
+        </div>
+
+        <!-- Search and Filter Bar -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Search by Name -->
+            <div class="space-y-2">
+              <label class="block text-sm font-bold text-gray-700 uppercase tracking-wide">Search Name</label>
+              <div class="relative">
+                <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input type="text" id="search-name" onkeyup="filterPatients()" placeholder="Patient name..."
+                  class="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:ring-2 focus:ring-primary-teal focus:border-transparent transition-all" />
+              </div>
+            </div>
+
+            <!-- Filter by Email -->
+            <div class="space-y-2">
+              <label class="block text-sm font-bold text-gray-700 uppercase tracking-wide">Search Email</label>
+              <div class="relative">
+                <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input type="text" id="search-email" onkeyup="filterPatients()" placeholder="Email address..."
+                  class="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:ring-2 focus:ring-primary-teal focus:border-transparent transition-all" />
+              </div>
+            </div>
+
+            <!-- Search by DOB -->
+            <div class="space-y-2">
+              <label class="block text-sm font-bold text-gray-700 uppercase tracking-wide">Date of Birth</label>
+              <div class="relative">
+                <i class="fas fa-calendar absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input type="date" id="search-dob" onchange="filterPatients()"
+                  class="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:ring-2 focus:ring-primary-teal focus:border-transparent transition-all" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <div class="space-y-4" id="patient-list">
+        <% if (patients && patients.length> 0) { %>
+          <% patients.forEach(patient=> { %>
+            <div
+              class="patient-card bg-white rounded-lg shadow-md hover:shadow-xl transition-all p-6 border-l-4 border-primary-teal"
+              data-name="<%= patient.firstname %> <%= patient.lastname %>"
+              data-email="<%= patient.email %>"
+              data-dob="<%= patient.dob ? new Date(patient.dob).toISOString().split('T')[0] : '' %>"
+            >
+              <div class="flex items-center justify-between">
+                <div class="grid grid-cols-2 gap-x-16 gap-y-3 flex-1">
+                  <div class="space-y-3">
+                    <div class="flex gap-2">
+                      <span class="text-primary-teal font-bold min-w-[90px]">Name :</span>
+                      <span class="text-gray-900 font-semibold patient-name-display text-lg">
+                        <%= patient.firstname %>
+                          <%= patient.lastname %>
+                      </span>
+                    </div>
+                    <div class="flex gap-2 text-sm">
+                      <span class="text-primary-teal font-bold min-w-[90px]">Contact :</span>
+                      <span class="text-gray-700">
+                        <%= patient.mobile %>
+                      </span>
+                    </div>
+                    <div class="flex gap-2 text-sm">
+                      <span class="text-primary-teal font-bold min-w-[90px]">Email :</span>
+                      <span class="text-gray-700">
+                        <%= patient.email %>
+                      </span>
+                    </div>
+                    <div class="flex gap-2 text-sm">
+                      <span class="text-primary-teal font-bold min-w-[90px]">Address :</span>
+                      <span class="text-gray-700">
+                        <%= patient.address %>
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="space-y-3">
+                    <div class="flex gap-2 text-sm">
+                      <span class="text-primary-teal font-bold min-w-[110px]">Gender :</span>
+                      <span class="text-gray-700">
+                        <%= patient.gender %>
+                      </span>
+                    </div>
+                    <div class="flex gap-2 text-sm">
+                      <span class="text-primary-teal font-bold min-w-[110px]">Dob :</span>
+                      <span class="text-gray-700">
+                        <%= patient.dob ? new Date(patient.dob).toISOString().split('T')[0] : 'N/A' %>
+                      </span>
+                    </div>
+                    <div class="flex gap-2 text-sm">
+                      <span class="text-primary-teal font-bold min-w-[110px]">Blood group :</span>
+                      <span class="text-gray-700">
+                        <%= patient.blood_group %>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex flex-col gap-2 ml-8">
+                  <div class="hidden patient-data"><%= JSON.stringify(patient) %></div>
+                  <button onclick="openEditModal(this)"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2.5 rounded-lg transition-all flex items-center justify-center gap-2 shadow-sm">
+                    <i class="fas fa-edit"></i> Edit
+                  </button>
+                </div>
+              </div>
+            </div>
+            <% }) %>
+              <% } else { %>
+                <div class="text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-200">
+                  <i class="fas fa-users-slash text-5xl text-gray-300 mb-4"></i>
+                  <p class="text-xl text-gray-500">No patients registered yet</p>
+                </div>
+                <% } %>
+      </div>
+    </main>
+
+    <!-- Edit Patient Modal -->
+    <div id="edit-patient-modal"
+      class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div
+          class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
+          <h3 class="text-2xl font-bold text-slate-700">Edit Patient Profile</h3>
+          <button onclick="closeModal('edit-patient-modal')"
+            class="text-red-500 hover:text-red-700 transition-colors text-3xl font-bold w-8 h-8 flex items-center justify-center">
+            ×
+          </button>
+        </div>
+        <div class="p-6">
+          <form id="edit-patient-form" class="space-y-4">
+            <input type="hidden" id="edit-id" />
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">First Name</label>
+                <input type="text" id="edit-firstname"
+                  class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-teal focus:border-transparent" />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Last Name</label>
+                <input type="text" id="edit-lastname"
+                  class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-teal focus:border-transparent" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Contact</label>
+                <input type="text" id="edit-mobile"
+                  class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-teal focus:border-transparent" />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                <input type="email" id="edit-email"
+                  class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-teal focus:border-transparent" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Gender</label>
+                <select id="edit-gender"
+                  class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-teal focus:border-transparent">
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Others">Others</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Blood Group</label>
+                <select id="edit-blood_group"
+                  class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-teal focus:border-transparent">
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">DOB</label>
+              <input type="date" id="edit-dob"
+                class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-teal focus:border-transparent" />
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Address</label>
+              <textarea id="edit-address" rows="3"
+                class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-teal focus:border-transparent"></textarea>
+            </div>
+
+            <button type="button" onclick="savePatientChanges()"
+              class="w-full bg-primary-teal hover:bg-teal-700 text-white font-bold py-3 rounded-lg transition-all text-lg shadow-lg">
+              Save Changes
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    </main>
+
+    <!-- Scripts -->
+    <script>
+      let currentPatientId = null;
+
+      function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+        document.body.style.overflow = 'auto';
+      }
+
+      function showModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+
+      // Verify Patient (Report Modal)
+      async function verifyPatientReport() {
+        const email = document.getElementById('patientEmailReport').value.trim();
+        if (!email) return Swal.fire('Error', 'Please enter email', 'error');
+
+        try {
+          const response = await fetch('/receptionist/verify-patient', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+          });
+          const data = await response.json();
+
+          const messageElement = document.getElementById('patientVerifyMessage');
+          if (data.success) {
+            messageElement.textContent = `✓ Verified: ${data.patient.firstname} ${data.patient.lastname}`;
+            messageElement.className = 'text-sm mb-4 text-green-600 font-bold';
+            document.getElementById('submit-report').disabled = false;
+            currentPatientId = data.patient.id;
+          } else {
+            messageElement.textContent = '✗ ' + data.message;
+            messageElement.className = 'text-sm mb-4 text-red-600 font-bold';
+            document.getElementById('submit-report').disabled = true;
+            currentPatientId = null;
+          }
+        } catch (err) {
+          Swal.fire('Error', 'Verification failed', 'error');
+        }
+      }
+
+      async function uploadFile() {
+        const fileInput = document.getElementById('report');
+        if (!fileInput.files[0]) {
+          Swal.fire('Error', 'Please select a file', 'error');
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append('patient_id', currentPatientId);
+        formData.append('report', fileInput.files[0]);
+
+        try {
+          const response = await fetch('/receptionist/uploadReport', {
+            method: 'POST',
+            body: formData
+          });
+          const data = await response.json();
+          if (response.ok) {
+            Swal.fire('Success!', 'Report uploaded successfully!', 'success').then(() => {
+              closeModal('add-report-modal');
+              window.location.reload();
+            });
+          } else {
+            Swal.fire('Error', data.message || 'Upload failed', 'error');
+          }
+        } catch (err) {
+          Swal.fire('Error', 'Something went wrong', 'error');
+        }
+      }
+
+      function logout() {
+        Swal.fire({
+          title: 'Logout?',
+          text: 'Are you sure you want to logout?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#ef4444',
+          cancelButtonColor: '#6b7280',
+          confirmButtonText: 'Yes, logout',
+        }).then((r) => {
+          if (r.isConfirmed) window.location.href = "/logout";
+        });
+      }
+
+      // Close modals when clicking outside
+      document.querySelectorAll('[id$="-modal"]').forEach(modal => {
+        modal.addEventListener('click', function (e) {
+          if (e.target === this) closeModal(this.id);
+        });
+      });
+
+      function filterPatients() {
+        const nameInput = document.getElementById('search-name').value.toLowerCase();
+        const emailInput = document.getElementById('search-email').value.toLowerCase();
+        const dobInput = document.getElementById('search-dob').value;
+
+        const cards = document.querySelectorAll('.patient-card');
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+          const name = card.getAttribute('data-name').toLowerCase();
+          const email = card.getAttribute('data-email').toLowerCase();
+          const dob = card.getAttribute('data-dob');
+
+          const matchesName = name.includes(nameInput);
+          const matchesEmail = email.includes(emailInput);
+          const matchesDob = !dobInput || dob === dobInput;
+
+          if (matchesName && matchesEmail && matchesDob) {
+            card.style.display = 'block';
+            visibleCount++;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        // Handle No Results
+        let noResults = document.querySelector('.no-results-msg');
+        if (visibleCount === 0) {
+          if (!noResults) {
+            noResults = document.createElement('div');
+            noResults.className = 'no-results-msg text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-200';
+            noResults.innerHTML = `
+                <i class="fas fa-search text-5xl text-gray-300 mb-4"></i>
+                <p class="text-xl text-gray-500">No patients match your filters</p>
+              `;
+            document.getElementById('patient-list').appendChild(noResults);
+          }
+        } else if (noResults) {
+          noResults.remove();
+        }
+      }
+
+      function showReportModal(email) {
+        document.getElementById('patientEmailReport').value = email;
+        showModal('add-report-modal');
+        verifyPatientReport();
+      }
+
+      function openEditModal(btn) {
+        const patientJson = btn.parentElement.querySelector('.patient-data').textContent;
+        const patient = JSON.parse(patientJson);
+        document.getElementById('edit-id').value = patient.id;
+        document.getElementById('edit-firstname').value = patient.firstname;
+        document.getElementById('edit-lastname').value = patient.lastname;
+        document.getElementById('edit-mobile').value = patient.mobile;
+        document.getElementById('edit-email').value = patient.email;
+        document.getElementById('edit-gender').value = patient.gender;
+        document.getElementById('edit-blood_group').value = patient.blood_group;
+        document.getElementById('edit-dob').value = patient.dob ? new Date(patient.dob).toISOString().split('T')[0] : '';
+        document.getElementById('edit-address').value = patient.address;
+
+        showModal('edit-patient-modal');
+      }
+
+      async function savePatientChanges() {
+        const data = {
+          id: document.getElementById('edit-id').value,
+          firstname: document.getElementById('edit-firstname').value.trim(),
+          lastname: document.getElementById('edit-lastname').value.trim(),
+          mobile: document.getElementById('edit-mobile').value.trim(),
+          email: document.getElementById('edit-email').value.trim(),
+          gender: document.getElementById('edit-gender').value,
+          blood_group: document.getElementById('edit-blood_group').value,
+          dob: document.getElementById('edit-dob').value,
+          address: document.getElementById('edit-address').value.trim()
+        };
+
+        if (!data.firstname || !data.lastname || !data.email) {
+          return Swal.fire('Error', 'Name and Email are required', 'error');
+        }
+
+        try {
+          const response = await fetch('/receptionist/update-patient', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+          const result = await response.json();
+          if (result.success) {
+            Swal.fire('Updated!', 'Patient details updated successfully', 'success').then(() => {
+              window.location.reload();
+            });
+          } else {
+            Swal.fire('Error', result.message || 'Update failed', 'error');
+          }
+        } catch (err) {
+          Swal.fire('Error', 'Something went wrong', 'error');
+        }
+      }
+    </script>
+    <script src="/js/receptionist/receptionist_navbar.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,134 @@
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Leave Application Modal -->
+<div id="leave-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 transition-opacity modal-backdrop" onclick="closeLeaveModal()">
+            <div class="absolute inset-0 bg-gray-900 opacity-75"></div>
+        </div>
+        <div
+            class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-gradient-to-r from-teal-600 to-cyan-500 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-2xl font-bold text-white">Leave Application</h3>
+                    <button onclick="closeLeaveModal()" class="text-white hover:text-gray-200 transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <form id="leave-form" class="p-6 space-y-5">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">From:</label>
+                    <input type="date" name="start_date"
+                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition" />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">To:</label>
+                    <input type="date" name="end_date"
+                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition" />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Reason:</label>
+                    <textarea name="reason" rows="4" placeholder="Enter your reason for leave..."
+                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition resize-none"></textarea>
+                </div>
+                <div class="pt-4">
+                    <button type="button" onclick="applyLeave()"
+                        class="w-full px-6 py-3 bg-gradient-to-r from-teal-600 to-cyan-500 text-white font-semibold rounded-lg hover:from-teal-700 hover:to-cyan-600 transition shadow-lg">
+                        Apply for Leave
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openLeaveModal() {
+        document.getElementById('leave-modal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLeaveModal() {
+        document.getElementById('leave-modal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    async function applyLeave() {
+        const form = document.getElementById('leave-form');
+        const start_date = form.querySelector('[name="start_date"]').value;
+        const end_date = form.querySelector('[name="end_date"]').value;
+        const reason = form.querySelector('[name="reason"]').value;
+
+        if (!start_date || !end_date || !reason) {
+            Swal.fire({
+                title: 'Required Fields',
+                text: 'Please fill in all fields to apply for leave.',
+                icon: 'warning',
+                position: 'top',
+                confirmButtonColor: '#0d9488'
+            });
+            return;
+        }
+
+        try {
+            const response = await fetch('/doctor/apply-leave', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ from_date: start_date, to_date: end_date, reason }),
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Your leave application has been submitted successfully.',
+                    icon: 'success',
+                    position: 'top',
+                    confirmButtonColor: '#0d9488'
+                }).then(() => {
+                    form.reset();
+                    closeLeaveModal();
+                    window.location.reload();
+                });
+            } else {
+                Swal.fire('Error', result.message, 'error');
+            }
+        } catch (error) {
+            console.error('Leave application error:', error);
+            Swal.fire('Error', 'An unexpected error occurred. Please try again.', 'error');
+        }
+    }
+
+    function logout() {
+        Swal.fire({
+            title: 'Logout Confirmation',
+            text: "Are you sure you want to exit the PDMS portal?",
+            icon: 'question',
+            position: 'top',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#0d9488',
+            confirmButtonText: 'Yes, Logout',
+            cancelButtonText: 'Stay Logged In'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/logout";
+            }
+        });
+    }
+
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+            if (typeof closeLeaveModal === 'function') closeLeaveModal();
+            if (typeof closeEditModal === 'function') closeEditModal();
+            if (typeof closeEndSessionModal === 'function') closeEndSessionModal();
+            if (typeof closeReportsModal === 'function') closeReportsModal();
+            if (typeof closeSummaryDetailModal === 'function') closeSummaryDetailModal();
+        }
+    });
+</script>

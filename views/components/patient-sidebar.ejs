@@ -1,0 +1,101 @@
+<!-- components/patient-sidebar.ejs -->
+
+<!-- Sidebar Navigation -->
+<aside
+    class="fixed left-0 top-0 h-screen w-64 bg-gradient-to-b from-primary-blue to-primary-teal shadow-2xl z-50 flex flex-col">
+
+    <!-- Logo Section -->
+    <div class="p-6 border-b border-white/10">
+        <div class="flex items-center justify-center">
+            <img src="/assets/logo.png" alt="PDMS Logo" class="h-16 w-auto" />
+        </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="flex-1 px-4 py-6 overflow-y-auto">
+        <div class="mb-6">
+            <h4 class="text-white/60 text-xs font-bold uppercase tracking-wider mb-3 px-3">
+                Menu
+            </h4>
+            <div class="space-y-2">
+                <!-- Dashboard -->
+                <a href="/patient/dashboard" id="nav-dashboard"
+                    class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 font-semibold transition-all duration-300 hover:bg-white/10 group">
+                    <i class="fas fa-home text-lg"></i>
+                    <span>Dashboard</span>
+                    <i
+                        class="fas fa-chevron-right ml-auto text-sm opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                </a>
+
+                <!-- Appointments -->
+                <a href="/patient/appointments" id="nav-appointments"
+                    class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 font-semibold transition-all duration-300 hover:bg-white/10 group">
+                    <i class="fas fa-calendar-check text-lg"></i>
+                    <span>Appointments</span>
+                    <i
+                        class="fas fa-chevron-right ml-auto text-sm opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                </a>
+
+                <!-- History -->
+                <a href="/patient/history" id="nav-history"
+                    class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 font-semibold transition-all duration-300 hover:bg-white/10 group">
+                    <i class="fas fa-history text-lg"></i>
+                    <span>History</span>
+                    <i
+                        class="fas fa-chevron-right ml-auto text-sm opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                </a>
+
+                <!-- Profile -->
+                <a href="/patient/profile" id="nav-profile"
+                    class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 font-semibold transition-all duration-300 hover:bg-white/10 group">
+                    <i class="fas fa-user-circle text-lg"></i>
+                    <span>Profile</span>
+                    <i
+                        class="fas fa-chevron-right ml-auto text-sm opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Logout Section -->
+    <div class="p-4 border-t border-white/10">
+        <a href="/patient/logout"
+            class="btn-logout w-full flex items-center justify-center gap-3 px-4 py-3 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl transition-all duration-300 group">
+            <i class="fas fa-sign-out-alt text-lg group-hover:translate-x-1 transition-transform"></i>
+            <span>Logout</span>
+        </a>
+    </div>
+
+</aside>
+
+<style>
+    /* Active navigation item */
+    .nav-item.active {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-item.active i {
+        transform: scale(1.1);
+    }
+
+    /* Scrollbar styling for sidebar */
+    aside::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    aside::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+    }
+
+    aside::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+    }
+
+    aside::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+</style>

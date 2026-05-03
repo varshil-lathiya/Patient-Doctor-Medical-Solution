@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/assets/favicon.png" type="image/x-icon" />
+    <title>Profile | PDMS</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <!-- Custom Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#0066CC',
+                        'primary-teal': '#008B8B',
+                        'secondary-cyan': '#00B4D8',
+                        'accent-green': '#00A86B',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+
+    <!-- Sidebar Navigation -->
+    <%- include('../components/patient-sidebar') %>
+
+        <!-- Main Content Area -->
+        <main class="ml-64 min-h-screen p-8" id="right-section">
+
+            <!-- Back Button -->
+            <div class="mb-4">
+                <a href="/patient/dashboard"
+                    class="inline-flex items-center gap-2 text-primary-teal hover:text-slate-800 font-bold transition-all group">
+                    <i class="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
+                    Back to Dashboard
+                </a>
+            </div>
+
+            <!-- Page Header -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-800 mb-1">My Profile</h1>
+                <p class="text-gray-500">Manage your personal information</p>
+            </div>
+
+            <!-- Profile Card -->
+            <div class="max-w-4xl">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+
+                    <!-- Profile Header with Avatar -->
+                    <div class="bg-gradient-to-r from-primary-blue to-primary-teal p-10">
+                        <div class="flex items-center gap-8">
+                            <div
+                                class="w-28 h-28 bg-white rounded-3xl flex items-center justify-center shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-300">
+                                <i class="fas fa-user text-5xl text-primary-blue"></i>
+                            </div>
+                            <div class="text-white">
+                                <h2 class="text-3xl font-bold mb-1" id="profile-full-name">
+                                    <%= user.firstname %>
+                                        <%= user.lastname %>
+                                </h2>
+                                <p class="text-blue-100 flex items-center gap-2 font-medium" id="profile-email-display">
+                                    <i class="fas fa-envelope opacity-70"></i>
+                                    <%= user.email %>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Information -->
+                    <div class="p-10">
+                        <div class="flex items-center justify-between mb-10">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-id-card text-2xl text-primary-teal"></i>
+                                <h3 class="text-xl font-bold text-gray-800">Account Information</h3>
+                            </div>
+                            <button id="edit-btn"
+                                class="flex items-center gap-2 bg-primary-blue hover:bg-slate-800 text-white font-bold px-6 py-3 rounded-xl transition-all shadow-lg active:scale-95">
+                                <i class="fas fa-user-edit"></i>
+                                <span>Update Profile</span>
+                            </button>
+                        </div>
+
+                        <!-- Profile Details Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+
+                            <!-- First Name -->
+                            <div class="space-y-1">
+                                <label class="text-xs font-bold text-gray-400 uppercase tracking-widest">First
+                                    Name</label>
+                                <p class="text-gray-900 font-bold text-lg" id="firstname">
+                                    <%= user.firstname %>
+                                </p>
+                            </div>
+
+                            <!-- Last Name -->
+                            <div class="space-y-1">
+                                <label class="text-xs font-bold text-gray-400 uppercase tracking-widest">Last
+                                    Name</label>
+                                <p class="text-gray-900 font-bold text-lg" id="lastname">
+                                    <%= user.lastname %>
+                                </p>
+                            </div>
+
+                            <!-- Contact -->
+                            <div class="space-y-1">
+                                <label class="text-xs font-bold text-gray-400 uppercase tracking-widest">Mobile
+                                    Number</label>
+                                <p class="text-gray-900 font-bold text-lg" id="mobile">
+                                    <%= user.mobile %>
+                                </p>
+                            </div>
+
+                            <!-- Date of Birth -->
+                            <div class="space-y-1">
+                                <label class="text-xs font-bold text-gray-400 uppercase tracking-widest">Date of
+                                    Birth</label>
+                                <p class="text-gray-900 font-bold text-lg" id="dob">
+                                    <%= user.dob ? new Date(user.dob).toLocaleDateString('en-US', { month: 'long' ,
+                                        day: 'numeric' , year: 'numeric' }) : '-' %>
+                                </p>
+                            </div>
+
+                            <!-- Gender -->
+                            <div class="space-y-1">
+                                <label class="text-xs font-bold text-gray-400 uppercase tracking-widest">Gender</label>
+                                <p class="text-gray-900 font-bold text-lg" id="gender">
+                                    <%= user.gender %>
+                                </p>
+                            </div>
+
+                            <!-- Blood Group -->
+                            <div class="space-y-1">
+                                <label class="text-xs font-bold text-gray-400 uppercase tracking-widest">Blood
+                                    Group</label>
+                                <p class="text-red-600 font-bold text-lg" id="blood_group">
+                                    <i class="fas fa-tint mr-1"></i>
+                                    <%= user.blood_group %>
+                                </p>
+                            </div>
+
+                            <!-- Address -->
+                            <div class="space-y-1 md:col-span-2">
+                                <label class="text-xs font-bold text-gray-400 uppercase tracking-widest">Current
+                                    Address</label>
+                                <p class="text-gray-900 font-bold text-lg" id="address">
+                                    <%= user.address || 'Not provided' %>
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+
+        <!-- Update Modal (Hidden) -->
+        <div id="update-patient-modal"
+            class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <form id="update-patient-form" class="p-8">
+                    <div class="flex items-center justify-between mb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 uppercase tracking-tight">Update Information</h3>
+                        <button type="button" onclick="closeModal('update-patient-modal')"
+                            class="text-gray-400 hover:text-red-500 transition-colors w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-xl">×</button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-500 mb-2 uppercase tracking-wide">First
+                                Name</label>
+                            <input type="text" name="firstname" id="form-firstname"
+                                class="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl focus:ring-2 focus:ring-primary-teal focus:border-transparent outline-none transition-all"
+                                required />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-500 mb-2 uppercase tracking-wide">Last
+                                Name</label>
+                            <input type="text" name="lastname" id="form-lastname"
+                                class="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl focus:ring-2 focus:ring-primary-teal focus:border-transparent outline-none transition-all"
+                                required />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-500 mb-2 uppercase tracking-wide">Mobile
+                                Number</label>
+                            <input type="text" name="mobile" id="form-mobile"
+                                class="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl focus:ring-2 focus:ring-primary-teal focus:border-transparent outline-none transition-all"
+                                required />
+                        </div>
+                        <div>
+                            <label
+                                class="block text-sm font-bold text-gray-500 mb-2 uppercase tracking-wide">Email</label>
+                            <input type="email" name="email" id="form-email"
+                                class="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl bg-gray-50 text-gray-400 cursor-not-allowed"
+                                readonly required />
+                        </div>
+                        <div class="md:col-span-2">
+                            <label
+                                class="block text-sm font-bold text-gray-500 mb-2 uppercase tracking-wide">Gender</label>
+                            <div class="flex gap-8 p-4 bg-gray-50 rounded-2xl">
+                                <label class="flex items-center gap-2 cursor-pointer font-bold text-gray-700">
+                                    <input type="radio" name="gender" id="form-Male" value="Male"
+                                        class="w-5 h-5 text-primary-teal focus:ring-primary-teal" /> Male
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer font-bold text-gray-700">
+                                    <input type="radio" name="gender" id="form-Female" value="Female"
+                                        class="w-5 h-5 text-primary-teal focus:ring-primary-teal" /> Female
+                                </label>
+                            </div>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-bold text-gray-500 mb-2 uppercase tracking-wide">Current
+                                Address</label>
+                            <textarea name="address" id="form-address" rows="3"
+                                class="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl focus:ring-2 focus:ring-primary-teal focus:border-transparent outline-none transition-all resize-none"
+                                required></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-500 mb-2 uppercase tracking-wide">Birth
+                                Date</label>
+                            <input type="date" name="dob" id="form-dob"
+                                class="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl focus:ring-2 focus:ring-primary-teal focus:border-transparent outline-none transition-all"
+                                required />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-500 mb-2 uppercase tracking-wide">Blood
+                                Group</label>
+                            <select name="blood_group" id="form-blood_group"
+                                class="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl focus:ring-2 focus:ring-primary-teal focus:border-transparent outline-none transition-all"
+                                required>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 mt-10">
+                        <button type="button" onclick="closeModal('update-patient-modal')"
+                            class="flex-1 px-6 py-4 border-2 border-gray-100 text-gray-500 font-bold rounded-2xl hover:bg-gray-50 transition-all">Cancel</button>
+                        <button type="button" onclick="profile_detail_update()"
+                            class="flex-1 px-6 py-4 bg-primary-teal text-white font-bold rounded-2xl shadow-lg hover:bg-slate-800 transition-all">Save
+                            Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Spinner (Hidden) -->
+        <div id="spinner-modal"
+            class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+            <div class="bg-white rounded-3xl p-10 shadow-2xl flex flex-col items-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-teal mb-4"></div>
+                <p class="text-gray-900 font-bold">Processing...</p>
+            </div>
+        </div>
+
+        <!-- Scripts -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="/js/patient/patient_navbar.js"></script>
+        <script src="/js/patient/patient_profile.js"></script>
+</body>
+
+</html>

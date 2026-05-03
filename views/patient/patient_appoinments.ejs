@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="/assets/favicon.png" type="image/x-icon" />
+  <title>PDMS - My Appointments</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+  <!-- Custom Tailwind Config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'primary-blue': '#0066CC',
+            'primary-teal': '#008B8B',
+            'secondary-cyan': '#00B4D8',
+            'accent-green': '#00A86B',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+
+  <!-- Sidebar Navigation -->
+  <%- include('../components/patient-sidebar') %>
+
+    <!-- Main Content Area -->
+    <main class="ml-64 min-h-screen p-8" id="right-section">
+
+      <!-- Back Button -->
+      <div class="mb-4">
+        <a href="/patient/dashboard"
+          class="inline-flex items-center gap-2 text-primary-teal hover:text-slate-800 font-bold transition-all group">
+          <i class="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
+          Back to Dashboard
+        </a>
+      </div>
+
+      <!-- Page Header -->
+      <div class="mb-8 flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 mb-1">My Appointments</h1>
+          <p class="text-gray-600">Track and manage your medical consultations</p>
+        </div>
+
+        <div class="flex gap-2 bg-white p-1 rounded-xl shadow-sm border border-gray-100">
+          <button onclick="showUpcoming()" id="upcoming-tab"
+            class="px-6 py-2.5 rounded-lg font-bold text-sm transition-all bg-primary-teal text-white">Upcoming</button>
+          <button onclick="showPast()" id="past-tab"
+            class="px-6 py-2.5 rounded-lg font-bold text-sm transition-all text-gray-500 hover:bg-gray-50">Past
+            History</button>
+        </div>
+      </div>
+
+      <!-- Appointment Sections -->
+      <div id="upcoming-section" class="space-y-4">
+        <% const upcoming = appointments.filter(a => a.display_status === 'upcoming');
+          if (upcoming.length > 0) {
+          upcoming.forEach(appt => {
+          %>
+          <div
+            class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div class="flex items-center gap-4">
+              <div
+                class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-blue to-primary-teal flex items-center justify-center shadow-md overflow-hidden">
+                <img
+                  src="<%= appt.profile_pic || `https://ui-avatars.com/api/?name=Dr+${appt.d_first}+${appt.d_last}&size=64&background=0066CC&color=fff&bold=true` %>"
+                  alt="Doctor" class="w-full h-full object-cover" />
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-gray-900">Dr. <%= appt.d_first %>
+                    <%= appt.d_last %>
+                </h3>
+                <p class="text-primary-teal font-bold text-sm uppercase">
+                  <%= appt.department %>
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="flex items-center gap-8 py-4 md:py-0 px-6 md:border-l md:border-r border-gray-100 flex-1 justify-center">
+              <div class="text-center">
+                <p class="text-xl font-bold text-gray-900">
+                  <%= new Date(appt.slot_date).toLocaleDateString('en-US', { month: 'short' , day: 'numeric' ,
+                    year: 'numeric' }) %>
+                </p>
+                <p class="text-gray-500 font-bold text-sm">
+                  <%= appt.slot_start %>
+                </p>
+              </div>
+              <div class="w-2 h-2 rounded-full <%= (appt.reason === 'Doctor on Emergency Leave') ? 'bg-red-500 animate-ping' : 'bg-primary-teal animate-pulse' %>"></div>
+              <div class="text-sm font-bold <%= (appt.reason === 'Doctor on Emergency Leave') ? 'text-red-600' : 'text-primary-blue' %>">
+                <%= (appt.reason === 'Doctor on Emergency Leave') ? 'Requires Action' : 'Booked' %>
+              </div>
+            </div>
+
+            <div class="flex gap-2">
+              <button
+                onclick="openRescheduleModal('<%= appt.id %>', '<%= appt.doctor_id %>', '<%= appt.d_first %> <%= appt.d_last %>', '<%= appt.department %>', '<%= appt.profile_pic %>')"
+                class="flex-1 md:flex-none bg-blue-50 text-primary-blue hover:bg-primary-blue hover:text-white font-bold px-5 py-2.5 rounded-xl transition-all text-sm">
+                Reschedule
+              </button>
+              <button onclick="openCancelModal('<%= appt.id %>')"
+                class="flex-1 md:flex-none bg-red-50 text-red-500 hover:bg-red-500 hover:text-white font-bold px-5 py-2.5 rounded-xl transition-all text-sm">
+                Cancel
+              </button>
+            </div>
+          </div>
+          <% }); } else { %>
+            <div class="py-20 text-center bg-white rounded-2xl border border-gray-100">
+              <i class="fas fa-calendar-times text-5xl text-gray-200 mb-4"></i>
+              <h3 class="text-xl font-bold text-gray-400">No Upcoming Appointments</h3>
+              <p class="text-gray-500">You don't have any scheduled sessions at the moment.</p>
+            </div>
+            <% } %>
+      </div>
+
+      <div id="past-section" class="hidden space-y-4">
+        <% const past = appointments.filter(a => a.display_status !== 'upcoming');
+          if (past.length > 0) {
+          past.forEach(appt => {
+          %>
+          <div
+            class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center justify-between transition-all duration-300">
+            <div class="flex items-center gap-4">
+              <div class="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center overflow-hidden">
+                <img
+                  src="<%= appt.profile_pic || `https://ui-avatars.com/api/?name=Dr+${appt.d_first}+${appt.d_last}&size=64&background=666&color=fff&bold=true` %>"
+                  alt="Doctor" class="w-full h-full object-cover" />
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-gray-900">Dr. <%= appt.d_first %>
+                    <%= appt.d_last %>
+                </h3>
+                <p class="text-gray-500 font-bold text-xs uppercase">
+                  <%= appt.department %>
+                </p>
+              </div>
+            </div>
+
+            <div class="text-center">
+              <p class="text-lg font-bold text-gray-900">
+                <%= new Date(appt.slot_date).toLocaleDateString() %>
+              </p>
+              <p class="text-gray-500 font-bold text-xs">
+                <%= appt.slot_start %>
+              </p>
+            </div>
+
+            <div>
+              <% if (appt.display_status === 'fulfilled') { %>
+                <span class="bg-green-100 text-green-700 px-4 py-1.5 rounded-full font-bold text-xs border border-green-200">Fulfilled</span>
+              <% } else if (appt.display_status === 'missed') { %>
+                <span class="bg-yellow-100 text-yellow-700 px-4 py-1.5 rounded-full font-bold text-xs border border-yellow-200">Missed</span>
+              <% } else if (appt.status === 'cancelled') { %>
+                <span class="bg-red-100 text-red-700 px-4 py-1.5 rounded-full font-bold text-xs border border-red-200">Cancelled</span>
+              <% } else { %>
+                <span class="bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-bold text-xs capitalize border border-gray-200">
+                  <%= appt.status.replace('is_', '') %>
+                </span>
+              <% } %>
+            </div>
+          </div>
+          <% }); } else { %>
+            <div class="py-20 text-center bg-white rounded-2xl border border-gray-100">
+              <i class="fas fa-history text-5xl text-gray-200 mb-4"></i>
+              <h3 class="text-xl font-bold text-gray-400">No Past Appointments</h3>
+            </div>
+            <% } %>
+      </div>
+    </main>
+
+    <!-- Reschedule Modal -->
+    <div id="reschedule-modal"
+      class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="sticky top-0 bg-white border-b border-gray-100 px-8 py-5 flex items-center justify-between z-10">
+          <h3 class="text-2xl font-bold text-gray-900">Reschedule Appointment</h3>
+          <button onclick="closeRescheduleModal()"
+            class="text-gray-400 hover:text-red-500 transition-colors bg-gray-100 w-10 h-10 rounded-full flex items-center justify-center text-xl">×</button>
+        </div>
+
+        <div class="p-8">
+          <div class="flex items-center gap-5 mb-8 p-5 bg-blue-50/50 rounded-2xl border border-blue-100">
+            <div
+              class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-blue to-primary-teal flex items-center justify-center shadow-md overflow-hidden">
+              <img id="modal-doctor-image" src="" alt="Doctor" class="w-full h-full object-cover" />
+            </div>
+            <div>
+              <h4 class="text-xl font-bold text-gray-900" id="modal-doctor-name"></h4>
+              <p class="text-sm text-primary-teal font-bold" id="modal-doctor-dept"></p>
+            </div>
+          </div>
+
+          <div class="mb-8">
+            <h5 class="text-sm font-bold text-gray-500 mb-4 uppercase tracking-widest">Select New Date</h5>
+            <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide" id="reschedule-date-selection"></div>
+          </div>
+
+          <div class="mb-8">
+            <h5 class="text-sm font-bold text-gray-500 mb-4 uppercase tracking-widest">Available Slots</h5>
+            <div id="reschedule-slots-container" class="grid grid-cols-3 sm:grid-cols-4 gap-3"></div>
+          </div>
+
+          <div>
+            <label class="text-sm font-bold text-gray-500 mb-2 uppercase tracking-widest block">Reason for
+              Rescheduling</label>
+            <textarea id="reschedule-reason"
+              class="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl focus:ring-2 focus:ring-primary-teal focus:border-transparent outline-none transition-all resize-none"
+              placeholder="Let the doctor know why you're moving the appointment..."></textarea>
+          </div>
+        </div>
+
+        <div class="sticky bottom-0 bg-white border-t border-gray-100 p-8">
+          <button id="reschedule-confirm-btn" onclick="submitReschedule()" disabled
+            class="w-full bg-primary-teal text-white font-bold py-4 rounded-2xl transition-all text-lg shadow-lg disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none hover:bg-slate-800">
+            Confirm Reschedule
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cancel Modal -->
+    <div id="cancel-modal"
+      class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full">
+        <div class="p-8">
+          <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-exclamation-triangle text-4xl text-red-500"></i>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 text-center mb-2">Cancel Appointment?</h3>
+          <p class="text-gray-500 text-center mb-8">Are you sure you want to cancel this consultation? This action
+            cannot be undone.</p>
+
+          <div class="mb-8">
+            <label class="text-sm font-bold text-gray-500 mb-2 uppercase tracking-widest block text-center">Reason for
+              Cancellation</label>
+            <textarea id="cancel-reason"
+              class="w-full px-4 py-3 border-2 border-red-500/20 rounded-2xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all resize-none bg-red-50/20"
+              placeholder="Optional reason..."></textarea>
+          </div>
+
+          <div class="flex gap-4">
+            <button onclick="closeCancelModal()"
+              class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-4 rounded-2xl transition-all">Go
+              Back</button>
+            <button onclick="submitCancel()"
+              class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-red-200">Yes,
+              Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+      let currentOldSlotId = null;
+      let currentDoctorId = null;
+      let selectedRescheduleDate = null;
+      let selectedNewSlotId = null;
+      let cancelSlotId = null;
+
+      function showUpcoming() {
+        document.getElementById('upcoming-section').classList.remove('hidden');
+        document.getElementById('past-section').classList.add('hidden');
+        document.getElementById('upcoming-tab').classList.add('bg-primary-teal', 'text-white');
+        document.getElementById('upcoming-tab').classList.remove('text-gray-500');
+        document.getElementById('past-tab').classList.remove('bg-primary-teal', 'text-white');
+        document.getElementById('past-tab').classList.add('text-gray-500');
+      }
+
+      function showPast() {
+        document.getElementById('upcoming-section').classList.add('hidden');
+        document.getElementById('past-section').classList.remove('hidden');
+        document.getElementById('past-tab').classList.add('bg-primary-teal', 'text-white');
+        document.getElementById('past-tab').classList.remove('text-gray-500');
+        document.getElementById('upcoming-tab').classList.remove('bg-primary-teal', 'text-white');
+        document.getElementById('upcoming-tab').classList.add('text-gray-500');
+      }
+
+      // Reschedule Logic
+      function openRescheduleModal(oldSlotId, doctorId, docName, dept, docImg) {
+        currentOldSlotId = oldSlotId;
+        currentDoctorId = doctorId;
+        document.getElementById('modal-doctor-name').textContent = 'Dr. ' + docName;
+        document.getElementById('modal-doctor-dept').textContent = dept;
+        document.getElementById('modal-doctor-image').src = docImg || `https://ui-avatars.com/api/?name=${encodeURIComponent(docName)}&size=64&background=0066CC&color=fff&bold=true`;
+
+        generateDates();
+        document.getElementById('reschedule-modal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeRescheduleModal() {
+        document.getElementById('reschedule-modal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        selectedNewSlotId = null;
+        document.getElementById('reschedule-confirm-btn').disabled = true;
+      }
+
+      function generateDates() {
+        const container = document.getElementById('reschedule-date-selection');
+        container.innerHTML = '';
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const today = new Date();
+
+        for (let i = 1; i < 8; i++) {
+          const date = new Date(today);
+          date.setDate(today.getDate() + i);
+          const dateStr = date.toISOString().split('T')[0];
+          const btn = document.createElement('button');
+          btn.className = `flex-shrink-0 w-16 h-20 rounded-2xl flex flex-col items-center justify-center transition-all border-2 bg-white text-gray-600 border-gray-100 hover:border-primary-teal`;
+          btn.onclick = () => selectRescheduleDate(dateStr, btn);
+          btn.innerHTML = `<span class="text-xs font-bold uppercase">${days[date.getDay()]}</span><span class="text-xl font-bold">${date.getDate()}</span>`;
+          container.appendChild(btn);
+        }
+      }
+
+      async function selectRescheduleDate(date, btn) {
+        selectedRescheduleDate = date;
+        selectedNewSlotId = null;
+        document.getElementById('reschedule-confirm-btn').disabled = true;
+        document.querySelectorAll('#reschedule-date-selection button').forEach(b => {
+          b.classList.remove('bg-primary-teal', 'text-white', 'border-primary-teal');
+          b.classList.add('bg-white', 'text-gray-600', 'border-gray-100');
+        });
+        btn.classList.add('bg-primary-teal', 'text-white', 'border-primary-teal');
+        btn.classList.remove('bg-white', 'text-gray-600', 'border-gray-100');
+
+        const container = document.getElementById('reschedule-slots-container');
+        container.innerHTML = '<div class="col-span-full py-4 flex justify-center"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-teal"></div></div>';
+
+        try {
+          const response = await fetch(`/patient/get-slots?doctor_id=${currentDoctorId}&date=${date}`);
+          const data = await response.json();
+          if (data.slots && data.slots.length > 0) {
+            container.innerHTML = data.slots.map(slot => `
+                        <button onclick="selectNewSlot('${slot.id}', this)" class="r-slot-btn p-3 rounded-xl border-2 border-gray-100 text-gray-700 font-bold text-sm hover:border-primary-teal transition-all">
+                            ${slot.slot_start}
+                        </button>
+                    `).join('');
+          } else {
+            container.innerHTML = '<p class="col-span-full text-center text-red-500 py-4 font-bold">No slots available</p>';
+          }
+        } catch (err) {
+          container.innerHTML = '<p class="col-span-full text-center text-red-500 py-4">Error loading slots</p>';
+        }
+      }
+
+      function selectNewSlot(id, btn) {
+        selectedNewSlotId = id;
+        document.querySelectorAll('.r-slot-btn').forEach(b => {
+          b.classList.remove('bg-primary-teal', 'text-white', 'border-primary-teal');
+          b.classList.add('border-gray-100', 'text-gray-700');
+        });
+        btn.classList.add('bg-primary-teal', 'text-white', 'border-primary-teal');
+        btn.classList.remove('border-gray-100', 'text-gray-700');
+        document.getElementById('reschedule-confirm-btn').disabled = false;
+      }
+
+      async function submitReschedule() {
+        const reason = document.getElementById('reschedule-reason').value;
+        const response = await fetch('/patient/reschedule-appointment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ old_slot_id: currentOldSlotId, new_slot_id: selectedNewSlotId, reason })
+        });
+        const data = await response.json();
+        if (response.ok) Swal.fire('Updated!', data.message, 'success').then(() => window.location.reload());
+        else Swal.fire('Error', data.message, 'error');
+      }
+
+      // Cancel Logic
+      function openCancelModal(id) {
+        cancelSlotId = id;
+        document.getElementById('cancel-modal').classList.remove('hidden');
+      }
+
+      function closeCancelModal() {
+        document.getElementById('cancel-modal').classList.add('hidden');
+      }
+
+      async function submitCancel() {
+        const reason = document.getElementById('cancel-reason').value;
+        const response = await fetch('/patient/cancel-appointment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slot_id: cancelSlotId, reason })
+        });
+        const data = await response.json();
+        if (response.ok) Swal.fire('Cancelled!', data.message, 'success').then(() => window.location.reload());
+        else Swal.fire('Error', data.message, 'error');
+      }
+    </script>
+    <script src="/js/patient/patient_navbar.js"></script>
+</body>
+
+</html>

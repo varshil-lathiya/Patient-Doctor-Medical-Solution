@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PDMS - Doctor Leave Application</title>
+    <link rel="icon" href="/assets/favicon.png" type="image/x-icon" />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status-pending { background-color: #fef3c7; color: #d97706; }
+        .status-approved { background-color: #d1fae5; color: #059669; }
+        .status-rejected { background-color: #fee2e2; color: #dc2626; }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: #f9fafb;
+            border: 2px solid #f3f4f6;
+            border-radius: 0.75rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            border-color: #0d9488;
+            background-color: white;
+            box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-slide-up {
+            animation: slideUp 0.5s ease forwards;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <%- include('../components/doctor-sidebar', { currentPage: 'leaves' }) %>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 min-h-screen p-8">
+
+            <!-- Page Header -->
+            <div class="flex items-center justify-between mb-8 animate-slide-up">
+                <div>
+                    <h1 class="text-3xl font-bold text-teal-600 mb-1">Leave Application</h1>
+                    <p class="text-gray-600">Apply for leave and track your requests</p>
+                </div>
+                <div class="bg-teal-50 px-6 py-4 rounded-2xl border border-teal-100 text-center shadow-sm">
+                    <span class="block text-sm font-bold text-teal-600 uppercase tracking-widest mb-1">Total Leaves Approved</span>
+                    <span class="text-3xl font-black text-teal-700"><%= totalLeaves %></span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Apply Leave Form -->
+                <div class="lg:col-span-1 animate-slide-up" style="animation-delay: 0.1s">
+                    <div class="glass-card rounded-3xl shadow-xl overflow-hidden border-t-4 border-teal-500">
+                        <div class="p-6 bg-gradient-to-r from-teal-600 to-cyan-500 text-white">
+                            <h3 class="text-xl font-bold flex items-center gap-2">
+                                <i class="fas fa-paper-plane"></i>
+                                New Leave Request
+                            </h3>
+                        </div>
+                        <form id="leaveForm" class="p-6 space-y-6">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-bold text-gray-700 uppercase tracking-wide">From Date</label>
+                                <div class="relative">
+                                    <i class="fas fa-calendar-alt absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                    <input type="date" id="from_date" name="from_date" class="form-input pl-11" min="<%= new Date().toISOString().split('T')[0] %>" required />
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-sm font-bold text-gray-700 uppercase tracking-wide">To Date</label>
+                                <div class="relative">
+                                    <i class="fas fa-calendar-check absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                    <input type="date" id="to_date" name="to_date" class="form-input pl-11" min="<%= new Date().toISOString().split('T')[0] %>" required />
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-sm font-bold text-gray-700 uppercase tracking-wide">Reason</label>
+                                <div class="relative">
+                                    <i class="fas fa-comment-alt absolute left-4 top-4 text-gray-400"></i>
+                                    <textarea id="reason" name="reason" rows="4" class="form-input pl-11 pt-3 resize-none" placeholder="Details about your reason for leave..." required></textarea>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-bold py-4 rounded-2xl shadow-lg transition-all transform active:scale-95 flex items-center justify-center gap-2">
+                                <i class="fas fa-check-circle"></i>
+                                Submit Application
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Leave History Table -->
+                <div class="lg:col-span-2 animate-slide-up" style="animation-delay: 0.2s">
+                    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                            <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                                <i class="fas fa-history text-teal-600"></i>
+                                Leave History
+                            </h3>
+                            <div class="flex items-center gap-3">
+                                <label class="text-xs font-bold text-gray-500 uppercase tracking-wider text-teal-600">Filter:</label>
+                                <select id="timeFilter" onchange="filterHistory()" class="text-sm font-bold bg-white border-2 border-gray-100 rounded-lg px-3 py-1.5 focus:border-teal-500 outline-none transition-all">
+                                    <option value="all">All Time</option>
+                                    <option value="month">Current Month</option>
+                                    <option value="6month">Last 6 Months</option>
+                                    <option value="year">Last 1 Year</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-gray-50/80 border-b border-gray-100">
+                                    <tr>
+                                        <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Duration</th>
+                                        <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Reason</th>
+                                        <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest text-center">Status</th>
+                                        <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Admin Remark</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historyBody" class="divide-y divide-gray-50 font-medium">
+                                    <% if (leaves && leaves.length > 0) { %>
+                                        <% leaves.forEach(leave => { %>
+                                            <tr class="history-row hover:bg-gray-50/80 transition-colors" data-created="<%= leave.created_at %>">
+                                                <td class="px-6 py-5">
+                                                    <div class="text-sm">
+                                                        <p class="font-bold text-gray-900">
+                                                            <%= new Date(leave.from_date).toLocaleDateString('en-GB') %> - <%= new Date(leave.to_date).toLocaleDateString('en-GB') %>
+                                                        </p>
+                                                        <p class="text-xs text-gray-400 italic">
+                                                            Applied: <%= new Date(leave.created_at).toLocaleDateString('en-GB') %>
+                                                        </p>
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-5">
+                                                    <p class="text-sm text-gray-600 max-w-xs truncate" title="<%= leave.reason %>">
+                                                        <%= leave.reason %>
+                                                    </p>
+                                                </td>
+                                                <td class="px-6 py-5 text-center">
+                                                    <span class="status-<%= leave.status %> px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm">
+                                                        <%= leave.status %>
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-5">
+                                                    <p class="text-xs text-gray-500 italic">
+                                                        <%= leave.admin_remark || 'No remarks yet' %>
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        <% }) %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="4" class="px-6 py-20 text-center">
+                                                <i class="fas fa-calendar-check text-5xl text-gray-100 mb-4 block"></i>
+                                                <p class="text-xl font-bold text-gray-300">No leave history found</p>
+                                            </td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Page Logic -->
+    <script>
+        // Form Submission
+        document.getElementById('leaveForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+
+            if (new Date(data.from_date) > new Date(data.to_date)) {
+                return Swal.fire({
+                    title: 'Error',
+                    text: 'End date cannot be before start date',
+                    icon: 'error',
+                    confirmButtonColor: '#0d9488'
+                });
+            }
+
+            try {
+                const res = await fetch('/doctor/apply-leave', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if (result.success) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Leave application submitted successfully',
+                        icon: 'success',
+                        confirmButtonColor: '#0d9488'
+                    }).then(() => window.location.reload());
+                } else {
+                    Swal.fire('Error', result.message, 'error');
+                }
+            } catch (err) {
+                Swal.fire('Error', 'Something went wrong', 'error');
+            }
+        };
+
+        // Filter Functionality
+        function filterHistory() {
+            const filterValue = document.getElementById('timeFilter').value;
+            const rows = document.querySelectorAll('.history-row');
+            const now = new Date();
+
+            rows.forEach(row => {
+                const createdDate = new Date(row.dataset.created);
+                let show = true;
+
+                if (filterValue === 'month') {
+                    show = createdDate.getMonth() === now.getMonth() && createdDate.getFullYear() === now.getFullYear();
+                } else if (filterValue === '6month') {
+                    const sixMonthsAgo = new Date();
+                    sixMonthsAgo.setMonth(now.getMonth() - 6);
+                    show = createdDate >= sixMonthsAgo;
+                } else if (filterValue === 'year') {
+                    const oneYearAgo = new Date();
+                    oneYearAgo.setFullYear(now.getFullYear() - 1);
+                    show = createdDate >= oneYearAgo;
+                }
+
+                row.style.display = show ? '' : 'none';
+            });
+        }
+    </script>
+    <%- include('../components/doctor-modals') %>
+</body>
+
+</html>

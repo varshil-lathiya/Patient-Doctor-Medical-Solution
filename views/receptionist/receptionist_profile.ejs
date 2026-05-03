@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PDMS - My Profile</title>
+    <link rel="icon" href="/assets/favicon.png" type="image/x-icon">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Custom Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#0066CC',
+                        'primary-teal': '#008B8B',
+                        'secondary-cyan': '#00B4D8',
+                        'accent-green': '#00A86B',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+
+    <!-- Receptionist Sidebar -->
+    <%- include('../components/receptionist-sidebar') %>
+
+        <!-- Main Content Area -->
+        <main class="ml-64 min-h-screen p-8">
+
+            <!-- Page Header -->
+            <div class="mb-8">
+                <a href="/receptionist/dashboard"
+                    class="mb-4 inline-flex items-center gap-2 text-primary-teal hover:text-slate-800 font-bold transition-all group">
+                    <i class="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
+                    Back to Dashboard
+                </a>
+                <h1 class="text-3xl font-bold text-primary-teal mb-1">My Profile</h1>
+                <p class="text-gray-600">Manage your personal information</p>
+            </div>
+
+            <!-- Profile Container -->
+            <div class="flex gap-6 flex-col lg:flex-row">
+
+                <!-- Left Section - Profile Picture -->
+                <div class="lg:w-80 flex-shrink-0">
+                    <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-8">
+                        <!-- Profile Image -->
+                        <div class="flex flex-col items-center mb-6">
+                            <div class="relative">
+                                <div
+                                    class="w-48 h-48 rounded-full overflow-hidden border-4 border-primary-teal shadow-xl mb-4">
+                                    <img id="profile_pic"
+                                        src="<%= user.profile_pic || `https://ui-avatars.com/api/?name=${user.firstname}+${user.lastname}&size=200&background=008B8B&color=fff&bold=true` %>"
+                                        alt="Profile" class="w-full h-full object-cover" />
+                                </div>
+                                <!-- Edit Icon Badge -->
+                                <div
+                                    class="absolute bottom-6 right-0 w-12 h-12 bg-gradient-to-br from-primary-teal to-teal-600 rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:scale-110 transition-transform">
+                                    <label for="img-update" class="cursor-pointer">
+                                        <i class="fas fa-camera text-white text-lg"></i>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Hidden File Input -->
+                            <form id="profile-img" class="hidden">
+                                <input id="img-update" name="profile_pic" type="file" accept="image/*"
+                                    onchange="previewImage(event)" />
+                            </form>
+
+                            <!-- Name Display -->
+                            <h3 class="text-2xl font-bold text-gray-900 text-center mb-1">
+                                <%= user.firstname %>
+                                    <%= user.lastname %>
+                            </h3>
+                            <p class="text-primary-teal font-semibold">Receptionist</p>
+                        </div>
+
+                        <!-- Save Image Button -->
+                        <button id="save-image-btn" onclick="saveProfileImage()" disabled
+                            class="w-full bg-gradient-to-r from-primary-teal to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold py-3 rounded-lg transition-all shadow-md hover:shadow-xl disabled:bg-gray-400 disabled:cursor-not-allowed mb-4">
+                            <i class="fas fa-save mr-2"></i>
+                            Save Image
+                        </button>
+
+                        <!-- Quick Stats -->
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-teal-50 rounded-lg">
+                                <span class="text-gray-700 font-semibold flex items-center gap-2">
+                                    <i class="fas fa-envelope text-primary-teal"></i>
+                                    Email
+                                </span>
+                                <span class="text-gray-600 text-sm">Verified</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                                <span class="text-gray-700 font-semibold flex items-center gap-2">
+                                    <i class="fas fa-phone text-blue-600"></i>
+                                    Phone
+                                </span>
+                                <span class="text-gray-600 text-sm">Verified</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                                <span class="text-gray-700 font-semibold flex items-center gap-2">
+                                    <i class="fas fa-shield-alt text-green-600"></i>
+                                    Status
+                                </span>
+                                <span class="text-green-600 text-sm font-semibold">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Section - Profile Information -->
+                <div class="flex-1">
+                    <div class="bg-white rounded-2xl shadow-lg p-8">
+
+                        <!-- Edit Button (Top Right) -->
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-2xl font-bold text-gray-900">Personal Information</h2>
+                            <button id="profile-data-btn" onclick="toggleEdit()"
+                                class="bg-slate-700 hover:bg-slate-800 text-white font-semibold px-6 py-3 rounded-lg transition-all shadow-md hover:shadow-xl">
+                                <i class="fas fa-pen-to-square mr-2"></i>
+                                Edit
+                            </button>
+                        </div>
+
+                        <!-- Profile Form -->
+                        <form id="profile_detail" class="space-y-6">
+
+                            <!-- Row 1: First Name & Last Name -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="firstname" class="block text-sm font-bold text-gray-700 mb-2">
+                                        First Name
+                                    </label>
+                                    <input type="text" id="firstname" name="firstname"
+                                        value="<%= user.firstname || '' %>" disabled
+                                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-teal focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed transition-all" />
+                                    <p id="firstnameError" class="text-red-500 text-sm mt-1"></p>
+                                </div>
+
+                                <div>
+                                    <label for="lastname" class="block text-sm font-bold text-gray-700 mb-2">
+                                        Last Name
+                                    </label>
+                                    <input type="text" id="lastname" name="lastname" value="<%= user.lastname || '' %>"
+                                        disabled
+                                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-teal focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed transition-all" />
+                                    <p id="lastnameError" class="text-red-500 text-sm mt-1"></p>
+                                </div>
+                            </div>
+
+                            <!-- Row 2: Contact & Email -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="mobile" class="block text-sm font-bold text-gray-700 mb-2">
+                                        Contact
+                                    </label>
+                                    <input type="text" id="mobile" name="mobile" value="<%= user.mobile || '' %>"
+                                        disabled
+                                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-teal focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed transition-all" />
+                                    <p id="mobileError" class="text-red-500 text-sm mt-1"></p>
+                                </div>
+
+                                <div>
+                                    <label for="email" class="block text-sm font-bold text-gray-700 mb-2">
+                                        Email
+                                    </label>
+                                    <input type="email" id="email" name="email" value="<%= user.email || '' %>" readonly
+                                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed" />
+                                    <p id="emailError" class="text-red-500 text-sm mt-1"></p>
+                                </div>
+                            </div>
+
+                            <!-- Row 3: Address -->
+                            <div>
+                                <label for="address" class="block text-sm font-bold text-gray-700 mb-2">
+                                    Address
+                                </label>
+                                <input type="text" id="address" name="address" value="<%= user.address || '' %>"
+                                    disabled
+                                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-teal focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed transition-all" />
+                                <p id="addressError" class="text-red-500 text-sm mt-1"></p>
+                            </div>
+                            <!-- Row 4: Gender & Date of Birth -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">
+                                        Gender
+                                    </label>
+                                    <div class="flex gap-6 pt-2">
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="radio" name="gender" value="Male" <%=user.gender==='Male'
+                                                ? 'checked' : '' %>
+                                            disabled
+                                            class="w-4 h-4 text-primary-teal disabled:cursor-not-allowed"
+                                            />
+                                            <span class="text-gray-700">Male</span>
+                                        </label>
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="radio" name="gender" value="Female" <%=user.gender==='Female'
+                                                ? 'checked' : '' %>
+                                            disabled
+                                            class="w-4 h-4 text-primary-teal disabled:cursor-not-allowed"
+                                            />
+                                            <span class="text-gray-700">Female</span>
+                                        </label>
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="radio" name="gender" value="Other" <%=user.gender==='Other'
+                                                ? 'checked' : '' %>
+                                            disabled
+                                            class="w-4 h-4 text-primary-teal disabled:cursor-not-allowed"
+                                            />
+                                            <span class="text-gray-700">Others</span>
+                                        </label>
+                                    </div>
+                                    <p id="genderError" class="text-red-500 text-sm mt-1"></p>
+                                </div>
+
+                                <div>
+                                    <label for="dob" class="block text-sm font-bold text-gray-700 mb-2">
+                                        Date Of Birth
+                                    </label>
+                                    <input type="date" id="dob" name="dob"
+                                        value="<%= user.dob ? new Date(user.dob).toISOString().split('T')[0] : '' %>"
+                                        disabled
+                                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-teal focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed transition-all" />
+                                    <p id="dobError" class="text-red-500 text-sm mt-1"></p>
+                                </div>
+                            </div>
+
+                            <!-- Row 5: Blood Group -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="blood_group" class="block text-sm font-bold text-gray-700 mb-2">
+                                        Blood Group
+                                    </label>
+                                    <select id="blood_group" name="blood_group" disabled
+                                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-teal focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed transition-all">
+                                        <option value="A+" <%=user.blood_group==='A+' ? 'selected' : '' %>>A+</option>
+                                        <option value="A-" <%=user.blood_group==='A-' ? 'selected' : '' %>>A-</option>
+                                        <option value="AB+" <%=user.blood_group==='AB+' ? 'selected' : '' %>>AB+
+                                        </option>
+                                        <option value="AB-" <%=user.blood_group==='AB-' ? 'selected' : '' %>>AB-
+                                        </option>
+                                        <option value="B+" <%=user.blood_group==='B+' ? 'selected' : '' %>>B+</option>
+                                        <option value="B-" <%=user.blood_group==='B-' ? 'selected' : '' %>>B-</option>
+                                        <option value="O+" <%=user.blood_group==='O+' ? 'selected' : '' %>>O+</option>
+                                        <option value="O-" <%=user.blood_group==='O-' ? 'selected' : '' %>>O-</option>
+                                    </select>
+                                    <p id="blood_groupError" class="text-red-500 text-sm mt-1"></p>
+                                </div>
+                            </div>
+
+                            <!-- Save Changes Button (Hidden by Default) -->
+                            <div id="save-changes-section" class="hidden pt-4 border-t border-gray-200">
+                                <div class="flex gap-4">
+                                    <button type="button" onclick="saveChanges()"
+                                        class="flex-1 bg-gradient-to-r from-primary-teal to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold py-4 rounded-lg transition-all shadow-md hover:shadow-xl text-lg">
+                                        <i class="fas fa-save mr-2"></i>
+                                        Save Changes
+                                    </button>
+                                    <button type="button" onclick="cancelEdit()"
+                                        class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-4 rounded-lg transition-all shadow-md hover:shadow-xl text-lg">
+                                        <i class="fas fa-times mr-2"></i>
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+
+                    <!-- Account Settings Card -->
+                </div>
+
+            </div>
+        </main>
+
+        <!-- Loading Spinner Modal -->
+        <div id="spinner-modal"
+            class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+            <div class="bg-white rounded-xl p-10 shadow-xl">
+                <div class="flex flex-col items-center">
+                    <img src="/assets/favicon.png" alt="Loading" class="w-16 h-16 animate-bounce mb-3" />
+                    <p class="text-gray-700 font-medium">Saving...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scripts -->
+        <script src="/js/receptionist/receptionist_navbar.js"></script>
+        <script>
+
+            let isEditMode = false;
+            let originalFormData = {};
+
+            // Toggle Edit Mode
+            function toggleEdit() {
+                isEditMode = true;
+
+                // Store original data
+                const form = document.getElementById('profile_detail');
+                const formData = new FormData(form);
+                originalFormData = Object.fromEntries(formData);
+
+                // Enable all inputs except email
+                const inputs = form.querySelectorAll('input:not([readonly]), select');
+                inputs.forEach(input => {
+                    input.disabled = false;
+                    if (input.type === 'radio') {
+                        input.parentElement.classList.add('cursor-pointer');
+                    }
+                });
+
+                // Show save/cancel buttons
+                document.getElementById('save-changes-section').classList.remove('hidden');
+
+                // Change edit button
+                document.getElementById('profile-data-btn').innerHTML = '<i class="fas fa-eye mr-2"></i>View Mode';
+                document.getElementById('profile-data-btn').classList.remove('bg-slate-700', 'hover:bg-slate-800');
+                document.getElementById('profile-data-btn').classList.add('bg-gray-400');
+                document.getElementById('profile-data-btn').disabled = true;
+            }
+
+            // Cancel Edit
+            function cancelEdit() {
+                isEditMode = false;
+
+                // Restore original data
+                Object.keys(originalFormData).forEach(key => {
+                    const element = document.querySelector(`[name="${key}"]`);
+                    if (element) {
+                        if (element.type === 'radio') {
+                            const radio = document.querySelector(`[name="${key}"][value="${originalFormData[key]}"]`);
+                            if (radio) radio.checked = true;
+                        } else {
+                            element.value = originalFormData[key];
+                        }
+                    }
+                });
+
+                // Disable all inputs
+                const form = document.getElementById('profile_detail');
+                const inputs = form.querySelectorAll('input:not([readonly]), select');
+                inputs.forEach(input => {
+                    input.disabled = true;
+                });
+
+                // Hide save/cancel buttons
+                document.getElementById('save-changes-section').classList.add('hidden');
+
+                // Restore edit button
+                document.getElementById('profile-data-btn').innerHTML = '<i class="fas fa-pen-to-square mr-2"></i>Edit';
+                document.getElementById('profile-data-btn').classList.add('bg-slate-700', 'hover:bg-slate-800');
+                document.getElementById('profile-data-btn').classList.remove('bg-gray-400');
+                document.getElementById('profile-data-btn').disabled = false;
+            }
+
+            // Save Changes
+            async function saveChanges() {
+                document.getElementById('spinner-modal').classList.remove('hidden');
+
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                document.getElementById('spinner-modal').classList.add('hidden');
+
+                await Swal.fire({
+                    title: 'Success!',
+                    text: 'Profile updated successfully!',
+                    icon: 'success',
+                    confirmButtonColor: '#008B8B'
+                });
+
+                // Disable edit mode
+                cancelEdit();
+            }
+
+            // Preview Image
+            function previewImage(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        document.getElementById('profile_pic').src = e.target.result;
+                        document.getElementById('save-image-btn').disabled = false;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            // Save Profile Image
+            async function saveProfileImage() {
+                const fileInput = document.getElementById('img-update');
+                if (!fileInput.files || !fileInput.files[0]) {
+                    return;
+                }
+
+                document.getElementById('spinner-modal').classList.remove('hidden');
+
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                document.getElementById('spinner-modal').classList.add('hidden');
+
+                await Swal.fire({
+                    title: 'Success!',
+                    text: 'Profile picture updated successfully!',
+                    icon: 'success',
+                    confirmButtonColor: '#008B8B'
+                });
+
+                document.getElementById('save-image-btn').disabled = true;
+            }
+
+            // Set active nav item on load
+            document.addEventListener('DOMContentLoaded', function () {
+                document.getElementById('nav-profile')?.classList.add('active');
+            });
+        </script>
+
+</body>
+
+</html>

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDMS - Appointments</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .modal-backdrop {
+            backdrop-filter: blur(4px);
+        }
+
+        .nav-item {
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover {
+            transform: translateX(5px);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .appointment-row {
+            animation: slideIn 0.5s ease forwards;
+        }
+
+        .status-badge {
+            transition: all 0.3s ease;
+        }
+
+        .status-badge:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+    <div class="flex min-h-screen">
+        <!-- Sidebar Navigation -->
+        <%- include('../components/doctor-sidebar', { currentPage: 'appointments' }) %>
+
+            <!-- Main Content Area -->
+            <div class="flex-1 overflow-y-auto">
+                <!-- Header -->
+                <div class="bg-white shadow-sm border-b">
+                    <div class="px-8 py-6">
+                        <a href="/doctor/dashboard"
+                            class="mb-4 inline-flex items-center gap-2 text-teal-600 hover:text-slate-800 font-bold transition-all group">
+                            <i class="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
+                            Back to Dashboard
+                        </a>
+                        <h1 class="text-3xl font-bold text-gray-800">Appointments</h1>
+                        <p class="text-gray-500 mt-1">Manage and view all your appointments</p>
+                    </div>
+                </div>
+
+                <!-- Appointments Content -->
+                <div class="p-8">
+                    <!-- Global Search Filter -->
+                    <div class="mb-6 relative max-w-md">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                        <input type="text" id="patientSearch" 
+                            onkeyup="filterAppointments()"
+                            placeholder="Search patients by name..." 
+                            class="w-full pl-11 pr-4 py-3 bg-white border-2 border-gray-100 rounded-2xl focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 outline-none transition-all shadow-sm font-medium"
+                        >
+                    </div>
+
+                    <!-- Tab Navigation -->
+                    <div class="flex flex-wrap items-center gap-4 mb-8 bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
+                        <button onclick="switchTab('upcoming')" id="tab-upcoming"
+                            class="flex-1 min-w-[150px] flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold transition-all duration-300 bg-teal-600 text-white shadow-lg shadow-teal-200">
+                            <i class="fas fa-calendar-check text-lg"></i>
+                            <span>Upcoming</span>
+                        </button>
+                        <button onclick="switchTab('missed')" id="tab-missed"
+                            class="flex-1 min-w-[150px] flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold transition-all duration-300 bg-white text-gray-500 hover:bg-gray-50">
+                            <i class="fas fa-user-clock text-lg"></i>
+                            <span>Missed Sessions</span>
+                        </button>
+                        <button onclick="switchTab('completed')" id="tab-completed"
+                            class="flex-1 min-w-[150px] flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold transition-all duration-300 bg-white text-gray-500 hover:bg-gray-50">
+                            <i class="fas fa-check-circle text-lg"></i>
+                            <span>Completed</span>
+                        </button>
+                    </div>
+
+                    <!-- Upcoming Appointments Tab -->
+                    <div id="section-upcoming" class="appointment-tab-content">
+                        <div class="bg-white rounded-2xl shadow-lg p-6 mb-8 border-t-4 border-teal-500">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-calendar-check text-teal-600 text-xl"></i>
+                                    </div>
+                                    <h3 class="text-2xl font-bold text-teal-600">Upcoming Appointments</h3>
+                                </div>
+                                <span class="px-4 py-1.5 bg-teal-50 text-teal-700 rounded-full font-bold text-sm border border-teal-100">
+                                    Total: <%= upcoming.length %>
+                                </span>
+                            </div>
+
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="bg-gradient-to-r from-teal-50 to-cyan-50 border-b border-teal-100">
+                                            <th class="px-6 py-4 text-left text-sm font-semibold text-teal-700 uppercase tracking-wider">Patient Name</th>
+                                            <th class="px-6 py-4 text-left text-sm font-semibold text-teal-700 uppercase tracking-wider">Gender</th>
+                                            <th class="px-6 py-4 text-left text-sm font-semibold text-teal-700 uppercase tracking-wider">Date</th>
+                                            <th class="px-6 py-4 text-left text-sm font-semibold text-teal-700 uppercase tracking-wider">Time</th>
+                                            <th class="px-6 py-4 text-left text-sm font-semibold text-teal-700 uppercase tracking-wider">Status</th>
+                                            <th class="px-6 py-4 text-left text-sm font-semibold text-teal-700 uppercase tracking-wider rounded-tr-lg">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-100">
+                                        <% if (upcoming && upcoming.length > 0) { %>
+                                            <% upcoming.forEach((app, index) => { %>
+                                                <tr class="appointment-row hover:bg-gray-50 transition">
+                                                    <td class="px-6 py-4">
+                                                        <div class="flex items-center gap-3">
+                                                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-400 to-cyan-400 flex items-center justify-center text-white font-bold">
+                                                                <%= app.firstname[0] %><%= app.lastname[0] %>
+                                                            </div>
+                                                            <span class="font-medium text-gray-800"><%= app.firstname %> <%= app.lastname %></span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        <span class="px-3 py-1 rounded-full text-xs font-bold <%= app.gender === 'Male' ? 'bg-blue-100 text-blue-700' : 'bg-pink-100 text-pink-700' %>">
+                                                            <%= app.gender %>
+                                                        </span>
+                                                    </td>
+                                                    <td class="px-6 py-4 text-gray-700 font-medium"><%= new Date(app.slot_date).toLocaleDateString('en-GB') %></td>
+                                                    <td class="px-6 py-4">
+                                                        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 text-green-700 text-sm font-medium">
+                                                            <i class="far fa-clock"></i>
+                                                            <%= app.slot_start %>
+                                                        </span>
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        <% if (app.status === 'is_in_process') { %>
+                                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 animate-pulse border border-amber-200">
+                                                                <i class="fas fa-spinner fa-spin mr-1.5"></i> In Process
+                                                            </span>
+                                                        <% } else { %>
+                                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                                                                <i class="fas fa-calendar-check mr-1.5"></i> Scheduled
+                                                            </span>
+                                                        <% } %>
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        <button onclick="window.location.href='/doctor/patient_history/<%= app.patient_id %>/<%= app.id %>'"
+                                                            class="inline-flex items-center gap-1 text-teal-600 hover:text-teal-800 font-bold text-sm transition-all group">
+                                                            Details <i class="fas fa-chevron-right text-xs group-hover:translate-x-1 transition-transform"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        <% } else { %>
+                                            <tr><td colspan="6" class="px-6 py-12 text-center text-gray-500 italic">No upcoming appointments found.</td></tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Missed Appointments Tab -->
+                    <div id="section-missed" class="appointment-tab-content hidden">
+                        <div class="bg-white rounded-2xl shadow-lg p-6 mb-8 border-t-4 border-red-400">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-user-clock text-red-600 text-xl"></i>
+                                    </div>
+                                    <h3 class="text-2xl font-bold text-red-600">Missed Sessions</h3>
+                                </div>
+                                <span class="px-4 py-1.5 bg-red-50 text-red-700 rounded-full font-bold text-sm border border-red-100">
+                                    Count: <%= past.length %>
+                                </span>
+                            </div>
+                            <p class="text-sm text-gray-500 mb-6 italic bg-red-50 p-3 rounded-lg border-l-4 border-red-300">
+                                <i class="fas fa-info-circle mr-2"></i> These appointments were scheduled for past dates but were not fulfilled.
+                            </p>
+                            
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="bg-red-50 border-b border-red-100">
+                                            <th class="px-6 py-4 text-left text-sm font-semibold text-red-700 uppercase tracking-wider">Patient Name</th>
+                                             <th class="px-6 py-4 text-left text-sm font-semibold text-red-700 uppercase tracking-wider">Date</th>
+                                             <th class="px-6 py-4 text-left text-sm font-semibold text-red-700 uppercase tracking-wider rounded-tr-lg">Time</th>
+                                         </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-100">
+                                        <% if (past && past.length > 0) { %>
+                                            <% past.forEach((app) => { %>
+                                                <tr class="appointment-row hover:bg-red-50 transition">
+                                                    <td class="px-6 py-4">
+                                                        <div class="flex items-center gap-3">
+                                                            <div class="w-9 h-9 rounded-full bg-red-100 flex items-center justify-center text-red-700 text-xs font-bold">
+                                                                <%= app.firstname[0] %><%= app.lastname[0] %>
+                                                            </div>
+                                                            <span class="font-medium text-gray-700"><%= app.firstname %> <%= app.lastname %></span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-6 py-4 text-gray-600"><%= new Date(app.slot_date).toLocaleDateString('en-GB') %></td>
+                                                     <td class="px-6 py-4 text-gray-600 font-medium"><%= app.slot_start %></td>
+                                                 </tr>
+                                            <% }); %>
+                                         <% } else { %>
+                                             <tr><td colspan="3" class="px-6 py-12 text-center text-gray-500 italic">No missed appointments records.</td></tr>
+                                         <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Completed Appointments Tab -->
+                    <div id="section-completed" class="appointment-tab-content hidden">
+                        <div class="bg-white rounded-2xl shadow-lg p-6 border-t-4 border-green-500">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                                    </div>
+                                    <h3 class="text-2xl font-bold text-green-600">Completed Sessions</h3>
+                                </div>
+                                <span class="px-4 py-1.5 bg-green-50 text-green-700 rounded-full font-bold text-sm border border-green-100">
+                                    Total Sessions: <%= completed.length %>
+                                </span>
+                            </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-100">
+                                            <th class="px-6 py-4 text-left text-sm font-semibold text-green-700 uppercase tracking-wider">Patient Name</th>
+                                            <th class="px-6 py-4 text-left text-sm font-semibold text-green-700 uppercase tracking-wider">Date</th>
+                                            <th class="px-6 py-4 text-left text-sm font-semibold text-green-700 uppercase tracking-wider">Time</th>
+                                            <th class="px-6 py-4 text-left text-sm font-semibold text-green-700 uppercase tracking-wider">Status</th>
+                                            <th class="px-6 py-4 text-left text-sm font-semibold text-green-700 uppercase tracking-wider">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-100">
+                                        <% if (completed && completed.length > 0) { %>
+                                            <% completed.forEach((app) => { %>
+                                                <tr class="appointment-row hover:bg-gray-50 transition border-l-4 border-transparent hover:border-green-500">
+                                                    <td class="px-6 py-4 text-gray-800 font-semibold"><%= app.firstname %> <%= app.lastname %></td>
+                                                    <td class="px-6 py-4 text-gray-600"><%= new Date(app.slot_date).toLocaleDateString('en-GB') %></td>
+                                                    <td class="px-6 py-4 text-gray-600 font-medium"><%= app.slot_start %></td>
+                                                    <td class="px-6 py-4">
+                                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800 border border-green-200">
+                                                            <i class="fas fa-check mr-1.5"></i> Fulfilled
+                                                        </span>
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        <button onclick="window.location.href='/doctor/patient_history/<%= app.patient_id %>/<%= app.id %>'"
+                                                            class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-bold text-sm transition-all group">
+                                                            View Report <i class="fas fa-file-medical ml-1 group-hover:scale-110 transition-transform"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        <% } else { %>
+                                            <tr><td colspan="5" class="px-6 py-12 text-center text-gray-500 italic">You haven't completed any sessions yet.</td></tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+    </div>
+
+    <%- include('../components/doctor-modals') %>
+
+        <!-- JavaScript -->
+        <script>
+            function switchTab(tabName) {
+                // Focus search when switching tabs
+                document.getElementById('patientSearch').value = '';
+                filterAppointments();
+
+                // Hide all sections
+                document.querySelectorAll('.appointment-tab-content').forEach(section => {
+                    section.classList.add('hidden');
+                });
+
+                // Show selected section
+                document.getElementById(`section-${tabName}`).classList.remove('hidden');
+
+                // Update tab button styles
+                const tabs = ['upcoming', 'missed', 'completed'];
+                tabs.forEach(t => {
+                    const btn = document.getElementById(`tab-${t}`);
+                    if (btn) {
+                        if (t === tabName) {
+                            btn.classList.add('bg-teal-600', 'text-white', 'shadow-lg', 'shadow-teal-200');
+                            btn.classList.remove('bg-white', 'text-gray-500', 'hover:bg-gray-50');
+                        } else {
+                            btn.classList.remove('bg-teal-600', 'text-white', 'shadow-lg', 'shadow-teal-200');
+                            btn.classList.add('bg-white', 'text-gray-500', 'hover:bg-gray-50');
+                        }
+                    }
+                });
+            }
+
+            function filterAppointments() {
+                const query = document.getElementById('patientSearch').value.toLowerCase();
+                const rows = document.querySelectorAll('.appointment-row');
+
+                rows.forEach(row => {
+                    const patientName = row.innerText.toLowerCase();
+                    if (patientName.includes(query)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            }
+
+            // Initialization logic
+            document.addEventListener('DOMContentLoaded', function () {
+                switchTab('upcoming');
+            });
+        </script>
+        <%- include('../components/doctor-modals') %>
+</body>
+
+</html>

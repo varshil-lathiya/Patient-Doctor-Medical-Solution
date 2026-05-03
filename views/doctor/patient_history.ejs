@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDMS - Patient History</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+    * {
+      font-family: "Inter", sans-serif;
+    }
+
+    .modal-backdrop {
+      backdrop-filter: blur(4px);
+    }
+
+    .nav-item {
+      transition: all 0.3s ease;
+    }
+
+    .nav-item:hover {
+      transform: translateX(5px);
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card-animate {
+      animation: slideIn 0.5s ease forwards;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 3px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50">
+  <div class="flex min-h-screen">
+    <!-- Sidebar Navigation -->
+    <%- include('../components/doctor-sidebar', { currentPage: 'history' }) %>
+
+      <!-- Main Content Area -->
+      <div class="flex-1 overflow-y-auto custom-scrollbar">
+        <!-- Header -->
+        <div class="bg-white shadow-sm border-b">
+          <div class="px-8 py-6">
+            <a href="/doctor/appoinments"
+              class="mb-4 inline-flex items-center gap-2 text-teal-600 hover:text-slate-800 font-bold transition-all group">
+              <i class="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
+              Back to Appointments
+            </a>
+            <div class="flex items-center justify-between">
+              <div>
+                <h1 class="text-3xl font-bold text-gray-800">
+                  Patient Details
+                </h1>
+                <p class="text-gray-500 mt-1">
+                  Manage patient records and medical history
+                </p>
+              </div>
+              <div class="flex gap-3">
+                <button onclick="openReportsModal()"
+                  class="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition shadow-sm font-medium">
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd"
+                      d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                      clip-rule="evenodd" />
+                  </svg>
+                  All Reports
+                </button>
+                <button onclick="openEndSessionModal()"
+                  class="flex items-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition shadow-sm font-medium">
+                  End Session
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="p-8 space-y-6">
+          <!-- Patient Basic Details -->
+
+          <!-- Patient Vitals Section -->
+          <div class="bg-white rounded-2xl shadow-lg p-6 card-animate" style="animation-delay: 0.1s">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 bg-rose-100 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+                  </path>
+                </svg>
+              </div>
+              <h2 class="text-2xl font-bold text-rose-600">Patient Vitals (Latest)</h2>
+            </div>
+            <div class="border-t-2 border-rose-600 mb-6"></div>
+
+            <div class="grid grid-cols-5 gap-6">
+              <!-- BP -->
+              <div class="bg-gradient-to-br from-rose-50 to-orange-50 rounded-xl p-4 border border-rose-100">
+                <p class="text-xs text-rose-600 uppercase tracking-wide font-semibold mb-1">Blood Pressure</p>
+                <p class="text-2xl font-bold text-gray-800">
+                  <%= vitals.BP || '--/--' %> <span class="text-sm font-normal text-gray-500">mmHg</span>
+                </p>
+              </div>
+              <!-- Heart Rate -->
+              <div class="bg-gradient-to-br from-red-50 to-rose-50 rounded-xl p-4 border border-red-100">
+                <p class="text-xs text-red-600 uppercase tracking-wide font-semibold mb-1">Heart Rate</p>
+                <p class="text-2xl font-bold text-gray-800">
+                  <%= vitals.HR || '--' %> <span class="text-sm font-normal text-gray-500">bpm</span>
+                </p>
+              </div>
+              <!-- Temperature -->
+              <div class="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-xl p-4 border border-orange-100">
+                <p class="text-xs text-orange-600 uppercase tracking-wide font-semibold mb-1">Temperature</p>
+                <p class="text-2xl font-bold text-gray-800">
+                  <%= vitals.Temp || '--' %> <span class="text-sm font-normal text-gray-500">°F</span>
+                </p>
+              </div>
+              <!-- SpO2 -->
+              <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-100">
+                <p class="text-xs text-blue-600 uppercase tracking-wide font-semibold mb-1">SpO2</p>
+                <p class="text-2xl font-bold text-gray-800">
+                  <%= vitals.SpO2 || '--' %> <span class="text-sm font-normal text-gray-500">%</span>
+                </p>
+              </div>
+              <!-- Weight -->
+              <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-100">
+                <p class="text-xs text-emerald-600 uppercase tracking-wide font-semibold mb-1">Weight</p>
+                <p class="text-2xl font-bold text-gray-800">
+                  <%= vitals.Weight || '--' %> <span class="text-sm font-normal text-gray-500">kg</span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Forms Section -->
+          <div class="grid grid-cols-2 gap-6">
+            <!-- Add Summary Form -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden card-animate" style="animation-delay: 0.1s">
+              <div class="bg-gradient-to-r from-teal-600 to-cyan-500 px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <h2 class="text-xl font-bold text-white">Add Summary</h2>
+                </div>
+              </div>
+              <form id="add-note-form" class="p-6 space-y-4">
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2">Symptoms:</label>
+                  <textarea id="symptoms" name="symptoms" rows="3"
+                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition resize-none"
+                    placeholder="Enter patient symptoms..."></textarea>
+                  <p id="symptomserror" class="text-red-500 text-sm mt-1"></p>
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2">Observation:</label>
+                  <textarea id="observation" name="Observation" rows="3"
+                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition resize-none"
+                    placeholder="Enter your observations..."></textarea>
+                  <p id="observationerror" class="text-red-500 text-sm mt-1"></p>
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2">Diagnosis:</label>
+                  <textarea id="diagnosis" name="diagnosis" rows="3"
+                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition resize-none"
+                    placeholder="Enter diagnosis..."></textarea>
+                  <p id="diagnosiserror" class="text-red-500 text-sm mt-1"></p>
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2">Conclusion:</label>
+                  <textarea id="conclusion" name="conclusion" rows="3"
+                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition resize-none"
+                    placeholder="Enter conclusion..."></textarea>
+                  <p id="conclusionerror" class="text-red-500 text-sm mt-1"></p>
+                </div>
+                <button type="button" onclick="newSummary()"
+                  class="w-full py-3 bg-gradient-to-r from-teal-600 to-cyan-500 hover:from-teal-700 hover:to-cyan-600 text-white font-semibold rounded-lg transition shadow-lg">
+                  Create Summary
+                </button>
+              </form>
+            </div>
+
+            <!-- Add Prescription Form -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden card-animate" style="animation-delay: 0.2s">
+              <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                  </svg>
+                  <h2 class="text-xl font-bold text-white">Add Prescription</h2>
+                </div>
+              </div>
+              <form id="add-prescription-form" class="p-6 space-y-4">
+                <div id="medicine_container" class="space-y-4">
+                  <div class="medicine_row border-2 border-gray-200 rounded-xl p-4 space-y-3">
+                    <div class="grid grid-cols-2 gap-4">
+                      <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Medicine:</label>
+                        <input type="text" name="medicine[]"
+                          class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                          placeholder="Medicine name" />
+                      </div>
+                      <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Dosage:</label>
+                        <input type="text" name="dosage[]"
+                          class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                          placeholder="e.g., 500mg" />
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                      <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Days:</label>
+                        <input type="text" name="days[]"
+                          class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                          placeholder="e.g., 7" />
+                      </div>
+                      <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Instructions:</label>
+                        <select name="instruction[]"
+                          class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                          <option>--Select--</option>
+                          <option value="Before Breakfast">
+                            Before Breakfast
+                          </option>
+                          <option value="After Breakfast">
+                            After Breakfast
+                          </option>
+                          <option value="Before Lunch">Before Lunch</option>
+                          <option value="After Lunch">After Lunch</option>
+                          <option value="Before Dinner">Before Dinner</option>
+                          <option value="After Dinner">After Dinner</option>
+                          <option value="3 times Before Meal">
+                            3 times Before Meal
+                          </option>
+                          <option value="3 times After Meal">
+                            3 times After Meal
+                          </option>
+                          <option value="Morning, Evening Before Meal">
+                            Morning, Evening Before Meal
+                          </option>
+                          <option value="Morning, Evening After Meal">
+                            Morning, Evening After Meal
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex gap-3">
+                  <button type="button" onclick="newPrescription()"
+                    class="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-lg transition shadow-lg">
+                    Add Prescription
+                  </button>
+                  <button type="button" onclick="addMedicine(event)"
+                    class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition shadow-lg flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Medicine
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Patient History Section -->
+          <div class="bg-white rounded-2xl shadow-lg overflow-hidden card-animate" style="animation-delay: 0.3s">
+            <div class="px-6 py-4 bg-gradient-to-r from-cyan-600 to-teal-600">
+              <div class="flex items-center gap-3">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h2 class="text-2xl font-bold text-white">Patient History</h2>
+              </div>
+            </div>
+
+            <div class="p-6">
+              <div id="summary-container" class="space-y-4">
+                <script id="history-data" type="application/json"><%- JSON.stringify(history) %></script>
+                <% if (history && history.length> 0) { %>
+                  <% history.forEach((record, index)=> { %>
+                    <div
+                      class="border-2 border-gray-200 rounded-xl p-5 hover:shadow-lg hover:border-teal-300 transition-all duration-200 card-animate"
+                      style="--delay: <%= index * 0.1 %>s; animation-delay: var(--delay);">
+                      <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-4">
+                          <div
+                            class="w-12 h-12 bg-gradient-to-br from-teal-100 to-cyan-100 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          </div>
+                          <div>
+                            <p class="font-bold text-gray-800 text-lg">Visit Summary</p>
+                            <p class="text-sm text-gray-500 flex items-center gap-2 mt-1">
+                              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                              <%= new Date(record.slot_date).toLocaleDateString() %> • Dr. <%= record.doc_first %>
+                                  <%= record.doc_last %>
+                            </p>
+                          </div>
+                        </div>
+                        <button onclick="viewSummaryDetails('<%= index %>')"
+                          class="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg transition shadow-sm flex items-center gap-2">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                            </path>
+                          </svg>
+                          View Details
+                        </button>
+                      </div>
+                      <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-gray-50 rounded-lg p-3">
+                          <span class="text-xs font-semibold text-gray-500 uppercase">Symptoms:</span>
+                          <p class="text-sm text-gray-800 mt-1 truncate">
+                            <%= record.symptoms %>
+                          </p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-3">
+                          <span class="text-xs font-semibold text-gray-500 uppercase">Diagnosis:</span>
+                          <p class="text-sm text-gray-800 mt-1 truncate">
+                            <%= record.diagnosis %>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <% }); %>
+                      <% } else { %>
+                        <div class="text-center py-16">
+                          <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          <h4 class="text-xl font-semibold text-gray-400 mb-2">No Previous Records</h4>
+                          <p class="text-gray-400">Patient history will appear here</p>
+                        </div>
+                        <% } %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+
+  <%- include('../components/doctor-modals') %>
+
+    <!-- End Session Modal -->
+    <div id="end-session-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+      <div class="flex items-center justify-center min-h-screen px-4">
+        <div class="fixed inset-0 transition-opacity modal-backdrop" onclick="closeEndSessionModal()">
+          <div class="absolute inset-0 bg-gray-900 opacity-75"></div>
+        </div>
+
+        <div
+          class="inline-block bg-white rounded-2xl text-center overflow-hidden shadow-2xl transform transition-all max-w-md w-full">
+          <div class="p-8">
+            <div class="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+              <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">End Session?</h3>
+            <p class="text-gray-500 mb-6">
+              Are you sure you want to end this patient session?
+            </p>
+            <div class="flex gap-3">
+              <button type="button" onclick="endSession()"
+                class="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition shadow-lg">
+                Yes, End Session
+              </button>
+              <button type="button" onclick="closeEndSessionModal()"
+                class="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 text-gray-700 font-semibold rounded-lg transition">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reports Modal -->
+    <div id="patient-reports-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+      <div class="flex items-center justify-center min-h-screen px-4">
+        <div class="fixed inset-0 transition-opacity modal-backdrop" onclick="closeReportsModal()">
+          <div class="absolute inset-0 bg-gray-900 opacity-75"></div>
+        </div>
+
+        <div
+          class="inline-block bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all max-w-2xl w-full">
+          <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                    clip-rule="evenodd" />
+                </svg>
+                <h3 class="text-2xl font-bold text-white">
+                  Patient Reports List
+                </h3>
+              </div>
+              <button onclick="closeReportsModal()" class="text-white hover:text-gray-200 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div id="report-list" class="p-6 max-h-96 overflow-y-auto custom-scrollbar">
+            <!-- Report items -->
+            <div class="space-y-3">
+              <% if (reports && reports.length> 0) { %>
+                <% reports.forEach(report=> { %>
+                  <div
+                    class="flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition border border-gray-200">
+                    <div class="flex items-center gap-3">
+                      <svg class="w-8 h-8 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                          d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                          clip-rule="evenodd" />
+                      </svg>
+                      <div>
+                        <p class="font-semibold text-gray-800">
+                          <%= report.report_name %>
+                        </p>
+                        <p class="text-sm text-gray-500">
+                          <%= new Date(report.upload_date).toLocaleDateString() %>
+                        </p>
+                      </div>
+                    </div>
+                    <a href="<%= report.report_url %>" target="_blank"
+                      class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition text-sm font-medium">
+                      View/Download
+                    </a>
+                  </div>
+                  <% }); %>
+                    <% } else { %>
+                      <div class="text-center py-12" id="no-reports">
+                        <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor"
+                          viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <p class="text-gray-400">No reports available</p>
+                      </div>
+                      <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Detail Modal -->
+    <div id="summary-detail-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+      <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 transition-opacity modal-backdrop" onclick="closeSummaryDetailModal()">
+          <div class="absolute inset-0 bg-gray-900 opacity-75"></div>
+        </div>
+
+        <div
+          class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full">
+          <div class="bg-gradient-to-r from-teal-600 to-cyan-500 px-6 py-4 flex items-center justify-between">
+            <div>
+              <h3 class="text-2xl font-bold text-white">Consultation Details</h3>
+              <p class="text-teal-100 text-sm"><span id="summary-detail-date"></span> • <span
+                  id="summary-detail-doctor"></span></p>
+            </div>
+            <button onclick="closeSummaryDetailModal()" class="text-white hover:text-gray-200 transition">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+          <div id="summary-detail-content" class="p-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+            <!-- Populated by JS -->
+          </div>
+          <div class="px-6 py-4 bg-gray-50 border-t flex justify-end">
+            <button onclick="closeSummaryDetailModal()"
+              class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spinner Modal -->
+    <div id="spinner-modal" class="hidden fixed inset-0 z-50">
+      <div class="flex items-center justify-center min-h-screen">
+        <div class="fixed inset-0 bg-gray-900 opacity-75"></div>
+        <div class="relative">
+          <div class="w-16 h-16 border-4 border-teal-200 border-t-teal-600 rounded-full animate-spin"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hidden data container for patient info -->
+    <script id="patient-data" type="application/json">
+        { "patient_id": <%= patient.id %>, "slot_id": <%= slot_id %> }
+    </script>
+
+    <script>
+      // Database injected data
+      let patient_id, slot_id, consultationHistory = [];
+      try {
+        const pData = JSON.parse(document.getElementById('patient-data').textContent);
+        patient_id = pData.patient_id;
+        slot_id = pData.slot_id;
+
+        const historyElement = document.getElementById('history-data');
+        if (historyElement) {
+          consultationHistory = JSON.parse(historyElement.textContent);
+        }
+      } catch (e) {
+        console.error("Error parsing patient/history data", e);
+      }
+
+      // Modal functions
+      function openLeaveModal() {
+        document.getElementById("leave-modal").classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeLeaveModal() {
+        document.getElementById("leave-modal").classList.add("hidden");
+        document.body.style.overflow = "auto";
+      }
+
+      function openEndSessionModal() {
+        document.getElementById("end-session-modal").classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeEndSessionModal() {
+        document.getElementById("end-session-modal").classList.add("hidden");
+        document.body.style.overflow = "auto";
+      }
+
+      function openReportsModal() {
+        document
+          .getElementById("patient-reports-modal")
+          .classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeReportsModal() {
+        document
+          .getElementById("patient-reports-modal")
+          .classList.add("hidden");
+        document.body.style.overflow = "auto";
+      }
+
+      function showSpinner() {
+        document.getElementById("spinner-modal").classList.remove("hidden");
+      }
+
+      function hideSpinner() {
+        document.getElementById("spinner-modal").classList.add("hidden");
+      }
+
+      // Form functions
+      let medications = [];
+
+      function addMedicine(event) {
+        event.preventDefault();
+        const container = document.getElementById("medicine_container");
+        const medicineRow = document.createElement("div");
+        medicineRow.className = "medicine_row border-2 border-gray-200 rounded-xl p-4 space-y-3";
+        medicineRow.innerHTML = `
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Medicine:</label>
+            <input type="text" name="medicine[]" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" placeholder="Medicine name">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Dosage:</label>
+            <input type="text" name="dosage[]" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" placeholder="e.g., 500mg">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Days:</label>
+            <input type="text" name="days[]" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" placeholder="e.g., 7">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Instructions:</label>
+            <select name="instruction[]" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+              <option>--Select--</option>
+              <option value="Before Breakfast">Before Breakfast</option>
+              <option value="After Breakfast">After Breakfast</option>
+              <option value="Before Lunch">Before Lunch</option>
+              <option value="After Lunch">After Lunch</option>
+              <option value="Before Dinner">Before Dinner</option>
+              <option value="After Dinner">After Dinner</option>
+              <option value="3 times Before Meal">3 times Before Meal</option>
+              <option value="3 times After Meal">3 times After Meal</option>
+            </select>
+          </div>
+        </div>
+        <button type="button" onclick="removeMedicine(this)" class="w-full py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg transition">Remove Medicine</button>
+      `;
+        container.appendChild(medicineRow);
+      }
+
+      function removeMedicine(button) {
+        button.closest(".medicine_row").remove();
+      }
+
+      async function endSession() {
+        const symptoms = document.getElementById("symptoms").value;
+        const observation = document.getElementById("observation").value;
+        const diagnosis = document.getElementById("diagnosis").value;
+        const conclusion = document.getElementById("conclusion").value;
+
+        const medicineInputs = document.getElementsByName("medicine[]");
+        const dosageInputs = document.getElementsByName("dosage[]");
+        const daysInputs = document.getElementsByName("days[]");
+        const instructionInputs = document.getElementsByName("instruction[]");
+
+        const medicines = [];
+        for (let i = 0; i < medicineInputs.length; i++) {
+          if (medicineInputs[i].value) {
+            medicines.push({
+              name: medicineInputs[i].value,
+              dosage: dosageInputs[i].value,
+              days: daysInputs[i].value,
+              instruction: instructionInputs[i].value
+            });
+          }
+        }
+
+        if (!symptoms || !diagnosis) {
+          Swal.fire({
+            title: 'Incomplete Information',
+            text: "Please provide at least Symptoms and Diagnosis to proceed.",
+            icon: 'warning',
+            position: 'top',
+            confirmButtonColor: '#0d9488'
+          });
+          return;
+        }
+
+        showSpinner();
+        try {
+          const response = await fetch("/doctor/record-consultation", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              slot_id,
+              patient_id,
+              symptoms,
+              observation,
+              diagnosis,
+              conclusion,
+              medicines
+            })
+          });
+
+          const data = await response.json();
+          if (response.ok) {
+            Swal.fire({
+              title: 'Success!',
+              text: "Consultation recorded successfully.",
+              icon: 'success',
+              position: 'top',
+              confirmButtonColor: '#0d9488'
+            }).then(() => {
+              window.location.href = "/doctor/appoinments";
+            });
+          } else {
+            Swal.fire('Error', data.message || 'Failed to record consultation', 'error');
+          }
+        } catch (error) {
+          console.error("Error recording consultation:", error);
+          Swal.fire('Error', 'Failed to record consultation. Please try again.', 'error');
+        } finally {
+          hideSpinner();
+        }
+      }
+
+      function newSummary() {
+        Swal.fire({
+          title: 'Summary Collected',
+          text: "Summary data collected. Please fill prescription if needed and click 'End Session' to save.",
+          icon: 'info',
+          position: 'top',
+          confirmButtonColor: '#0d9488'
+        });
+      }
+
+      function newPrescription() {
+        Swal.fire({
+          title: 'Prescription Ready',
+          text: "Prescription data collected. Click 'End Session' to save the complete consultation.",
+          icon: 'info',
+          position: 'top',
+          confirmButtonColor: '#0d9488'
+        });
+      }
+
+      function viewSummaryDetails(index) {
+        const record = consultationHistory[index];
+        if (!record) {
+          console.error("No record found at index:", index);
+          return;
+        }
+
+        const safeText = (text) => text || 'None recorded';
+
+        let medicineHTML = '<p class="text-gray-500 italic">No medicines prescribed</p>';
+        if (record.medicine) {
+          const medicines = record.medicine.split(', ');
+          const dosages = (record.dosage || '').split(', ');
+          const daysArr = (record.days || '').toString().split(', ');
+          const instructions = (record.instruction || '').split(', ');
+
+          medicineHTML = medicines.map((m, i) => {
+            const med = m || 'N/A';
+            const dos = dosages[i] || 'N/A';
+            const day = daysArr[i] || 'N/A';
+            const ins = instructions[i] || 'N/A';
+            return `
+                <div class="flex items-center justify-between border-b border-purple-100 pb-2 last:border-0 last:pb-0">
+                  <span class="font-semibold text-gray-800">${med}</span>
+                  <span class="text-sm text-purple-700 font-medium">
+                    ${dos} • ${day} Days • ${ins}
+                  </span>
+                </div>
+              `;
+          }).join('');
+        }
+
+        const content = `
+            <div class="space-y-6">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-teal-50 p-4 rounded-xl">
+                        <p class="text-xs font-bold text-teal-600 uppercase mb-1">Symptoms</p>
+                        <p class="text-gray-800">${safeText(record.symptoms)}</p>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-xl">
+                        <p class="text-xs font-bold text-blue-600 uppercase mb-1">Diagnosis</p>
+                        <p class="text-gray-800">${safeText(record.diagnosis)}</p>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 p-4 rounded-xl">
+                    <p class="text-xs font-bold text-gray-500 uppercase mb-1">Observation</p>
+                    <p class="text-gray-800">${safeText(record.observation)}</p>
+                </div>
+
+                <div class="bg-purple-50 p-4 rounded-xl">
+                    <p class="text-xs font-bold text-purple-600 uppercase mb-1">Prescription (Medicine, Dosage, Duration, Instruction)</p>
+                    <div class="mt-2 space-y-2">
+                        ${medicineHTML}
+                    </div>
+                </div>
+
+                <div class="bg-cyan-50 p-4 rounded-xl">
+                    <p class="text-xs font-bold text-cyan-600 uppercase mb-1">Conclusion</p>
+                    <p class="text-gray-800">${safeText(record.conclusion)}</p>
+                </div>
+            </div>
+          `;
+
+        const contentEl = document.getElementById("summary-detail-content");
+        const dateEl = document.getElementById("summary-detail-date");
+        const docEl = document.getElementById("summary-detail-doctor");
+        const modalEl = document.getElementById("summary-detail-modal");
+
+        if (contentEl && dateEl && docEl && modalEl) {
+          contentEl.innerHTML = content;
+          dateEl.innerText = record.slot_date ? new Date(record.slot_date).toLocaleDateString() : 'N/A';
+          docEl.innerText = `Dr. ${record.doc_first || ''} ${record.doc_last || ''}`;
+          modalEl.classList.remove("hidden");
+          document.body.style.overflow = "hidden";
+        } else {
+          console.warn("One or more modal elements not found, checking if they exist in the DOM...");
+          console.error("Missing elements:", { contentEl, dateEl, docEl, modalEl });
+        }
+      }
+
+      function closeSummaryDetailModal() {
+        document.getElementById("summary-detail-modal").classList.add("hidden");
+        document.body.style.overflow = "auto";
+      }
+
+      // Modals and Common Logic are handled by doctor-modals partial
+
+      // Initialize
+      console.log("Patient ID:", patient_id);
+      console.log("Slot ID:", slot_id);
+    </script>
+    <%- include('../components/doctor-modals') %>
+</body>
+
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/assets/favicon.png" type="image/x-icon" />
+    <title>PDMS - Patient Dashboard</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <!-- Custom Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#0066CC',
+                        'primary-teal': '#008B8B',
+                        'secondary-cyan': '#00B4D8',
+                        'accent-green': '#00A86B',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
+
+    <!-- Sidebar Navigation -->
+    <%- include('../components/patient-sidebar') %>
+
+        <!-- Main Content Area -->
+        <main class="ml-64 min-h-screen p-8" id="right-section">
+
+            <% if (locals.emergencyCancellations && emergencyCancellations.length > 0) { %>
+                <div class="mb-8 p-6 bg-red-50 border-l-4 border-red-500 rounded-r-xl shadow-sm flex items-start gap-4">
+                    <i class="fas fa-exclamation-triangle text-red-500 text-2xl mt-1"></i>
+                    <div>
+                        <h3 class="text-xl font-bold text-red-800 mb-1">Emergency Cancellation Notice</h3>
+                        <p class="text-red-700 font-medium">Unfortunately, the following appointments are affected due to an unforeseen emergency leave by your doctor. Kindly reschedule them as soon as possible:</p>
+                        <ul class="list-disc ml-5 mt-2 text-red-600 font-medium">
+                            <% emergencyCancellations.forEach(cancel => { %>
+                                <li><strong>Dr. <%= cancel.doc_first %> <%= cancel.doc_last %></strong> on <%= new Date(cancel.slot_date).toLocaleDateString() %> at <%= cancel.slot_start %></li>
+                            <% }) %>
+                        </ul>
+                        <p class="mt-3 text-red-700 font-medium">Please accept our apologies and <a href="/patient/appointments" class="underline font-bold hover:text-red-900 transition">click here</a> to reschedule your appointments.</p>
+                    </div>
+                </div>
+            <% } %>
+
+            <!-- Page Header -->
+            <div class="mb-8 flex items-center justify-between">
+                <div>
+                    <h1 class="text-4xl font-bold text-gray-900 mb-2">Dashboard</h1>
+                    <p class="text-gray-600">Welcome back, <%= locals.user ? user.firstname : 'Patient' %>! Here's your
+                            healthcare overview</p>
+                </div>
+                <div class="flex gap-4">
+                    <a href="/patient/appointments" class="hover:scale-105 transition-transform duration-200">
+                        <div class="p-4 rounded-2xl shadow-sm border flex items-center gap-4 <%= (locals.emergencyCancellations && emergencyCancellations.length > 0) ? 'bg-red-50 border-red-500 animate-pulse' : 'bg-white border-gray-100' %>">
+                            <div class="w-12 h-12 rounded-xl flex items-center justify-center <%= (locals.emergencyCancellations && emergencyCancellations.length > 0) ? 'bg-red-200' : 'bg-blue-100' %>">
+                                <i class="fas fa-calendar-alt text-xl <%= (locals.emergencyCancellations && emergencyCancellations.length > 0) ? 'text-red-600' : 'text-primary-blue' %>"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium <%= (locals.emergencyCancellations && emergencyCancellations.length > 0) ? 'text-red-700' : 'text-gray-500' %>">Upcoming</p>
+                                <p class="text-2xl font-bold <%= (locals.emergencyCancellations && emergencyCancellations.length > 0) ? 'text-red-800' : 'text-gray-900' %>">
+                                    <%= stats.upcomingCount %>
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="/patient/history" class="hover:scale-105 transition-transform duration-200">
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+                            <div class="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-history text-primary-teal text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 font-medium">Total Visits</p>
+                                <p class="text-2xl font-bold text-gray-900">
+                                    <%= stats.visitsCount %>
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Browse Specialties Section -->
+            <section class="mb-12">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                        <i class="fas fa-hospital text-primary-teal"></i>
+                        Browse Specialties
+                    </h2>
+                    <a href="/patient/appointments"
+                        class="text-primary-blue font-semibold hover:text-primary-teal transition-colors flex items-center gap-2">
+                        <span>Manage Appointments</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <!-- Specialties Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <% const deptConfig={ 'Cardiology' : { icon: 'fa-heartbeat' , color: 'bg-red-50' ,
+                        hover: '' , iconColor: 'text-red-500' }, 'Neurology' : { icon: 'fa-brain'
+                        , color: 'bg-purple-50' , hover: '' ,
+                        iconColor: 'text-purple-500' }, 'Orthopedics' : { icon: 'fa-bone' ,
+                        color: 'bg-blue-50' , hover: '' ,
+                        iconColor: 'text-blue-500' }, 'Oncology' : { icon: 'fa-ribbon' ,
+                        color: 'bg-pink-50' , hover: '' ,
+                        iconColor: 'text-pink-500' }, 'Pediatrics' : { icon: 'fa-child' ,
+                        color: 'bg-green-50' , hover: '' ,
+                        iconColor: 'text-green-500' }, 'Pulmonology' : { icon: 'fa-lungs' ,
+                        color: 'bg-amber-50' , hover: '' ,
+                        iconColor: 'text-amber-500' }, 'Rheumatology' : { icon: 'fa-hands' ,
+                        color: 'bg-lime-50' , hover: '' ,
+                        iconColor: 'text-lime-500' }, 'Gastroenterology' : { icon: 'fa-stomach' ,
+                        color: 'bg-emerald-50' , hover: '' ,
+                        iconColor: 'text-emerald-500' }, 'Ophthalmology' : { icon: 'fa-eye' ,
+                        color: 'bg-sky-50' , hover: '' ,
+                        iconColor: 'text-sky-500' }, 'Nephrology' : { icon: 'fa-vials' ,
+                        color: 'bg-cyan-50' , hover: '' ,
+                        iconColor: 'text-cyan-500' }, 'Otorhinolaryngology (ENT)' : { 
+                        logo: 'https://img.icons8.com/?size=100&id=BOELoM6usUUR&format=png&color=8B5CF6',
+                        color: 'bg-violet-50' , hover: '' ,
+                        iconColor: 'text-violet-500' }, 'Emergency' : { icon: 'fa-ambulance' ,
+                        color: 'bg-red-50' , hover: '' ,
+                        iconColor: 'text-red-600' } }; %>
+                        <% if (specialties && specialties.length> 0) { %>
+                            <% specialties.forEach(spec=> {
+                                const config = deptConfig[spec.department] || {
+                                icon: 'fa-user-md',
+                                color: 'bg-blue-50',
+                                hover: '',
+                                iconColor: 'text-primary-blue'
+                                };
+                                %>
+                                <a href="/patient/dashboard/department/<%= spec.department %>"
+                                    class="group block bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl hover:scale-105 transition-all duration-300 border border-gray-100 border-b-4 border-b-primary-teal">
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <div
+                                            class="w-14 h-14 <%= config.color %> rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110">
+                                            <% if (config.logo) { %>
+                                                <img src="<%= config.logo %>" alt="<%= spec.department %>" class="w-8 h-8 object-contain" />
+                                            <% } else { %>
+                                                <i class="fa-solid <%= config.icon %> fa-fw text-2xl <%= config.iconColor %> <%= config.hover %>"></i>
+                                            <% } %>
+                                        </div>
+                                        <h3 class="text-xl font-bold text-gray-900">
+                                            <%= spec.department %>
+                                        </h3>
+                                    </div>
+                                    <div class="flex items-center justify-between text-sm text-gray-500">
+                                        <span class="flex items-center gap-2">
+                                            <i class="fas fa-stethoscope text-primary-teal"></i>
+                                            Book Appointment
+                                        </span>
+                                        <i
+                                            class="fas fa-chevron-right group-hover:translate-x-1 transition-transform"></i>
+                                    </div>
+                                </a>
+                                <% }) %>
+                                    <% } else { %>
+                                        <div
+                                            class="col-span-full text-center py-12 bg-white rounded-2xl border-2 border-dashed border-gray-200">
+                                            <i class="fas fa-hospital text-4xl text-gray-300 mb-3"></i>
+                                            <p class="text-gray-500">No departments available at the moment</p>
+                                        </div>
+                                        <% } %>
+                </div>
+            </section>
+
+
+        </main>
+
+        <!-- Loading Spinner Modal -->
+        <div id="spinner-modal"
+            class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+            <div class="bg-white rounded-3xl p-12 shadow-2xl">
+                <div class="flex flex-col items-center">
+                    <img src="/assets/favicon.png" alt="Loading" class="w-20 h-20 animate-bounce mb-4" />
+                    <p class="text-gray-700 font-semibold">Loading...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scripts -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="/js/patient/patient_navbar.js"></script>
+        <% if (locals.emergencyCancellations && emergencyCancellations.length > 0) { %>
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Doctor on Emergency Leave',
+                    text: 'Your doctor is on an emergency leave for the date of your upcoming appointment. Kindly reschedule or cancel it via your Appointments pane.',
+                    confirmButtonText: 'View Appointments',
+                    confirmButtonColor: '#dc2626'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/patient/appointments';
+                    }
+                });
+            });
+        </script>
+        <% } %>
+</body>
+
+</html>

@@ -1,0 +1,36 @@
+<!-- components/department-card-new.ejs -->
+
+
+<div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:-translate-y-2">
+    
+    <!-- Card Header with Icon -->
+    <div class="p-6 bg-gradient-to-br from-<%= color %>-50 to-<%= color %>-100 border-b border-<%= color %>-200">
+        <div class="flex items-center gap-4">
+            <!-- Icon Circle -->
+            <div class="w-16 h-16 bg-white rounded-xl shadow-md flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <i class="fas <%= icon %> text-3xl text-<%= color %>-600"></i>
+            </div>
+            <!-- Department Name -->
+            <h3 class="text-xl font-bold text-gray-900 group-hover:text-<%= color %>-600 transition-colors">
+                <%= name %>
+            </h3>
+        </div>
+    </div>
+
+    <!-- Card Body -->
+    <div class="p-6">
+        <p class="text-gray-600 text-sm leading-relaxed mb-6 min-h-[48px]">
+            <%= description %>
+        </p>
+
+        <!-- Select Button -->
+        <button 
+            onclick="select_department('<%= name %>')" 
+            class="w-full bg-gradient-to-r from-<%= color %>-500 to-<%= color %>-600 hover:from-<%= color %>-600 hover:to-<%= color %>-700 text-white font-bold py-3 rounded-xl transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-2 group"
+        >
+            <span>Select Department</span>
+            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+        </button>
+    </div>
+
+</div>

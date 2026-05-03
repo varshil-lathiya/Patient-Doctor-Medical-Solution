@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - PDMS Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.4); }
+        .modal { display: none; backdrop-filter: blur(8px); }
+        .modal.active { display: flex; }
+        .animate-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .watermark-bg {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            font-size: 25rem;
+            font-weight: 900;
+            color: rgba(99, 102, 241, 0.02); /* Even more subtle Indigo */
+            pointer-events: none;
+            z-index: 0;
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body class="bg-[#fdfdff] text-slate-800">
+
+    <!-- Decent Watermark -->
+    <div class="watermark-bg">PDMS</div>
+
+    <div class="flex h-screen overflow-hidden relative z-10">
+        <!-- Sidebar Navigation -->
+        <%- include('../components/admin-sidebar', { active: 'dashboard' }) %>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto bg-[#f8fafc] p-6 md:p-10">
+            <!-- Header -->
+            <header class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+                <div class="animate-in">
+                    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Admin Dashboard</h2>
+                    <p class="text-slate-500 text-sm mt-1">Welcome back — here's what's happening today.</p>
+                </div>
+                
+                <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200 animate-in">
+                    <i class="far fa-calendar-alt text-indigo-600 text-sm"></i>
+                    <p class="text-[13px] font-semibold text-slate-700">
+                        <%= new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %>
+                    </p>
+                </div>
+            </header>
+
+            <!-- Statistics Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-10">
+                <!-- Total Doctors -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 animate-in" data-delay="0.1s">
+                    <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center mb-4 text-blue-600">
+                        <i class="fas fa-user-md text-sm"></i>
+                    </div>
+                    <p class="text-[12px] font-bold text-slate-400 uppercase tracking-normal mb-1">Doctors</p>
+                    <h3 class="text-3xl font-bold text-slate-900 leading-none"><%= counts.doctorCount %></h3>
+                    <p class="text-[13px] text-slate-500 mt-2 font-medium">Active specialists</p>
+                </div>
+
+                <!-- Total Receptionists -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 animate-in" data-delay="0.2s">
+                    <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center mb-4 text-green-600">
+                        <i class="fas fa-users text-sm"></i>
+                    </div>
+                    <p class="text-[12px] font-bold text-slate-400 uppercase tracking-normal mb-1">Receptionists</p>
+                    <h3 class="text-3xl font-bold text-slate-900 leading-none"><%= counts.receptionistCount %></h3>
+                    <p class="text-[13px] text-slate-500 mt-2 font-medium">Front desk staff</p>
+                </div>
+
+                <!-- Total Patients -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 animate-in" data-delay="0.3s">
+                    <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center mb-4 text-purple-600">
+                        <i class="fas fa-id-card-alt text-sm"></i>
+                    </div>
+                    <p class="text-[12px] font-bold text-slate-400 uppercase tracking-normal mb-1">Patients</p>
+                    <h3 class="text-3xl font-bold text-slate-900 leading-none"><%= counts.patientCount %></h3>
+                    <p class="text-[13px] text-slate-500 mt-2 font-medium">Registered patients</p>
+                </div>
+
+                <!-- Total Appointments -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 animate-in" data-delay="0.4s">
+                    <div class="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center mb-4 text-orange-600">
+                        <i class="fas fa-calendar-check text-sm"></i>
+                    </div>
+                    <p class="text-[12px] font-bold text-slate-400 uppercase tracking-normal mb-1">Appointments</p>
+                    <h3 class="text-3xl font-bold text-slate-900 leading-none"><%= counts.appointmentCount %></h3>
+                    <p class="text-[13px] text-slate-500 mt-2 font-medium">Total bookings</p>
+                </div>
+
+                <!-- On Leave Today -->
+                <div onclick="openLeaveModal()" class="bg-red-50/50 p-6 rounded-2xl shadow-sm border border-red-100 hover:shadow-md transition-all duration-300 animate-in cursor-pointer group" data-delay="0.5s">
+                    <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center mb-4 text-red-500 shadow-sm group-hover:scale-110 transition-transform">
+                        <i class="fas fa-user-clock text-sm"></i>
+                    </div>
+                    <p class="text-[12px] font-bold text-red-400 uppercase tracking-normal mb-1">On Leave Today</p>
+                    <h3 class="text-3xl font-bold text-red-600 leading-none"><%= counts.onLeaveTodayCount %></h3>
+                    <div class="text-[13px] text-red-500 mt-2 font-bold hover:underline flex items-center gap-1">
+                        View details <i class="fas fa-chevron-right text-[8px]"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions Section -->
+            <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 animate-in" data-delay="0.6s">
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">Quick Actions</h3>
+                        <p class="text-slate-500 text-sm mt-1">Manage hospital operations from here</p>
+                    </div>
+                    <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 italic">
+                        <i class="fas fa-bolt text-xs"></i>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <a href="/admin/doctors" class="flex items-center gap-4 p-5 rounded-2xl border border-slate-100 hover:bg-slate-50 hover:border-slate-200 transition-all duration-300 group">
+                        <div class="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-100">
+                            <i class="fas fa-stethoscope"></i>
+                        </div>
+                        <div>
+                            <p class="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">Medical Staff</p>
+                            <p class="text-[12px] text-slate-500 mt-0.5 font-medium">Manage doctors and their department details.</p>
+                        </div>
+                    </a>
+
+                    <a href="/admin/receptionist" class="flex items-center gap-4 p-5 rounded-2xl border border-slate-100 hover:bg-slate-50 hover:border-slate-200 transition-all duration-300 group">
+                        <div class="w-12 h-12 bg-emerald-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-emerald-100">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div>
+                            <p class="text-base font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">Front Desk</p>
+                            <p class="text-[12px] text-slate-500 mt-0.5 font-medium">Oversee reception staff and their access.</p>
+                        </div>
+                    </a>
+
+                    <a href="/admin/manage-leaves" class="flex items-center gap-4 p-5 rounded-2xl border border-slate-100 hover:bg-slate-50 hover:border-slate-200 transition-all duration-300 group relative">
+                        <% if (counts.pendingLeaves > 0) { %>
+                            <span class="absolute -top-2 -right-2 bg-rose-500 text-white text-[9px] font-bold px-2 py-1 rounded-lg shadow-lg animate-bounce uppercase"><%= counts.pendingLeaves %></span>
+                        <% } %>
+                        <div class="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-amber-100">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div>
+                            <p class="text-base font-bold text-slate-900 group-hover:text-amber-600 transition-colors">Leave Requests</p>
+                            <p class="text-[12px] text-slate-500 mt-0.5 font-medium">Review and approve staff leave applications.</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </main>
+        </main>
+    </div>
+
+    <!-- Redesigned Absence Modal -->
+    <div id="leave-modal" class="modal fixed inset-0 bg-slate-900/60 backdrop-blur-md items-center justify-center z-[100] p-4">
+        <div class="animate-in bg-white rounded-[2.5rem] shadow-2xl max-w-lg w-full flex flex-col max-h-[90vh] overflow-hidden border border-slate-100">
+            <!-- Header -->
+            <div class="px-8 py-8 border-b border-slate-50 flex justify-between items-start">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900 tracking-tight mb-1">Staff on Leave Today</h3>
+                    <p class="text-slate-400 font-medium text-sm">Currently absent staff members</p>
+                </div>
+                <button onclick="closeModal()" class="w-10 h-10 rounded-xl bg-slate-50 text-slate-400 hover:text-slate-600 transition-all flex items-center justify-center text-xl font-bold">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Content -->
+            <div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                <% if (staffOnLeaveToday && staffOnLeaveToday.length > 0) { %>
+                    <div class="space-y-3">
+                        <% staffOnLeaveToday.forEach(staff => { %>
+                            <div class="flex items-center gap-4 p-5 bg-slate-50/50 rounded-2xl border border-slate-100 hover:bg-white hover:shadow-md transition-all duration-300 group">
+                                <div class="w-12 h-12 rounded-xl bg-indigo-600/10 text-indigo-600 flex items-center justify-center text-base">
+                                    <i class="fas <%= staff.role_name === 'Doctor' ? 'fa-user-md' : 'fa-user-tie' %>"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-base font-bold text-slate-900 leading-tight">
+                                        <%= staff.role_name === 'Doctor' ? 'Dr.' : '' %> <%= staff.firstname %> <%= staff.lastname %>
+                                    </p>
+                                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-normal mt-1">
+                                        <%= staff.department || 'Clinical Ops' %>
+                                    </p>
+                                </div>
+                                <div class="px-3 py-1 rounded-lg bg-indigo-50 text-indigo-600 text-[10px] font-bold uppercase tracking-wider">
+                                    Absent
+                                </div>
+                            </div>
+                        <% }) %>
+                    </div>
+                <% } else { %>
+                    <!-- Full Attendance State (Matches Reference) -->
+                    <div class="py-12 text-center">
+                        <div class="w-20 h-20 bg-[#e6fcf5] rounded-2xl flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-users text-[32px] text-[#10b981]"></i>
+                        </div>
+                        <h4 class="text-2xl font-bold text-[#1e293b] mb-2 tracking-tight">Full Attendance</h4>
+                        <p class="text-slate-500 font-medium text-base">All staff members are present today.</p>
+                    </div>
+                <% } %>
+            </div>
+            
+            <!-- Footer -->
+            <div class="px-8 pb-8 pt-0 mt-4">
+                <button onclick="closeModal()" class="w-full bg-[#0f172a] text-white font-bold py-5 rounded-[2rem] shadow-xl shadow-slate-200 hover:bg-slate-900 transition-all text-sm uppercase tracking-normal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openLeaveModal() { document.getElementById('leave-modal').classList.add('active'); document.body.style.overflow = 'hidden'; }
+        function closeModal() { document.getElementById('leave-modal').classList.remove('active'); document.body.style.overflow = 'auto'; }
+        window.onclick = (e) => { if (e.target.id === 'leave-modal') closeModal(); }
+
+        // Initialize animation delays from data attributes
+        document.querySelectorAll('.animate-in[data-delay]').forEach(el => {
+            el.style.animationDelay = el.dataset.delay;
+        });
+
+        function logout() {
+            Swal.fire({
+                title: 'Logout?',
+                text: "Are you sure you want to end your session?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#6366f1',
+                cancelButtonColor: '#f43f5e',
+                confirmButtonText: 'Yes, Logout',
+                customClass: {
+                    popup: 'rounded-[2rem]',
+                    confirmButton: 'rounded-xl px-10 py-3 font-bold',
+                    cancelButton: 'rounded-xl px-10 py-3 font-bold'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/logout';
+                }
+            })
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDMS - Schedule</title>
+    <link rel="icon" href="/assets/favicon.png" type="image/x-icon">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Custom Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#0066CC',
+                        'primary-teal': '#008B8B',
+                        'secondary-cyan': '#00B4D8',
+                        'accent-green': '#00A86B',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+
+    <!-- Receptionist Sidebar -->
+    <%- include('../components/receptionist-sidebar') %>
+
+        <!-- Main Content Area -->
+        <main class="ml-64 min-h-screen p-8" id="right-section">
+
+            <!-- Tab Buttons -->
+            <div class="mb-8">
+                <div class="flex gap-3">
+                    <button id="upcoming-btn" onclick="showUpcoming()"
+                        class="px-8 py-3 bg-primary-teal text-white font-semibold rounded-lg transition-all hover:bg-teal-700">
+                        Upcoming
+                    </button>
+                    <button id="in-process-btn" onclick="showInProcess()"
+                        class="px-8 py-3 bg-slate-600 text-white font-semibold rounded-lg transition-all hover:bg-slate-700">
+                        In Process
+                    </button>
+                    <button id="completed-btn" onclick="showCompleted()"
+                        class="px-8 py-3 bg-slate-600 text-white font-semibold rounded-lg transition-all hover:bg-slate-700">
+                        Completed
+                    </button>
+                    <button id="absent-btn" onclick="showAbsent()"
+                        class="px-8 py-3 bg-slate-600 text-white font-semibold rounded-lg transition-all hover:bg-slate-700">
+                        Absent
+                    </button>
+                </div>
+            </div>
+
+            <!-- Upcoming Appointments Section -->
+            <div id="upcoming-section" class="space-y-4">
+                <% if (appointments.upcoming && appointments.upcoming.length> 0) { %>
+                    <% appointments.upcoming.forEach(app=> { %>
+                        <div
+                            class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200 p-6">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-6">
+                                    <!-- Doctor -->
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-16 h-16 rounded-full overflow-hidden border-4 border-primary-teal shadow-lg flex-shrink-0">
+                                            <img src="https://ui-avatars.com/api/?name=Dr+<%= app.d_first %>+<%= app.d_last %>&size=64&background=008B8B&color=fff&bold=true"
+                                                alt="Doctor" class="w-full h-full object-cover" />
+                                        </div>
+                                        <div>
+                                            <p class="text-xs text-gray-500 uppercase">Doctor</p>
+                                            <h3 class="text-lg font-bold text-gray-900">Dr. <%= app.d_first %>
+                                                    <%= app.d_last %>
+                                            </h3>
+                                            <p class="text-sm text-gray-600">
+                                                <%= app.department %>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <!-- Divider -->
+                                    <div class="h-16 w-px bg-gray-300"></div>
+                                    <!-- Patient -->
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-16 h-16 rounded-full overflow-hidden border-4 border-blue-500 shadow-lg flex-shrink-0">
+                                            <img src="https://ui-avatars.com/api/?name=<%= app.p_first %>+<%= app.p_last %>&size=64&background=0066CC&color=fff&bold=true"
+                                                alt="Patient" class="w-full h-full object-cover" />
+                                        </div>
+                                        <div>
+                                            <p class="text-xs text-gray-500 uppercase">Patient</p>
+                                            <h3 class="text-lg font-bold text-gray-900 border-b border-gray-100">
+                                                <%= app.p_first %>
+                                                    <%= app.p_last %>
+                                            </h3>
+                                            <p class="text-sm text-gray-600">
+                                                <%= app.p_email %>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Middle: Date & Time -->
+                                <div class="text-center px-6 border-l border-r border-gray-200">
+                                    <p class="text-2xl font-bold text-gray-900">
+                                        <%= new Date(app.slot_date).toLocaleDateString() %>
+                                    </p>
+                                    <p class="text-gray-600 font-medium">
+                                        <%= app.slot_start %>
+                                    </p>
+                                </div>
+                                <!-- Right: Action Buttons -->
+                                <div class="flex gap-2">
+                                    <button onclick="sendToDoctor('<%= app.id %>')"
+                                        <%= appointments.inProcess.some(ip => ip.doctor_id == app.doctor_id) ? 'disabled' : '' %>
+                                        class="<%= appointments.inProcess.some(ip => ip.doctor_id == app.doctor_id) ? 'bg-gray-400 cursor-not-allowed' : 'bg-primary-teal hover:bg-teal-700' %> text-white font-semibold px-5 py-2.5 rounded-lg transition-all flex items-center gap-2">
+                                        <i class="fas fa-paper-plane"></i> <%= appointments.inProcess.some(ip => ip.doctor_id == app.doctor_id) ? 'Doctor Busy' : 'Send to Doctor' %>
+                                    </button>
+                                    <button onclick="openVitalsModal('<%= app.id %>', '<%= app.patient_id %>')"
+                                        class="bg-green-500 hover:bg-green-600 text-white font-semibold px-5 py-2.5 rounded-lg transition-all flex items-center gap-2">
+                                        <i class="fas fa-heartbeat"></i> Vitals
+                                    </button>
+                                    <button
+                                        onclick="openRescheduleModal('<%= app.id %>', '<%= app.doctor_id %>', '<%= app.patient_id %>')"
+                                        class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-5 py-2.5 rounded-lg transition-all flex items-center gap-2">
+                                        <i class="fas fa-calendar-alt"></i> Reschedule
+                                    </button>
+                                    <button onclick="openCancelModal('<%= app.id %>')"
+                                        class="bg-red-500 hover:bg-red-600 text-white font-semibold px-5 py-2.5 rounded-lg transition-all flex items-center gap-2">
+                                        <i class="fas fa-times-circle"></i> Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <% }) %>
+                            <% } else { %>
+                                <div
+                                    class="text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-200">
+                                    <i class="fas fa-calendar-day text-5xl text-gray-300 mb-4"></i>
+                                    <p class="text-xl text-gray-500">No upcoming appointments found</p>
+                                </div>
+                                <% } %>
+            </div>
+
+            <!-- In Process Appointments Section -->
+            <div id="in-process-section" class="hidden space-y-4">
+                <% if (appointments.inProcess && appointments.inProcess.length > 0) { %>
+                    <% appointments.inProcess.forEach(app => { %>
+                        <div class="bg-white rounded-xl shadow-sm border border-primary-teal p-6 relative overflow-hidden">
+                            <div class="absolute top-0 right-0">
+                                <span class="bg-primary-teal text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider animate-pulse">
+                                    In Process
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-6">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-16 h-16 rounded-full overflow-hidden border-4 border-primary-teal shadow-lg flex-shrink-0">
+                                            <img src="https://ui-avatars.com/api/?name=Dr+<%= app.d_first %>+<%= app.d_last %>&size=64&background=008B8B&color=fff&bold=true" alt="Doctor" class="w-full h-full object-cover" />
+                                        </div>
+                                        <div>
+                                            <p class="text-xs text-gray-500 uppercase">Doctor</p>
+                                            <h3 class="text-lg font-bold text-gray-900">Dr. <%= app.d_first %> <%= app.d_last %></h3>
+                                            <p class="text-sm text-gray-600"><%= app.department %></p>
+                                        </div>
+                                    </div>
+                                    <div class="h-16 w-px bg-gray-200"></div>
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-16 h-16 rounded-full overflow-hidden border-4 border-blue-500 shadow-lg flex-shrink-0">
+                                            <img src="https://ui-avatars.com/api/?name=<%= app.p_first %>+<%= app.p_last %>&size=64&background=0066CC&color=fff&bold=true" alt="Patient" class="w-full h-full object-cover" />
+                                        </div>
+                                        <div>
+                                            <p class="text-xs text-gray-500 uppercase">Patient</p>
+                                            <h3 class="text-lg font-bold text-gray-900"><%= app.p_first %> <%= app.p_last %></h3>
+                                            <p class="text-sm text-gray-600"><%= app.p_email %></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-center px-6 border-l border-r border-gray-200">
+                                    <p class="text-2xl font-bold text-gray-900"><%= app.slot_start %></p>
+                                    <p class="text-gray-500 text-sm">Session Started</p>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="flex h-3 w-3 relative">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-3 w-3 bg-teal-500"></span>
+                                    </span>
+                                    <span class="text-teal-600 font-bold">Active Consult</span>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-200">
+                        <i class="fas fa-stethoscope text-5xl text-gray-300 mb-4"></i>
+                        <p class="text-xl text-gray-500">No patients are currently in process</p>
+                    </div>
+                <% } %>
+            </div>
+
+            <!-- Completed Appointments Section -->
+            <div id="completed-section" class="hidden space-y-4">
+                <% if (appointments.completed && appointments.completed.length > 0) { %>
+                    <% appointments.completed.forEach(app => { %>
+                        <div
+                            class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200 p-6 opacity-75">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-6">
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-16 h-16 rounded-full overflow-hidden border-4 border-gray-400 shadow-lg flex-shrink-0">
+                                            <img src="https://ui-avatars.com/api/?name=Dr+<%= app.d_first %>+<%= app.d_last %>&size=64&background=6b7280&color=fff&bold=true"
+                                                alt="Doctor" class="w-full h-full object-cover grayscale" />
+                                        </div>
+                                        <div>
+                                            <p class="text-xs text-gray-500 uppercase">Doctor</p>
+                                            <h3 class="text-lg font-bold text-gray-900 border-b border-gray-100">Dr. <%=
+                                                    app.d_first %>
+                                                    <%= app.d_last %>
+                                            </h3>
+                                            <p class="text-sm text-gray-600">
+                                                <%= app.department %>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="h-16 w-px bg-gray-300"></div>
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-16 h-16 rounded-full overflow-hidden border-4 border-gray-400 shadow-lg flex-shrink-0">
+                                            <img src="https://ui-avatars.com/api/?name=<%= app.p_first %>+<%= app.p_last %>&size=64&background=6b7280&color=fff&bold=true"
+                                                alt="Patient" class="w-full h-full object-cover grayscale" />
+                                        </div>
+                                        <div>
+                                            <p class="text-xs text-gray-500 uppercase">Patient</p>
+                                            <h3 class="text-lg font-bold text-gray-900">
+                                                <%= app.p_first %>
+                                                    <%= app.p_last %>
+                                            </h3>
+                                            <p class="text-sm text-gray-600">
+                                                <%= app.p_email %>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-center px-6 border-l border-r border-gray-200">
+                                    <p class="text-2xl font-bold text-gray-900">
+                                        <%= new Date(app.slot_date).toLocaleDateString() %>
+                                    </p>
+                                    <p class="text-gray-600 font-medium">
+                                        <%= app.slot_start %>
+                                    </p>
+                                </div>
+                                <div>
+                                    <span
+                                        class="bg-green-500 text-white font-bold px-6 py-3 rounded-lg text-lg">Completed</span>
+                                </div>
+                            </div>
+                        </div>
+                        <% }) %>
+                            <% } else { %>
+                                <div
+                                    class="text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-200">
+                                    <i class="fas fa-check-circle text-5xl text-gray-300 mb-4"></i>
+                                    <p class="text-xl text-gray-500">No completed appointments found</p>
+                                </div>
+                                <% } %>
+            </div>
+
+            <!-- Absent Appointments Section -->
+            <div id="absent-section" class="hidden space-y-4">
+                <% if (appointments.absent && appointments.absent.length> 0) { %>
+                    <% appointments.absent.forEach(app=> { %>
+                        <div
+                            class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200 p-6">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-6">
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-16 h-16 rounded-full overflow-hidden border-4 border-yellow-500 shadow-lg flex-shrink-0">
+                                            <img src="https://ui-avatars.com/api/?name=Dr+<%= app.d_first %>+<%= app.d_last %>&size=64&background=eab308&color=fff&bold=true"
+                                                alt="Doctor" class="w-full h-full object-cover" />
+                                        </div>
+                                        <div>
+                                            <p class="text-xs text-gray-500 uppercase">Doctor</p>
+                                            <h3 class="text-lg font-bold text-gray-900 border-b border-gray-100">Dr. <%=
+                                                    app.d_first %>
+                                                    <%= app.d_last %>
+                                            </h3>
+                                            <p class="text-sm text-gray-600">
+                                                <%= app.department %>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="h-16 w-px bg-gray-300"></div>
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-16 h-16 rounded-full overflow-hidden border-4 border-yellow-500 shadow-lg flex-shrink-0">
+                                            <img src="https://ui-avatars.com/api/?name=<%= app.p_first %>+<%= app.p_last %>&size=64&background=eab308&color=fff&bold=true"
+                                                alt="Patient" class="w-full h-full object-cover" />
+                                        </div>
+                                        <div>
+                                            <p class="text-xs text-gray-500 uppercase">Patient</p>
+                                            <h3 class="text-lg font-bold text-gray-900">
+                                                <%= app.p_first %>
+                                                    <%= app.p_last %>
+                                            </h3>
+                                            <p class="text-sm text-gray-600">
+                                                <%= app.p_email %>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-center px-6 border-l border-r border-gray-200">
+                                    <p class="text-2xl font-bold text-gray-900">
+                                        <%= new Date(app.slot_date).toLocaleDateString() %>
+                                    </p>
+                                    <p class="text-gray-600 font-medium">
+                                        <%= app.slot_start %>
+                                    </p>
+                                </div>
+                                <div>
+                                    <span class="bg-yellow-500 text-white font-bold px-6 py-3 rounded-lg text-lg">Not
+                                        Attended</span>
+                                </div>
+                            </div>
+                        </div>
+                        <% }) %>
+                            <% } else { %>
+                                <div
+                                    class="text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-200">
+                                    <i class="fas fa-user-clock text-5xl text-gray-300 mb-4"></i>
+                                    <p class="text-xl text-gray-500">No missed appointments found</p>
+                                </div>
+                                <% } %>
+            </div>
+        </main>
+
+        <!-- Cancel Appointment Modal -->
+        <div id="cancel-modal"
+            class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full">
+                <div
+                    class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl">
+                    <h3 class="text-2xl font-bold text-slate-700">Cancel Appointment</h3>
+                    <button onclick="closeModal('cancel-modal')"
+                        class="text-red-500 hover:text-red-700 transition-colors text-3xl font-bold w-8 h-8 flex items-center justify-center">
+                        ×
+                    </button>
+                </div>
+                <div class="p-6">
+                    <div class="mb-6">
+                        <label for="cancel-reason" class="block text-sm font-semibold text-gray-700 mb-2">Reason
+                            :</label>
+                        <textarea id="cancel-reason" rows="4"
+                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all resize-none"
+                            placeholder="Enter reason for cancellation"></textarea>
+                    </div>
+                    <button onclick="submitCancel()"
+                        class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-lg transition-all text-lg">
+                        Cancel Appointment
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reschedule Modal -->
+        <div id="reschedule-modal"
+            class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+                <div
+                    class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl">
+                    <h3 class="text-2xl font-bold text-slate-700">Select Slot</h3>
+                    <button onclick="closeModal('reschedule-modal')"
+                        class="text-red-500 hover:text-red-700 transition-colors text-3xl font-bold w-8 h-8 flex items-center justify-center">
+                        ×
+                    </button>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center gap-4 mb-6 p-4 bg-gray-50 rounded-xl">
+                        <div
+                            class="w-16 h-16 rounded-full bg-gradient-to-br from-primary-blue to-primary-teal flex items-center justify-center shadow-lg overflow-hidden">
+                            <img src="https://ui-avatars.com/api/?name=Dr+Varshil&size=64&background=0066CC&color=fff&bold=true"
+                                alt="Doctor" class="w-full h-full object-cover" />
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-bold text-gray-900">Dr. Varshil Lathiya</h4>
+                            <p class="text-sm text-primary-teal font-medium">Ophthalmology</p>
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <h5 class="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">Select Date</h5>
+                        <div class="grid grid-cols-7 gap-2">
+                            <button
+                                class="date-btn bg-primary-teal text-white px-4 py-3 rounded-lg font-semibold text-sm hover:bg-primary-blue transition-all">
+                                <div>Sun</div>
+                                <div class="text-xs">26</div>
+                            </button>
+                            <button
+                                class="date-btn bg-slate-700 text-white px-4 py-3 rounded-lg font-semibold text-sm hover:bg-slate-800 transition-all">
+                                <div>Mon</div>
+                                <div class="text-xs">27</div>
+                            </button>
+                            <button
+                                class="date-btn bg-slate-700 text-white px-4 py-3 rounded-lg font-semibold text-sm hover:bg-slate-800 transition-all">
+                                <div>Tue</div>
+                                <div class="text-xs">28</div>
+                            </button>
+                            <button
+                                class="date-btn bg-slate-700 text-white px-4 py-3 rounded-lg font-semibold text-sm hover:bg-slate-800 transition-all">
+                                <div>Wed</div>
+                                <div class="text-xs">29</div>
+                            </button>
+                            <button
+                                class="date-btn bg-slate-700 text-white px-4 py-3 rounded-lg font-semibold text-sm hover:bg-slate-800 transition-all">
+                                <div>Thu</div>
+                                <div class="text-xs">30</div>
+                            </button>
+                            <button
+                                class="date-btn bg-slate-700 text-white px-4 py-3 rounded-lg font-semibold text-sm hover:bg-slate-800 transition-all">
+                                <div>Fri</div>
+                                <div class="text-xs">31</div>
+                            </button>
+                            <button
+                                class="date-btn bg-slate-700 text-white px-4 py-3 rounded-lg font-semibold text-sm hover:bg-slate-800 transition-all">
+                                <div>Sat</div>
+                                <div class="text-xs">1</div>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <h5 class="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">Available Slots
+                        </h5>
+                        <div class="grid grid-cols-4 gap-3">
+                            <button
+                                class="slot-btn bg-white border-2 border-primary-teal text-primary-teal font-semibold px-4 py-3 rounded-lg hover:bg-primary-teal hover:text-white transition-all">10:00
+                                AM</button>
+                            <button
+                                class="slot-btn bg-white border-2 border-primary-teal text-primary-teal font-semibold px-4 py-3 rounded-lg hover:bg-primary-teal hover:text-white transition-all">11:00
+                                AM</button>
+                            <button
+                                class="slot-btn bg-white border-2 border-primary-teal text-primary-teal font-semibold px-4 py-3 rounded-lg hover:bg-primary-teal hover:text-white transition-all">2:00
+                                PM</button>
+                            <button
+                                class="slot-btn bg-white border-2 border-primary-teal text-primary-teal font-semibold px-4 py-3 rounded-lg hover:bg-primary-teal hover:text-white transition-all">3:00
+                                PM</button>
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <label for="reschedule-reason" class="block text-sm font-semibold text-gray-700 mb-2">Reason
+                            :</label>
+                        <input type="text" id="reschedule-reason"
+                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-blue focus:border-transparent transition-all"
+                            placeholder="Enter reason for rescheduling" />
+                    </div>
+                    <button onclick="bookSlot()"
+                        class="w-full bg-primary-teal hover:bg-slate-800 text-white font-bold py-3 rounded-lg transition-all text-lg">
+                        Book Slot
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Report Modal -->
+        <div id="add-report-modal"
+            class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full">
+                <div
+                    class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl">
+                    <h3 class="text-2xl font-bold text-slate-700">Add Report</h3>
+                    <button onclick="closeModal('add-report-modal')"
+                        class="text-red-500 hover:text-red-700 transition-colors text-3xl font-bold w-8 h-8 flex items-center justify-center">
+                        ×
+                    </button>
+                </div>
+                <div class="p-6">
+                    <form id="patient-verify-form" class="mb-4">
+                        <div class="flex gap-2">
+                            <input type="text" id="patientEmail" placeholder="Patient Email Id"
+                                class="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-teal focus:border-transparent" />
+                            <button type="button" onclick="verifyPatient()"
+                                class="bg-primary-teal hover:bg-teal-700 text-white font-bold px-6 py-3 rounded-lg transition-all">
+                                Verify
+                            </button>
+                        </div>
+                    </form>
+                    <p id="patientVerifyMessage" class="text-sm mb-4"></p>
+                    <form id="file-upload">
+                        <div class="space-y-4">
+                            <input type="file" id="report"
+                                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg" />
+                            <button type="button" id="submit-report" disabled onclick="uploadFile()"
+                                class="w-full bg-primary-teal hover:bg-teal-700 text-white font-bold py-3 rounded-lg transition-all disabled:bg-gray-400 disabled:cursor-not-allowed">
+                                Submit
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vitals Modal -->
+        <div id="vitals-modal"
+            class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full">
+                <div
+                    class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl">
+                    <h3 class="text-2xl font-bold text-slate-700">Patient Vitals</h3>
+                    <button onclick="closeModal('vitals-modal')"
+                        class="text-red-500 hover:text-red-700 transition-colors text-3xl font-bold w-8 h-8 flex items-center justify-center">
+                        ×
+                    </button>
+                </div>
+                <div class="p-6">
+                    <form id="vitals-form" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Blood Pressure
+                                    (mmHg)</label>
+                                <input type="text" id="vitals-bp" placeholder="e.g. 120/80"
+                                    class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-teal" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Weight (kg)</label>
+                                <input type="number" id="vitals-weight" placeholder="e.g. 70"
+                                    class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-teal" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Temperature (°F)</label>
+                                <input type="number" step="0.1" id="vitals-temp" placeholder="e.g. 98.6"
+                                    class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-teal" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Pulse Rate (bpm)</label>
+                                <input type="number" id="vitals-pulse" placeholder="e.g. 72"
+                                    class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-teal" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">SpO2 (%)</label>
+                                <input type="number" id="vitals-spo2" placeholder="e.g. 98"
+                                    class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-teal" />
+                            </div>
+                        </div>
+                        <button type="button" onclick="submitVitals()"
+                            class="w-full bg-primary-teal hover:bg-teal-700 text-white font-bold py-3 rounded-lg transition-all text-lg mt-4">
+                            Save Vitals
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Spinner Modal -->
+        <div id="spinner-modal"
+            class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+            <div class="bg-white rounded-xl p-10 shadow-xl">
+                <div class="flex flex-col items-center">
+                    <img src="/assets/favicon.png" alt="Loading" class="w-16 h-16 animate-bounce mb-3" />
+                    <p class="text-gray-700 font-medium">Loading...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scripts -->
+        <script>
+            function showUpcoming() {
+                document.getElementById('upcoming-section').classList.remove('hidden');
+                document.getElementById('in-process-section').classList.add('hidden');
+                document.getElementById('completed-section').classList.add('hidden');
+                document.getElementById('absent-section').classList.add('hidden');
+
+                document.getElementById('upcoming-btn').classList.add('bg-primary-teal');
+                document.getElementById('upcoming-btn').classList.remove('bg-slate-600');
+                document.getElementById('in-process-btn').classList.remove('bg-primary-teal');
+                document.getElementById('in-process-btn').classList.add('bg-slate-600');
+                document.getElementById('completed-btn').classList.remove('bg-primary-teal');
+                document.getElementById('completed-btn').classList.add('bg-slate-600');
+                document.getElementById('absent-btn').classList.remove('bg-primary-teal');
+                document.getElementById('absent-btn').classList.add('bg-slate-600');
+            }
+
+            async function sendToDoctor(slotId) {
+                const result = await Swal.fire({
+                    title: 'Send to Doctor?',
+                    text: 'This will move the patient to the in-process state.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#008B8B',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Yes, Send'
+                });
+
+                if (result.isConfirmed) {
+                    try {
+                        const response = await fetch('/receptionist/start-consultation', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ slot_id: slotId })
+                        });
+                        const data = await response.json();
+                        if (data.success) {
+                            Swal.fire('Sent!', data.message, 'success').then(() => window.location.reload());
+                        } else {
+                            Swal.fire('Error', data.message, 'error');
+                        }
+                    } catch (err) {
+                        Swal.fire('Error', 'Something went wrong', 'error');
+                    }
+                }
+            }
+            function showInProcess() {
+                document.getElementById('upcoming-section').classList.add('hidden');
+                document.getElementById('in-process-section').classList.remove('hidden');
+                document.getElementById('completed-section').classList.add('hidden');
+                document.getElementById('absent-section').classList.add('hidden');
+
+                document.getElementById('in-process-btn').classList.add('bg-primary-teal');
+                document.getElementById('in-process-btn').classList.remove('bg-slate-600');
+                document.getElementById('upcoming-btn').classList.remove('bg-primary-teal');
+                document.getElementById('upcoming-btn').classList.add('bg-slate-600');
+                document.getElementById('completed-btn').classList.remove('bg-primary-teal');
+                document.getElementById('completed-btn').classList.add('bg-slate-600');
+                document.getElementById('absent-btn').classList.remove('bg-primary-teal');
+                document.getElementById('absent-btn').classList.add('bg-slate-600');
+            }
+
+            function showCompleted() {
+                document.getElementById('upcoming-section').classList.add('hidden');
+                document.getElementById('in-process-section').classList.add('hidden');
+                document.getElementById('completed-section').classList.remove('hidden');
+                document.getElementById('absent-section').classList.add('hidden');
+
+                document.getElementById('completed-btn').classList.add('bg-primary-teal');
+                document.getElementById('completed-btn').classList.remove('bg-slate-600');
+                document.getElementById('upcoming-btn').classList.remove('bg-primary-teal');
+                document.getElementById('upcoming-btn').classList.add('bg-slate-600');
+                document.getElementById('in-process-btn').classList.remove('bg-primary-teal');
+                document.getElementById('in-process-btn').classList.add('bg-slate-600');
+                document.getElementById('absent-btn').classList.remove('bg-primary-teal');
+                document.getElementById('absent-btn').classList.add('bg-slate-600');
+            }
+
+            function showAbsent() {
+                document.getElementById('upcoming-section').classList.add('hidden');
+                document.getElementById('in-process-section').classList.add('hidden');
+                document.getElementById('completed-section').classList.add('hidden');
+                document.getElementById('absent-section').classList.remove('hidden');
+
+                document.getElementById('absent-btn').classList.add('bg-primary-teal');
+                document.getElementById('absent-btn').classList.remove('bg-slate-600');
+                document.getElementById('upcoming-btn').classList.remove('bg-primary-teal');
+                document.getElementById('upcoming-btn').classList.add('bg-slate-600');
+                document.getElementById('in-process-btn').classList.remove('bg-primary-teal');
+                document.getElementById('in-process-btn').classList.add('bg-slate-600');
+                document.getElementById('completed-btn').classList.remove('bg-primary-teal');
+                document.getElementById('completed-btn').classList.add('bg-slate-600');
+            }
+
+            // Modal Functions
+            let currentSlotId = null;
+            let currentPatientId = null;
+            let currentDoctorId = null;
+
+            function closeModal(modalId) {
+                document.getElementById(modalId).classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+
+            function showModal(modalId) {
+                document.getElementById(modalId).classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function openCancelModal(slotId) {
+                currentSlotId = slotId;
+                showModal('cancel-modal');
+            }
+
+            async function submitCancel() {
+                const reason = document.getElementById('cancel-reason').value;
+                if (!reason) {
+                    Swal.fire('Error', 'Please enter a reason', 'error');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/receptionist/cancel-appointment', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ slot_id: currentSlotId, reason })
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        Swal.fire('Success!', data.message, 'success').then(() => window.location.reload());
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                } catch (err) {
+                    Swal.fire('Error', 'Something went wrong', 'error');
+                }
+            }
+
+            async function openRescheduleModal(slotId, doctorId, patientId) {
+                currentSlotId = slotId;
+                currentDoctorId = doctorId;
+                currentPatientId = patientId;
+                showModal('reschedule-modal');
+
+                // Logic to fetch slots for today (default)
+                const today = new Date().toISOString().split('T')[0];
+                fetchSlots(today);
+            }
+
+            async function fetchSlots(date) {
+                const slotContainer = document.querySelector('#reschedule-modal .grid.grid-cols-4');
+                slotContainer.innerHTML = '<p class="col-span-4 text-center text-gray-500">Loading slots...</p>';
+
+                try {
+                    const response = await fetch(`/receptionist/get-slots?doctor_id=${currentDoctorId}&date=${date}`);
+                    const data = await response.json();
+
+                    if (data.slots && data.slots.length > 0) {
+                        slotContainer.innerHTML = data.slots.map(slot => `
+                        <button 
+                            onclick="selectSlot('${slot.id}', this)"
+                            class="slot-btn bg-white border-2 border-primary-teal text-primary-teal font-semibold px-4 py-3 rounded-lg hover:bg-primary-teal hover:text-white transition-all"
+                        >
+                            ${slot.slot_start}
+                        </button>
+                    `).join('');
+                    } else {
+                        slotContainer.innerHTML = '<p class="col-span-4 text-center text-red-500">No slots available</p>';
+                    }
+                } catch (err) {
+                    slotContainer.innerHTML = '<p class="col-span-4 text-center text-red-500">Failed to load slots</p>';
+                }
+            }
+
+            let selectedNewSlotId = null;
+            function selectSlot(id, btn) {
+                selectedNewSlotId = id;
+                document.querySelectorAll('.slot-btn').forEach(b => {
+                    b.classList.remove('bg-primary-teal', 'text-white');
+                    b.classList.add('text-primary-teal');
+                });
+                btn.classList.add('bg-primary-teal', 'text-white');
+                btn.classList.remove('text-primary-teal');
+            }
+
+            async function bookSlot() {
+                if (!selectedNewSlotId) {
+                    Swal.fire('Error', 'Please select a new slot', 'error');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/receptionist/reschedule-appointment', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            old_slot_id: currentSlotId,
+                            new_slot_id: selectedNewSlotId,
+                            patient_id: currentPatientId
+                        })
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        Swal.fire('Success!', data.message, 'success').then(() => window.location.reload());
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                } catch (err) {
+                    Swal.fire('Error', 'Something went wrong', 'error');
+                }
+            }
+
+            function openVitalsModal(slotId, patientId) {
+                currentSlotId = slotId;
+                currentPatientId = patientId;
+                showModal('vitals-modal');
+                // Vitals logic can be added here
+            }
+
+            async function verifyPatient() {
+                const email = document.getElementById('patientEmail').value;
+                if (!email) {
+                    Swal.fire('Error', 'Please enter patient email', 'error');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/receptionist/verify-patient', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email })
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        document.getElementById('patientVerifyMessage').textContent = `✓ Patient Verified: ${data.patient.firstname} ${data.patient.lastname}`;
+                        document.getElementById('patientVerifyMessage').classList.remove('text-red-600');
+                        document.getElementById('patientVerifyMessage').classList.add('text-green-600', 'font-bold');
+                        document.getElementById('submit-report').disabled = false;
+                        currentPatientId = data.patient.id;
+                    } else {
+                        document.getElementById('patientVerifyMessage').textContent = '✗ ' + data.message;
+                        document.getElementById('patientVerifyMessage').classList.remove('text-green-600');
+                        document.getElementById('patientVerifyMessage').classList.add('text-red-600', 'font-bold');
+                        document.getElementById('submit-report').disabled = true;
+                    }
+                } catch (err) {
+                    Swal.fire('Error', 'Verification failed', 'error');
+                }
+            }
+
+            async function submitVitals() {
+                const vitals = {
+                    patient_id: currentPatientId,
+                    appointment_id: currentSlotId,
+                    bp: document.getElementById('vitals-bp').value,
+                    weight: document.getElementById('vitals-weight').value,
+                    temperature: document.getElementById('vitals-temp').value,
+                    pulse: document.getElementById('vitals-pulse').value,
+                    spo2: document.getElementById('vitals-spo2').value
+                };
+
+                try {
+                    const response = await fetch('/receptionist/update-vitals', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(vitals)
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        Swal.fire('Success!', 'Vitals updated successfully!', 'success').then(() => closeModal('vitals-modal'));
+                    } else {
+                        Swal.fire('Error', data.message || 'Failed to update vitals', 'error');
+                    }
+                } catch (err) {
+                    Swal.fire('Error', 'Something went wrong', 'error');
+                }
+            }
+
+            async function uploadFile() {
+                const fileInput = document.getElementById('report');
+                if (!fileInput.files[0]) {
+                    Swal.fire('Error', 'Please select a file', 'error');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('patient_id', currentPatientId);
+                formData.append('report', fileInput.files[0]);
+
+                try {
+                    const response = await fetch('/receptionist/uploadReport', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        Swal.fire('Success!', 'Report uploaded successfully!', 'success').then(() => closeModal('add-report-modal'));
+                    } else {
+                        Swal.fire('Error', data.message || 'Upload failed', 'error');
+                    }
+                } catch (err) {
+                    Swal.fire('Error', 'Something went wrong', 'error');
+                }
+            }
+
+
+            // Redirect functions (placeholders)
+
+            // Date button selection
+            document.querySelectorAll('.date-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll('.date-btn').forEach(b => {
+                        b.classList.remove('bg-primary-teal');
+                        b.classList.add('bg-slate-700');
+                    });
+                    this.classList.remove('bg-slate-700');
+                    this.classList.add('bg-primary-teal');
+                });
+            });
+
+            // Slot button selection
+            document.querySelectorAll('.slot-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll('.slot-btn').forEach(b => {
+                        b.classList.remove('bg-primary-teal', 'text-white');
+                        b.classList.add('text-primary-teal');
+                    });
+                    this.classList.add('bg-primary-teal', 'text-white');
+                    this.classList.remove('text-primary-teal');
+                });
+            });
+
+            // Close modals when clicking outside
+            document.querySelectorAll('[id$="-modal"]').forEach(modal => {
+                modal.addEventListener('click', function (e) {
+                    if (e.target === this) {
+                        closeModal(this.id);
+                    }
+                });
+            });
+
+            // Close modals on ESC key
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('[id$="-modal"]:not(.hidden)').forEach(modal => {
+                        if (modal.id !== 'spinner-modal') {
+                            closeModal(modal.id);
+                        }
+                    });
+                }
+            });
+
+            // Set schedule nav as active on load
+            document.addEventListener('DOMContentLoaded', function () {
+                document.getElementById('nav-schedule').classList.add('active');
+            });
+        </script>
+        <script src="/js/receptionist/receptionist_navbar.js"></script>
+</body>
+
+</html>
