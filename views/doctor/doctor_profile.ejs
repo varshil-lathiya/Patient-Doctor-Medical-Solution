@@ -81,6 +81,45 @@
             background: #0d9488;
             border-radius: 10px;
         }
+
+        @media (max-width: 1023px) {
+            .doctor-profile-main {
+                min-width: 0;
+            }
+
+            .doctor-profile-topbar,
+            .doctor-schedule-header,
+            .doctor-shift-row,
+            .doctor-modal-actions,
+            .doctor-gender-options {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .doctor-profile-actions,
+            .doctor-profile-actions button,
+            .doctor-modal-actions button {
+                width: 100%;
+            }
+
+            .doctor-profile-actions button,
+            .doctor-modal-actions button {
+                justify-content: center;
+            }
+
+            .doctor-profile-text-wrap {
+                overflow-wrap: anywhere;
+            }
+
+            .doctor-time-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .doctor-profile-topbar {
+                top: 4rem;
+            }
+        }
     </style>
 </head>
 
@@ -90,14 +129,14 @@
         <%- include('../components/doctor-sidebar', { currentPage: 'profile' }) %>
 
         <!-- Main Content Area -->
-        <div class="flex-1 max-h-screen overflow-y-auto">
+        <div class="doctor-profile-main flex-1 max-h-screen overflow-y-auto">
             <!-- Top Navigation Bar -->
-            <div class="sticky top-0 z-10 p-6 glass-morphism border-b border-gray-100 flex items-center justify-between">
+            <div class="doctor-profile-topbar sticky top-0 z-10 p-4 sm:p-6 glass-morphism border-b border-gray-100 flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-extrabold text-gray-800 tracking-tight">Doctor Profile</h1>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-800 tracking-tight">Doctor Profile</h1>
                     <p class="text-gray-500 font-medium">Manage your professional presence and availability</p>
                 </div>
-                <div class="flex gap-4">
+                <div class="doctor-profile-actions flex gap-4">
                     <button onclick="window.location.href='/doctor/dashboard'"
                         class="px-5 py-2.5 rounded-xl border-2 border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition-all flex items-center gap-2">
                         <i class="fas fa-arrow-left"></i> Dashboard
@@ -109,12 +148,12 @@
                 </div>
             </div>
 
-            <div class="p-8 space-y-8 max-w-7xl mx-auto">
+            <div class="p-4 sm:p-6 lg:p-8 space-y-8 max-w-7xl mx-auto">
                 <!-- Hero Profile Section -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <!-- Left: Profile Image & Status -->
                     <div class="lg:col-span-1 space-y-8">
-                        <div class="profile-card glass-morphism rounded-[2.5rem] p-8 text-center shadow-xl relative overflow-hidden group">
+                        <div class="profile-card glass-morphism rounded-[2.5rem] p-6 sm:p-8 text-center shadow-xl relative overflow-hidden group">
                            <div class="absolute top-0 left-0 w-full h-2 gradient-bg"></div>
                             <div class="relative inline-block mt-4">
                                 <div class="w-48 h-48 rounded-[2rem] border-8 border-white shadow-2xl overflow-hidden mx-auto transform transition-transform group-hover:scale-105 duration-500">
@@ -127,7 +166,7 @@
                                     <% } %>
                                 </div>
                             </div>
-                            <h2 class="text-2xl font-extrabold text-gray-800 mt-6 tracking-tight">Dr. <%= user.firstname %> <%= user.lastname %></h2>
+                            <h2 class="doctor-profile-text-wrap text-2xl font-extrabold text-gray-800 mt-6 tracking-tight">Dr. <%= user.firstname %> <%= user.lastname %></h2>
                             <span class="px-4 py-1.5 gradient-bg text-white text-sm font-black rounded-full uppercase tracking-widest inline-block mt-2 shadow-sm">
                                 <%= user.department %>
                             </span>
@@ -147,7 +186,7 @@
                         </div>
 
                         <!-- ID Badge Card -->
-                        <div class="profile-card bg-gray-900 rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden">
+                        <div class="profile-card bg-gray-900 rounded-[2.5rem] p-6 sm:p-8 text-white shadow-2xl relative overflow-hidden">
                             <i class="fas fa-id-badge absolute -right-4 -bottom-4 text-8xl text-white/5 transform rotate-12"></i>
                             <p class="text-teal-400 font-black text-xs uppercase tracking-[0.25em] mb-2">Digital Identity</p>
                             <h3 class="text-xl font-bold mb-4">Verification Badge</h3>
@@ -168,18 +207,18 @@
                         <!-- Information Grid -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <!-- Professional Info -->
-                            <div class="profile-card glass-morphism rounded-[2.5rem] p-8 shadow-xl">
+                            <div class="profile-card glass-morphism rounded-[2.5rem] p-6 sm:p-8 shadow-xl">
                                 <h3 class="text-xl font-extrabold text-gray-800 mb-6 flex items-center gap-3">
                                     <i class="fas fa-stethoscope text-teal-600"></i> Professional Details
                                 </h3>
                                 <div class="space-y-4">
                                     <div class="detail-row">
                                         <p class="text-xs font-bold text-teal-600 uppercase tracking-widest mb-1">Degree & Education</p>
-                                        <p class="text-gray-900 font-bold text-lg"><%= user.degree || 'MBBS, MD' %></p>
+                                        <p class="doctor-profile-text-wrap text-gray-900 font-bold text-lg"><%= user.degree || 'MBBS, MD' %></p>
                                     </div>
                                     <div class="detail-row">
                                         <p class="text-xs font-bold text-teal-600 uppercase tracking-widest mb-1">Specialization</p>
-                                        <p class="text-gray-900 font-bold text-lg"><%= user.qualification %></p>
+                                        <p class="doctor-profile-text-wrap text-gray-900 font-bold text-lg"><%= user.qualification %></p>
                                     </div>
                                     <div class="detail-row">
                                         <p class="text-xs font-bold text-teal-600 uppercase tracking-widest mb-1">Member Since</p>
@@ -189,7 +228,7 @@
                             </div>
 
                             <!-- Personal Info -->
-                            <div class="profile-card glass-morphism rounded-[2.5rem] p-8 shadow-xl">
+                            <div class="profile-card glass-morphism rounded-[2.5rem] p-6 sm:p-8 shadow-xl">
                                 <h3 class="text-xl font-extrabold text-gray-800 mb-6 flex items-center gap-3">
                                     <i class="fas fa-user-circle text-cyan-600"></i> Personal Info
                                 </h3>
@@ -200,7 +239,7 @@
                                     </div>
                                     <div class="detail-row">
                                         <p class="text-xs font-bold text-cyan-600 uppercase tracking-widest mb-1">Email Address</p>
-                                        <p class="text-gray-900 font-bold text-lg truncate"><%= user.email %></p>
+                                        <p class="doctor-profile-text-wrap text-gray-900 font-bold text-lg"><%= user.email %></p>
                                     </div>
                                     <div class="detail-row">
                                         <p class="text-xs font-bold text-cyan-600 uppercase tracking-widest mb-1">Gender / DOB</p>
@@ -211,20 +250,20 @@
                         </div>
 
                         <!-- Full Width Address Section -->
-                        <div class="profile-card glass-morphism rounded-[2.5rem] p-8 shadow-xl">
+                        <div class="profile-card glass-morphism rounded-[2.5rem] p-6 sm:p-8 shadow-xl">
                             <h3 class="text-xl font-extrabold text-gray-800 mb-4 flex items-center gap-3">
                                 <i class="fas fa-map-marked-alt text-teal-600"></i> Workplace & Address
                             </h3>
                             <div class="p-4 bg-teal-50/50 rounded-2xl border border-teal-100">
-                                <p class="text-gray-700 leading-relaxed font-medium">
+                                <p class="doctor-profile-text-wrap text-gray-700 leading-relaxed font-medium">
                                     <%= user.address %>
                                 </p>
                             </div>
                         </div>
 
                         <!-- Availability Slots Section -->
-                        <div class="profile-card glass-morphism rounded-[2.5rem] p-8 shadow-xl">
-                            <div class="flex items-center justify-between mb-8">
+                        <div class="profile-card glass-morphism rounded-[2.5rem] p-6 sm:p-8 shadow-xl">
+                            <div class="doctor-schedule-header flex items-center justify-between mb-8">
                                 <h3 class="text-xl font-extrabold text-gray-800 flex items-center gap-3">
                                     <i class="fas fa-clock text-amber-500"></i> Consultation Schedule
                                 </h3>
@@ -251,7 +290,7 @@
                                                 <p class="text-xl font-black text-gray-800">Available Session</p>
                                             </div>
                                         </div>
-                                        <div class="flex items-end justify-between">
+                                        <div class="doctor-shift-row flex items-end justify-between">
                                             <div>
                                                 <p class="text-sm font-bold text-gray-400">Time Range</p>
                                                 <p class="text-2xl font-black text-teal-600"><%= slot.morning_start ? slot.morning_start.substring(0, 5) : 'N/A' %> - <%= slot.morning_end ? slot.morning_end.substring(0, 5) : 'N/A' %></p>
@@ -277,7 +316,7 @@
                                                 <p class="text-xl font-black text-gray-800">Available Session</p>
                                             </div>
                                         </div>
-                                        <div class="flex items-end justify-between">
+                                        <div class="doctor-shift-row flex items-end justify-between">
                                             <div>
                                                 <p class="text-sm font-bold text-gray-400">Time Range</p>
                                                 <p class="text-2xl font-black text-teal-600"><%= slot.evening_start ? slot.evening_start.substring(0, 5) : 'N/A' %> - <%= slot.evening_end ? slot.evening_end.substring(0, 5) : 'N/A' %></p>
@@ -309,16 +348,16 @@
 
             <div class="relative bg-white rounded-[3rem] shadow-2xl transform scale-95 opacity-0 transition-all duration-300 max-w-4xl w-full overflow-hidden" id="modal-content">
                 <!-- Modal Header -->
-                <div class="gradient-bg px-10 py-8 relative">
+                <div class="gradient-bg px-6 sm:px-10 py-8 relative">
                     <button onclick="closeEditModal()" class="absolute top-8 right-8 text-white/80 hover:text-white transition-all text-2xl">
                         <i class="fas fa-times"></i>
                     </button>
-                    <h3 class="text-3xl font-black text-white tracking-tight">Professional Profile</h3>
+                    <h3 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Professional Profile</h3>
                     <p class="text-teal-100 font-medium mt-1">Update your professional details and display information</p>
                 </div>
 
                 <!-- Modal Body -->
-                <form id="edit-form" class="p-10">
+                <form id="edit-form" class="p-6 sm:p-10">
                     <div class="max-h-[60vh] overflow-y-auto pr-4 space-y-8">
                         <!-- Name & Contact -->
                         <div class="space-y-6">
@@ -386,7 +425,7 @@
                                 </div>
                                 <div class="space-y-2">
                                     <label class="text-sm font-bold text-gray-700 ml-1">Gender</label>
-                                    <div class="flex gap-4">
+                                    <div class="doctor-gender-options flex gap-4">
                                         <% ['Male', 'Female', 'Other'].forEach(gender => { %>
                                             <label class="flex-1">
                                                 <input type="radio" name="gender" value="<%= gender %>" <%= user.gender === gender ? 'checked' : '' %> class="hidden peer">
@@ -413,7 +452,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div class="space-y-4">
                                     <p class="text-sm font-black text-amber-600 uppercase tracking-widest"><i class="fas fa-sun mr-2"></i>Morning Shift</p>
-                                    <div class="grid grid-cols-2 gap-4">
+                                    <div class="doctor-time-grid grid grid-cols-2 gap-4">
                                         <div class="space-y-2">
                                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest ml-1">Start Time</label>
                                             <input type="time" name="morning_start" value="<%= avail.morning_start ? avail.morning_start.substring(0,5) : '10:00' %>" class="w-full px-6 py-4 rounded-2xl input-premium font-bold">
@@ -426,7 +465,7 @@
                                 </div>
                                 <div class="space-y-4">
                                     <p class="text-sm font-black text-indigo-600 uppercase tracking-widest"><i class="fas fa-moon mr-2"></i>Evening Shift</p>
-                                    <div class="grid grid-cols-2 gap-4">
+                                    <div class="doctor-time-grid grid grid-cols-2 gap-4">
                                         <div class="space-y-2">
                                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest ml-1">Start Time</label>
                                             <input type="time" name="evening_start" value="<%= avail.evening_start ? avail.evening_start.substring(0,5) : '15:00' %>" class="w-full px-6 py-4 rounded-2xl input-premium font-bold">
@@ -446,7 +485,7 @@
                     </div>
 
                     <!-- Footer Actions -->
-                    <div class="flex gap-4 pt-10 mt-8 border-t border-gray-100">
+                    <div class="doctor-modal-actions flex gap-4 pt-10 mt-8 border-t border-gray-100">
                         <button type="button" onclick="closeEditModal()" class="flex-1 py-4 bg-gray-100 text-gray-500 font-black rounded-2xl hover:bg-gray-200 transition-all">
                             Discard Changes
                         </button>

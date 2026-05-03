@@ -21,7 +21,7 @@
 
   <body class="bg-teal-50 min-h-screen flex items-center justify-center">
     <div
-      class="w-11/12 sm:w-2/3 md:w-1/3 bg-white shadow-2xl rounded-2xl p-8 flex flex-col items-center"
+      class="w-11/12 sm:w-2/3 md:w-1/3 bg-white shadow-2xl rounded-2xl p-6 sm:p-8 flex flex-col items-center"
     >
       <!-- Logo -->
       <div class="w-full flex justify-center mb-6">
@@ -37,7 +37,7 @@
       </div>
 
       <!-- OTP Inputs -->
-      <div id="inputs" class="flex justify-center gap-3 mb-6 w-full sm:w-4/5">
+      <div id="inputs" class="flex justify-center gap-2 sm:gap-3 mb-6 w-full sm:w-4/5">
         <input type="text" maxlength="1" class="otp-input" />
         <input type="text" maxlength="1" class="otp-input" />
         <input type="text" maxlength="1" class="otp-input" />
@@ -188,6 +188,14 @@
       .otp-input:focus {
         border-color: #0d9488;
         box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.2);
+      }
+
+      @media (max-width: 640px) {
+        .otp-input {
+          width: 2.125rem;
+          height: 3rem;
+          font-size: 1.125rem;
+        }
       }
     </style>
   </body>

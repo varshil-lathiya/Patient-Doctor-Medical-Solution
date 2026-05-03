@@ -28,6 +28,37 @@
             }
         }
     </script>
+    <style>
+        @media (max-width: 1023px) {
+            #right-section {
+                margin-left: 0 !important;
+                padding: 1rem !important;
+                padding-top: 5rem !important;
+            }
+
+            .profile-hero,
+            .profile-section-header,
+            .report-row,
+            .modal-header,
+            .modal-actions,
+            .gender-options {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .profile-section-header button,
+            .report-row a,
+            .modal-actions button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .profile-text-wrap {
+                overflow-wrap: anywhere;
+            }
+        }
+    </style>
 </head>
 
 <body class="bg-gray-50 min-h-screen">
@@ -49,7 +80,7 @@
 
             <!-- Page Header -->
             <div class="mb-8">
-                <h1 class="text-3xl font-bold text-gray-800 mb-1">My Profile</h1>
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-1">My Profile</h1>
                 <p class="text-gray-500">Manage your personal information</p>
             </div>
 
@@ -58,18 +89,18 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
 
                     <!-- Profile Header with Avatar -->
-                    <div class="bg-gradient-to-r from-primary-blue to-primary-teal p-10">
-                        <div class="flex items-center gap-8">
+                    <div class="bg-gradient-to-r from-primary-blue to-primary-teal p-6 sm:p-10">
+                        <div class="profile-hero flex items-center gap-8">
                             <div
                                 class="w-28 h-28 bg-white rounded-3xl flex items-center justify-center shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-300">
                                 <i class="fas fa-user text-5xl text-primary-blue"></i>
                             </div>
                             <div class="text-white">
-                                <h2 class="text-3xl font-bold mb-1" id="profile-full-name">
+                                <h2 class="profile-text-wrap text-2xl sm:text-3xl font-bold mb-1" id="profile-full-name">
                                     <%= user.firstname %>
                                         <%= user.lastname %>
                                 </h2>
-                                <p class="text-blue-100 flex items-center gap-2 font-medium" id="profile-email-display">
+                                <p class="profile-text-wrap text-blue-100 flex items-center gap-2 font-medium" id="profile-email-display">
                                     <i class="fas fa-envelope opacity-70"></i>
                                     <%= user.email %>
                                 </p>
@@ -78,8 +109,8 @@
                     </div>
 
                     <!-- Profile Information -->
-                    <div class="p-10">
-                        <div class="flex items-center justify-between mb-10">
+                    <div class="p-6 sm:p-10">
+                        <div class="profile-section-header flex items-center justify-between mb-10">
                             <div class="flex items-center gap-3">
                                 <i class="fas fa-id-card text-2xl text-primary-teal"></i>
                                 <h3 class="text-xl font-bold text-gray-800">Account Information</h3>
@@ -152,7 +183,7 @@
                             <div class="space-y-1 md:col-span-2">
                                 <label class="text-xs font-bold text-gray-400 uppercase tracking-widest">Current
                                     Address</label>
-                                <p class="text-gray-900 font-bold text-lg" id="address">
+                                <p class="profile-text-wrap text-gray-900 font-bold text-lg" id="address">
                                     <%= user.address || 'Not provided' %>
                                 </p>
                             </div>
@@ -168,7 +199,7 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
 
                     <!-- Section Header -->
-                    <div class="p-8 pb-6">
+                    <div class="p-6 sm:p-8 pb-6">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
                                 <i class="fas fa-file-medical text-xl text-primary-blue"></i>
@@ -180,17 +211,17 @@
                         </div>
                     </div>
 
-                    <div class="px-8 pb-8">
+                    <div class="px-6 sm:px-8 pb-8">
                         <% if (reports && reports.length > 0) { %>
                             <div class="space-y-3">
                                 <% reports.forEach((report, index) => { %>
-                                    <div class="flex items-center justify-between p-4 bg-gray-50 hover:bg-blue-50 rounded-2xl border border-gray-100 hover:border-blue-100 transition-all duration-200 group">
+                                    <div class="report-row flex items-center justify-between p-4 bg-gray-50 hover:bg-blue-50 rounded-2xl border border-gray-100 hover:border-blue-100 transition-all duration-200 group">
                                         <div class="flex items-center gap-4">
                                             <div class="w-11 h-11 bg-white rounded-xl flex items-center justify-center shadow-sm border border-gray-100 group-hover:border-blue-200 transition-colors flex-shrink-0">
                                                 <i class="fas fa-file-pdf text-red-500 text-lg"></i>
                                             </div>
                                             <div>
-                                                <p class="font-semibold text-gray-800 text-sm"><%= report.report_name %></p>
+                                                <p class="profile-text-wrap font-semibold text-gray-800 text-sm"><%= report.report_name %></p>
                                                 <p class="text-xs text-gray-400 mt-0.5">
                                                     <i class="fas fa-calendar-alt mr-1"></i>
                                                     <%= new Date(report.upload_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %>
@@ -225,9 +256,9 @@
         <div id="update-patient-modal"
             class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                <form id="update-patient-form" class="p-8">
-                    <div class="flex items-center justify-between mb-8">
-                        <h3 class="text-2xl font-bold text-gray-900 uppercase tracking-tight">Update Information</h3>
+                <form id="update-patient-form" class="p-6 sm:p-8">
+                    <div class="modal-header flex items-center justify-between mb-8">
+                        <h3 class="text-xl sm:text-2xl font-bold text-gray-900 uppercase tracking-tight">Update Information</h3>
                         <button type="button" onclick="closeModal('update-patient-modal')"
                             class="text-gray-400 hover:text-red-500 transition-colors w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-xl">×</button>
                     </div>
@@ -264,7 +295,7 @@
                         <div class="md:col-span-2">
                             <label
                                 class="block text-sm font-bold text-gray-500 mb-2 uppercase tracking-wide">Gender</label>
-                            <div class="flex gap-8 p-4 bg-gray-50 rounded-2xl">
+                            <div class="gender-options flex gap-8 p-4 bg-gray-50 rounded-2xl">
                                 <label class="flex items-center gap-2 cursor-pointer font-bold text-gray-700">
                                     <input type="radio" name="gender" id="form-Male" value="Male"
                                         class="w-5 h-5 text-primary-teal focus:ring-primary-teal" /> Male
@@ -307,7 +338,7 @@
                         </div>
                     </div>
 
-                    <div class="flex gap-4 mt-10">
+                    <div class="modal-actions flex gap-4 mt-10">
                         <button type="button" onclick="closeModal('update-patient-modal')"
                             class="flex-1 px-6 py-4 border-2 border-gray-100 text-gray-500 font-bold rounded-2xl hover:bg-gray-50 transition-all">Cancel</button>
                         <button type="button" onclick="profile_detail_update()"
@@ -321,7 +352,7 @@
         <!-- Spinner (Hidden) -->
         <div id="spinner-modal"
             class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
-            <div class="bg-white rounded-3xl p-10 shadow-2xl flex flex-col items-center">
+            <div class="bg-white rounded-3xl p-6 sm:p-10 shadow-2xl flex flex-col items-center">
                 <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-teal mb-4"></div>
                 <p class="text-gray-900 font-bold">Processing...</p>
             </div>
