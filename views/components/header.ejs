@@ -74,7 +74,65 @@
         .mobile-menu.active {
             max-height: 500px;
         }
+
+        .nav-link-active {
+            color: #0066CC !important;
+        }
+
+        .nav-underline-active {
+            width: 100% !important;
+        }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sectionIds = ['home', 'stats', 'about', 'departments'];
+
+            function getActiveSection() {
+                const scrollY = window.scrollY;
+                let activeId = sectionIds[0];
+                for (const id of sectionIds) {
+                    const el = document.getElementById(id);
+                    if (!el) continue;
+                    if (scrollY >= el.offsetTop - 120) {
+                        activeId = id;
+                    }
+                }
+                return activeId;
+            }
+
+            function updateNav(activeId) {
+                document.querySelectorAll('[data-section]').forEach(function (link) {
+                    const isActive = link.dataset.section === activeId;
+                    const underline = link.querySelector('.nav-underline');
+
+                    if (isActive) {
+                        link.classList.add('nav-link-active');
+                        link.classList.remove('text-gray-700');
+                        if (underline) underline.classList.add('nav-underline-active');
+                        if (link.classList.contains('block')) link.classList.add('bg-blue-50');
+                    } else {
+                        link.classList.remove('nav-link-active');
+                        link.classList.add('text-gray-700');
+                        if (underline) underline.classList.remove('nav-underline-active');
+                        if (link.classList.contains('block')) link.classList.remove('bg-blue-50');
+                    }
+                });
+            }
+
+            let ticking = false;
+            window.addEventListener('scroll', function () {
+                if (!ticking) {
+                    requestAnimationFrame(function () {
+                        updateNav(getActiveSection());
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            });
+
+            updateNav(getActiveSection());
+        });
+    </script>
 </head>
 <body class="overflow-x-hidden bg-gray-50 font-sans">
 
@@ -93,27 +151,27 @@
                 <nav class="hidden lg:block animate-fadeInUp">
                     <ul class="flex space-x-6 xl:space-x-8 text-base xl:text-lg font-medium">
                         <li>
-                            <a href="/" class="text-gray-700 hover:text-primary-blue transition-colors duration-300 relative group <%= typeof page !== 'undefined' && page === 'home' ? 'text-primary-blue' : '' %>">
+                            <a href="#home" data-section="home" class="text-gray-700 hover:text-primary-blue transition-colors duration-300 relative group">
                                 Home
-                                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-blue group-hover:w-full transition-all duration-300 <%= typeof page !== 'undefined' && page === 'home' ? 'w-full' : '' %>"></span>
+                                <span class="nav-underline absolute bottom-0 left-0 w-0 h-0.5 bg-primary-blue group-hover:w-full transition-all duration-300"></span>
                             </a>
                         </li>
                         <li>
-                            <a href="/#about" class="text-gray-700 hover:text-primary-blue transition-colors duration-300 relative group">
+                            <a href="#about" data-section="about" class="text-gray-700 hover:text-primary-blue transition-colors duration-300 relative group">
                                 About
-                                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-blue group-hover:w-full transition-all duration-300"></span>
+                                <span class="nav-underline absolute bottom-0 left-0 w-0 h-0.5 bg-primary-blue group-hover:w-full transition-all duration-300"></span>
                             </a>
                         </li>
                         <li>
-                            <a href="/#departments" class="text-gray-700 hover:text-primary-blue transition-colors duration-300 relative group">
+                            <a href="#departments" data-section="departments" class="text-gray-700 hover:text-primary-blue transition-colors duration-300 relative group">
                                 Departments
-                                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-blue group-hover:w-full transition-all duration-300"></span>
+                                <span class="nav-underline absolute bottom-0 left-0 w-0 h-0.5 bg-primary-blue group-hover:w-full transition-all duration-300"></span>
                             </a>
                         </li>
                         <li>
-                            <a href="/#stats" class="text-gray-700 hover:text-primary-blue transition-colors duration-300 relative group">
+                            <a href="#stats" data-section="stats" class="text-gray-700 hover:text-primary-blue transition-colors duration-300 relative group">
                                 Our Impact
-                                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-blue group-hover:w-full transition-all duration-300"></span>
+                                <span class="nav-underline absolute bottom-0 left-0 w-0 h-0.5 bg-primary-blue group-hover:w-full transition-all duration-300"></span>
                             </a>
                         </li>
                     </ul>
@@ -140,16 +198,16 @@
             <!-- Mobile Menu -->
             <div class="mobile-menu lg:hidden" id="mobile-menu">
                 <nav class="py-4 space-y-3">
-                    <a href="/" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-primary-blue rounded-lg transition-colors duration-300 <%= typeof page !== 'undefined' && page === 'home' ? 'bg-blue-50 text-primary-blue' : '' %>">
+                    <a href="#home" data-section="home" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-primary-blue rounded-lg transition-colors duration-300">
                         <i class="fas fa-home mr-3"></i>Home
                     </a>
-                    <a href="/#about" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-primary-blue rounded-lg transition-colors duration-300">
+                    <a href="#about" data-section="about" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-primary-blue rounded-lg transition-colors duration-300">
                         <i class="fas fa-info-circle mr-3"></i>About
                     </a>
-                    <a href="/#departments" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-primary-blue rounded-lg transition-colors duration-300">
+                    <a href="#departments" data-section="departments" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-primary-blue rounded-lg transition-colors duration-300">
                         <i class="fas fa-hospital mr-3"></i>Departments
                     </a>
-                    <a href="/#stats" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-primary-blue rounded-lg transition-colors duration-300">
+                    <a href="#stats" data-section="stats" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-primary-blue rounded-lg transition-colors duration-300">
                         <i class="fas fa-chart-line mr-3"></i>Our Impact
                     </a>
                     <div class="flex flex-col space-y-2 pt-3 px-4 md:hidden">

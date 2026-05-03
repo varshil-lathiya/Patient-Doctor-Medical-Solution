@@ -60,42 +60,22 @@
                     <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-8">
                         <!-- Profile Image -->
                         <div class="flex flex-col items-center mb-6">
-                            <div class="relative">
-                                <div
-                                    class="w-48 h-48 rounded-full overflow-hidden border-4 border-primary-teal shadow-xl mb-4">
-                                    <img id="profile_pic"
-                                        src="<%= user.profile_pic || `https://ui-avatars.com/api/?name=${user.firstname}+${user.lastname}&size=200&background=008B8B&color=fff&bold=true` %>"
-                                        alt="Profile" class="w-full h-full object-cover" />
-                                </div>
-                                <!-- Edit Icon Badge -->
-                                <div
-                                    class="absolute bottom-6 right-0 w-12 h-12 bg-gradient-to-br from-primary-teal to-teal-600 rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:scale-110 transition-transform">
-                                    <label for="img-update" class="cursor-pointer">
-                                        <i class="fas fa-camera text-white text-lg"></i>
-                                    </label>
-                                </div>
+                            <div class="w-48 h-48 rounded-full overflow-hidden border-4 border-primary-teal shadow-xl mb-4">
+                                <% if (user.profile_pic) { %>
+                                    <img src="<%= user.profile_pic %>" alt="Profile" class="w-full h-full object-cover" />
+                                <% } else { %>
+                                    <div class="w-full h-full bg-gradient-to-br from-primary-teal to-teal-700 flex items-center justify-center text-white text-5xl font-black select-none">
+                                        <%= user.firstname[0].toUpperCase() %><%= user.lastname[0].toUpperCase() %>
+                                    </div>
+                                <% } %>
                             </div>
-
-                            <!-- Hidden File Input -->
-                            <form id="profile-img" class="hidden">
-                                <input id="img-update" name="profile_pic" type="file" accept="image/*"
-                                    onchange="previewImage(event)" />
-                            </form>
 
                             <!-- Name Display -->
                             <h3 class="text-2xl font-bold text-gray-900 text-center mb-1">
-                                <%= user.firstname %>
-                                    <%= user.lastname %>
+                                <%= user.firstname %> <%= user.lastname %>
                             </h3>
                             <p class="text-primary-teal font-semibold">Receptionist</p>
                         </div>
-
-                        <!-- Save Image Button -->
-                        <button id="save-image-btn" onclick="saveProfileImage()" disabled
-                            class="w-full bg-gradient-to-r from-primary-teal to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold py-3 rounded-lg transition-all shadow-md hover:shadow-xl disabled:bg-gray-400 disabled:cursor-not-allowed mb-4">
-                            <i class="fas fa-save mr-2"></i>
-                            Save Image
-                        </button>
 
                         <!-- Quick Stats -->
                         <div class="space-y-3">
@@ -373,60 +353,38 @@
 
             // Save Changes
             async function saveChanges() {
+                const form = document.getElementById('profile_detail');
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData);
+
                 document.getElementById('spinner-modal').classList.remove('hidden');
+                try {
+                    const response = await fetch('/receptionist/update-profile', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    const result = await response.json();
+                    document.getElementById('spinner-modal').classList.add('hidden');
 
-                // Simulate API call
-                await new Promise(resolve => setTimeout(resolve, 1500));
-
-                document.getElementById('spinner-modal').classList.add('hidden');
-
-                await Swal.fire({
-                    title: 'Success!',
-                    text: 'Profile updated successfully!',
-                    icon: 'success',
-                    confirmButtonColor: '#008B8B'
-                });
-
-                // Disable edit mode
-                cancelEdit();
-            }
-
-            // Preview Image
-            function previewImage(event) {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        document.getElementById('profile_pic').src = e.target.result;
-                        document.getElementById('save-image-btn').disabled = false;
-                    };
-                    reader.readAsDataURL(file);
+                    if (result.success) {
+                        await Swal.fire({
+                            title: 'Success!',
+                            text: 'Profile updated successfully!',
+                            icon: 'success',
+                            confirmButtonColor: '#008B8B'
+                        });
+                        cancelEdit();
+                        window.location.reload();
+                    } else {
+                        Swal.fire('Error', result.message || 'Update failed', 'error');
+                    }
+                } catch (error) {
+                    document.getElementById('spinner-modal').classList.add('hidden');
+                    Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
                 }
             }
 
-            // Save Profile Image
-            async function saveProfileImage() {
-                const fileInput = document.getElementById('img-update');
-                if (!fileInput.files || !fileInput.files[0]) {
-                    return;
-                }
-
-                document.getElementById('spinner-modal').classList.remove('hidden');
-
-                // Simulate API call
-                await new Promise(resolve => setTimeout(resolve, 1500));
-
-                document.getElementById('spinner-modal').classList.add('hidden');
-
-                await Swal.fire({
-                    title: 'Success!',
-                    text: 'Profile picture updated successfully!',
-                    icon: 'success',
-                    confirmButtonColor: '#008B8B'
-                });
-
-                document.getElementById('save-image-btn').disabled = true;
-            }
 
             // Set active nav item on load
             document.addEventListener('DOMContentLoaded', function () {

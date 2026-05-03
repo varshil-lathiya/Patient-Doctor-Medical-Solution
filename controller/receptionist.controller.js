@@ -133,7 +133,7 @@ const updatePatient = async (req, res) => {
   try {
     await db.execute(
       "UPDATE patients SET firstname = ?, lastname = ?, mobile = ?, email = ?, gender = ?, address = ?, dob = ?, blood_group = ? WHERE id = ?",
-      [firstname, lastname, mobile, email, gender, address, dob, blood_group, id]
+      [firstname || null, lastname || null, mobile || null, email || null, gender || null, address || null, dob || null, blood_group || null, id]
     );
     res.status(200).json({ success: true, message: "Patient updated successfully" });
   } catch (error) {
@@ -186,6 +186,21 @@ const updateVitals = async (req, res) => {
 
 const receptionistProfilePage = (req, res) => {
   res.render("receptionist/receptionist_profile", { user: req.user });
+};
+
+const updateReceptionistProfile = async (req, res) => {
+  const receptionist_id = req.user.id;
+  const { firstname, lastname, mobile, dob, address, gender, blood_group } = req.body;
+  try {
+    await db.execute(
+      `UPDATE staff SET firstname = ?, lastname = ?, mobile = ?, dob = ?, address = ?, gender = ?, blood_group = ? WHERE id = ?`,
+      [firstname || null, lastname || null, mobile || null, dob || null, address || null, gender || null, blood_group || null, receptionist_id]
+    );
+    res.status(200).json({ success: true, message: "Profile updated successfully" });
+  } catch (error) {
+    console.error("Update receptionist profile error:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
 };
 
 const uploadReport = async (req, res) => {
@@ -517,6 +532,7 @@ module.exports = {
   getDoctorsByDepartment,
   startConsultation,
   updatePatient,
+  updateReceptionistProfile,
   receptionistLeavesPage,
   applyLeave
 };

@@ -52,11 +52,6 @@ const doctors = [
     { firstname: 'Deepak', lastname: 'Sharma', email: 'deepak.sharma@hospital.com', mobile: '9876543129', gender: 'Male', dob: '1980-04-09', blood_group: 'O-', department: 'Otorhinolaryngology (ENT)', qualification: 'MS ENT', experience: 14, degree: 'MBBS, MS', rating_avg: 4.7, total_rating: 105 },
     { firstname: 'Ritu', lastname: 'Banerjee', email: 'ritu.banerjee@hospital.com', mobile: '9876543130', gender: 'Female', dob: '1989-01-05', blood_group: 'A-', department: 'Otorhinolaryngology (ENT)', qualification: 'MS ENT', experience: 6, degree: 'MBBS, MS', rating_avg: 4.5, total_rating: 50 },
 
-    // Emergency
-    { firstname: 'Alok', lastname: 'Nath', email: 'alok.nath@hospital.com', mobile: '9876543131', gender: 'Male', dob: '1982-06-16', blood_group: 'B-', department: 'Emergency', qualification: 'MD Emergency Medicine', experience: 13, degree: 'MBBS, MD', rating_avg: 4.9, total_rating: 230 },
-    { firstname: 'Nisha', lastname: 'Das', email: 'nisha.das@hospital.com', mobile: '9876543132', gender: 'Female', dob: '1985-12-03', blood_group: 'O+', department: 'Emergency', qualification: 'MD Emergency Medicine', experience: 10, degree: 'MBBS, MD', rating_avg: 4.8, total_rating: 195 },
-    { firstname: 'Harish', lastname: 'Rao', email: 'harish.rao@hospital.com', mobile: '9876543133', gender: 'Male', dob: '1978-02-27', blood_group: 'A+', department: 'Emergency', qualification: 'MD Emergency Medicine', experience: 16, degree: 'MBBS, MD', rating_avg: 4.7, total_rating: 165 },
-
     // Cardiology (Just to be safe based on seedDoctor.js context)
     { firstname: 'Vinay', lastname: 'Kamat', email: 'vinay.kamat@hospital.com', mobile: '9876543134', gender: 'Male', dob: '1975-03-12', blood_group: 'O+', department: 'Cardiology', qualification: 'MD, DM Cardiology', experience: 18, degree: 'MBBS, MD', rating_avg: 4.9, total_rating: 240 },
     { firstname: 'Smriti', lastname: 'Menon', email: 'smriti.menon@hospital.com', mobile: '9876543135', gender: 'Female', dob: '1984-08-30', blood_group: 'A-', department: 'Cardiology', qualification: 'MD, DM Cardiology', experience: 11, degree: 'MBBS, MD', rating_avg: 4.8, total_rating: 155 },

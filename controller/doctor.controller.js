@@ -325,7 +325,7 @@ const updateDoctorProfile = async (req, res) => {
         gender = ?, 
         address = ?
       WHERE id = ?`,
-      [firstname, lastname, email, mobile, dob, gender, address, doctor_id]
+      [firstname, lastname, email, mobile, dob || null, gender, address, doctor_id]
     );
 
     // 2. Update doctor_details table
@@ -338,7 +338,7 @@ const updateDoctorProfile = async (req, res) => {
         degree = VALUES(degree), 
         consultation_fee = VALUES(consultation_fee), 
         experience = VALUES(experience)`,
-      [doctor_id, department, qualification, degree, consultation_fee, experience]
+      [doctor_id, department, qualification, degree, consultation_fee ?? null, experience]
     );
 
     // 3. Update doctor_availability table

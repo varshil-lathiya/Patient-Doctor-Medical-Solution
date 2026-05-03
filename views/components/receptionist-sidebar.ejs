@@ -14,9 +14,13 @@
     <div class="px-6 py-3 border-b border-gray-200">
         <div class="flex flex-col items-center">
             <div class="w-16 h-16 rounded-full overflow-hidden border-4 border-primary-teal shadow-lg mb-1">
-                <img id="profile-pic"
-                    src="<%= user.profile_pic || `https://ui-avatars.com/api/?name=${user.firstname}+${user.lastname}&size=80&background=008B8B&color=fff&bold=true` %>"
-                    alt="Profile" class="w-full h-full object-cover" />
+                <% if (user.profile_pic) { %>
+                    <img src="<%= user.profile_pic %>" alt="Profile" class="w-full h-full object-cover" />
+                <% } else { %>
+                    <div class="w-full h-full bg-gradient-to-br from-primary-teal to-teal-700 flex items-center justify-center text-white text-xl font-black select-none">
+                        <%= user.firstname[0].toUpperCase() %><%= user.lastname[0].toUpperCase() %>
+                    </div>
+                <% } %>
             </div>
             <h4 id="recep_name" class="text-gray-900 font-bold text-center text-sm">
                 <%= user.firstname %>

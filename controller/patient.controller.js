@@ -301,7 +301,7 @@ const updatePatientProfile = async (req, res) => {
 
     await db.execute(
       "UPDATE patients SET firstname = ?, lastname = ?, mobile = ?, dob = ?, address = ?, gender = ?, blood_group = ? WHERE id = ?",
-      [firstname, lastname, mobile, dob, address, gender, blood_group, patientId]
+      [firstname || null, lastname || null, mobile || null, dob || null, address || null, gender || null, blood_group || null, patientId]
     );
 
     res.json({ success: true, message: "Profile updated successfully" });

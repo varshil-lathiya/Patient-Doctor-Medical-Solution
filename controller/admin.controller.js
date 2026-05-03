@@ -61,8 +61,8 @@ const doctors_list = async (req, res) => {
 
     const defaultDepts = [
       'Cardiology', 'Neurology', 'Orthopedics', 'Oncology', 'Pediatrics', 
-      'Pulmonology', 'Gastroenterology', 'Ophthalmology', 'Nephrology', 
-      'Dermatology', 'Psychiatry', 'General Medicine', 'ENT', 'Emergency'
+      'Pulmonology', 'Gastroenterology', 'Ophthalmology', 'Nephrology',
+      'Dermatology', 'Psychiatry', 'General Medicine', 'ENT'
     ];
     const [dbDepartments] = await db.execute("SELECT DISTINCT department FROM doctor_details WHERE department IS NOT NULL AND department != '' ORDER BY department");
     const departments = [...new Set([...defaultDepts, ...dbDepartments.map(d => d.department)])].sort();
