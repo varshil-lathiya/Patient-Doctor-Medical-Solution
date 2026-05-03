@@ -1,7 +1,7 @@
 const db = require("../config/db.config");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const mailSender = require("../utils/mail_sender");
-const { cancellationTemplate } = require("../utils/email_templates");
+const { cancellationTemplate, rescheduleTemplate } = require("../utils/email_templates");
 const logger = require("../utils/logger");
 const { todayIST, currentTimeIST } = require("../utils/time");
 
@@ -274,6 +274,22 @@ const cancelAppointment = async (req, res) => {
 const rescheduleAppointment = async (req, res) => {
   const { old_slot_id, new_slot_id, patient_id } = req.body;
   try {
+    const [[oldSlot]] = await db.execute(
+      `SELECT a.slot_date, a.slot_start, p.email, p.firstname, p.lastname,
+              s.firstname AS doc_first, s.lastname AS doc_last, dd.department
+       FROM appointment_slots a
+       JOIN patients p ON a.patient_id = p.id
+       JOIN staff s ON a.doctor_id = s.id
+       JOIN doctor_details dd ON s.id = dd.doctor_id
+       WHERE a.id = ?`,
+      [old_slot_id]
+    );
+
+    const [[newSlot]] = await db.execute(
+      "SELECT slot_date, slot_start FROM appointment_slots WHERE id = ?",
+      [new_slot_id]
+    );
+
     await db.beginTransaction();
 
     await db.execute(
@@ -287,6 +303,20 @@ const rescheduleAppointment = async (req, res) => {
     );
 
     await db.commit();
+
+    if (oldSlot && newSlot) {
+      const html = rescheduleTemplate({
+        patientName: `${oldSlot.firstname} ${oldSlot.lastname}`,
+        doctorName: `${oldSlot.doc_first} ${oldSlot.doc_last}`,
+        department: oldSlot.department,
+        newSlotDate: newSlot.slot_date,
+        newSlotStart: newSlot.slot_start,
+        oldSlotDate: oldSlot.slot_date,
+        oldSlotStart: oldSlot.slot_start,
+      });
+      mailSender(oldSlot.email, 'Your Appointment Has Been Rescheduled – Kalp Hospital', '', html);
+    }
+
     res.status(200).json({ message: "Appointment rescheduled successfully" });
   } catch (error) {
     await db.rollback();
