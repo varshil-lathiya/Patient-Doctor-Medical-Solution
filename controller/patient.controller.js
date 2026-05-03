@@ -415,20 +415,22 @@ const patientHistoryPage = async (req, res) => {
 const patientAppoinmentPage = async (req, res) => {
   try {
     const patientId = req.user.id;
+    const today = todayIST();
+    const nowTime = currentTimeIST();
     const [appointments] = await db.execute(`
       SELECT a.*, s.firstname as d_first, s.lastname as d_last, dd.department, s.profile_pic,
-      CASE 
-          WHEN a.status = 'is_occupied' AND (a.slot_date < CURDATE() OR (a.slot_date = CURDATE() AND a.slot_start < CURTIME())) THEN 'missed'
+      CASE
+          WHEN a.status = 'is_occupied' AND (a.slot_date < ? OR (a.slot_date = ? AND a.slot_start < ?)) THEN 'missed'
           WHEN a.status = 'is_occupied' THEN 'upcoming'
           WHEN a.status = 'is_fulfilled' THEN 'fulfilled'
-          ELSE a.status 
+          ELSE a.status
       END as display_status
-      FROM appointment_slots a 
-      JOIN staff s ON a.doctor_id = s.id 
-      JOIN doctor_details dd ON s.id = dd.doctor_id 
+      FROM appointment_slots a
+      JOIN staff s ON a.doctor_id = s.id
+      JOIN doctor_details dd ON s.id = dd.doctor_id
       WHERE a.patient_id = ?
       ORDER BY a.slot_date DESC, a.slot_start DESC
-    `, [patientId]);
+    `, [today, today, nowTime, patientId]);
     res.render("patient/patient_appoinments", { appointments, user: req.user });
   } catch (error) {
     console.error("Patient appointments error:", error);

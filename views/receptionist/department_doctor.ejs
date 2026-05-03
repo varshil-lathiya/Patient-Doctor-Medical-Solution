@@ -264,7 +264,8 @@
                 document.getElementById('slot-modal').classList.remove('hidden');
                 document.body.style.overflow = 'hidden';
 
-                const today = new Date().toISOString().split('T')[0];
+                const _t = new Date();
+                const today = _t.getFullYear() + '-' + String(_t.getMonth() + 1).padStart(2, '0') + '-' + String(_t.getDate()).padStart(2, '0');
                 fetchSlots(today);
             }
 

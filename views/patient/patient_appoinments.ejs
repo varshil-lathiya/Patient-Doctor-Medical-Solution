@@ -375,7 +375,7 @@
         for (let i = 1; i < 8; i++) {
           const date = new Date(today);
           date.setDate(today.getDate() + i);
-          const dateStr = date.toISOString().split('T')[0];
+          const dateStr = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
           const btn = document.createElement('button');
           btn.className = `flex-shrink-0 w-16 h-20 rounded-2xl flex flex-col items-center justify-center transition-all border-2 bg-white text-gray-600 border-gray-100 hover:border-primary-teal`;
           btn.onclick = () => selectRescheduleDate(dateStr, btn);

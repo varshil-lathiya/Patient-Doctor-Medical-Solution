@@ -7,19 +7,20 @@ const { todayIST, currentTimeIST } = require("../utils/time");
 
 const receptionistDashboardPage = async (req, res) => {
   try {
-    const [[{ pendingToday }]] = await db.execute("SELECT COUNT(*) as pendingToday FROM appointment_slots WHERE status = 'is_occupied' AND slot_date = CURDATE()");
+    const today = todayIST();
+    const [[{ pendingToday }]] = await db.execute("SELECT COUNT(*) as pendingToday FROM appointment_slots WHERE status = 'is_occupied' AND slot_date = ?", [today]);
     const [[{ patientCount }]] = await db.execute("SELECT COUNT(*) as patientCount FROM patients");
 
     // Fetch Upcoming Appointments (Occupied and Date >= Today)
     const [upcoming] = await db.execute(`
       SELECT a.*, p.firstname as p_first, p.lastname as p_last, p.email as p_email, s.firstname as d_first, s.lastname as d_last, dd.department
-      FROM appointment_slots a 
-      JOIN patients p ON a.patient_id = p.id 
-      JOIN staff s ON a.doctor_id = s.id 
+      FROM appointment_slots a
+      JOIN patients p ON a.patient_id = p.id
+      JOIN staff s ON a.doctor_id = s.id
       JOIN doctor_details dd ON s.id = dd.doctor_id
-      WHERE a.status = 'is_occupied' AND a.slot_date >= CURDATE()
+      WHERE a.status = 'is_occupied' AND a.slot_date >= ?
       ORDER BY a.slot_date, a.slot_start
-    `);
+    `, [today]);
 
     // Fetch In Process Appointments
     const [inProcess] = await db.execute(`
@@ -47,13 +48,13 @@ const receptionistDashboardPage = async (req, res) => {
     // Fetch Absent Appointments (Occupied but Date < Today)
     const [absent] = await db.execute(`
       SELECT a.*, p.firstname as p_first, p.lastname as p_last, p.email as p_email, s.firstname as d_first, s.lastname as d_last, dd.department
-      FROM appointment_slots a 
-      JOIN patients p ON a.patient_id = p.id 
-      JOIN staff s ON a.doctor_id = s.id 
+      FROM appointment_slots a
+      JOIN patients p ON a.patient_id = p.id
+      JOIN staff s ON a.doctor_id = s.id
       JOIN doctor_details dd ON s.id = dd.doctor_id
-      WHERE a.status = 'is_occupied' AND a.slot_date < CURDATE()
+      WHERE a.status = 'is_occupied' AND a.slot_date < ?
       ORDER BY a.slot_date DESC, a.slot_start DESC
-    `);
+    `, [today]);
 
     res.render("receptionist/receptionist_dashboard", {
       user: req.user,

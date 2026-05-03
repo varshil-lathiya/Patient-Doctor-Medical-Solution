@@ -1,36 +1,38 @@
 const db = require("../config/db.config");
+const { todayIST } = require("../utils/time");
 
 const doctorDashboard = async (req, res) => {
   try {
     const doctor_id = req.user.id;
+    const today = todayIST();
 
     // 1. Get Today's Pending Appointments (In Process)
     const [pendingToday] = await db.execute(`
-      SELECT a.*, p.firstname, p.lastname, p.gender, p.dob 
-      FROM appointment_slots a 
-      JOIN patients p ON a.patient_id = p.id 
+      SELECT a.*, p.firstname, p.lastname, p.gender, p.dob
+      FROM appointment_slots a
+      JOIN patients p ON a.patient_id = p.id
       WHERE a.doctor_id = ? AND a.status = 'is_in_process'
       ORDER BY a.slot_start
     `, [doctor_id]);
 
     // 2. Get Today's Upcoming Appointments (Occupied but not yet in process)
     const [upcomingToday] = await db.execute(`
-      SELECT a.*, p.firstname, p.lastname, p.gender, p.dob 
-      FROM appointment_slots a 
-      JOIN patients p ON a.patient_id = p.id 
-      WHERE a.doctor_id = ? AND a.status = 'is_occupied' AND DATE(a.slot_date) = CURDATE()
+      SELECT a.*, p.firstname, p.lastname, p.gender, p.dob
+      FROM appointment_slots a
+      JOIN patients p ON a.patient_id = p.id
+      WHERE a.doctor_id = ? AND a.status = 'is_occupied' AND a.slot_date = ?
       ORDER BY a.slot_start
-    `, [doctor_id]);
+    `, [doctor_id, today]);
 
     // 3. Get Statistics for Today
     const [stats] = await db.execute(`
-      SELECT 
+      SELECT
         COUNT(*) as total,
         SUM(CASE WHEN status IN ('is_occupied', 'is_in_process') THEN 1 ELSE 0 END) as pending,
         SUM(CASE WHEN status = 'is_fulfilled' THEN 1 ELSE 0 END) as fulfilled
-      FROM appointment_slots 
-      WHERE doctor_id = ? AND DATE(slot_date) = CURDATE()
-    `, [doctor_id]);
+      FROM appointment_slots
+      WHERE doctor_id = ? AND slot_date = ?
+    `, [doctor_id, today]);
 
     res.render("doctor/doctor_dashboard", {
       user: req.user,
@@ -47,24 +49,25 @@ const doctorDashboard = async (req, res) => {
 const doctorAppoinmentPage = async (req, res) => {
   try {
     const doctor_id = req.user.id;
+    const today = todayIST();
 
     // 1. Upcoming Appointments (Today and Future)
     const [upcoming] = await db.execute(`
-      SELECT a.*, p.firstname, p.lastname, p.gender, p.dob 
-      FROM appointment_slots a 
-      JOIN patients p ON a.patient_id = p.id 
-      WHERE a.doctor_id = ? AND (a.status = 'is_in_process' OR (a.status = 'is_occupied' AND DATE(a.slot_date) >= CURDATE()))
+      SELECT a.*, p.firstname, p.lastname, p.gender, p.dob
+      FROM appointment_slots a
+      JOIN patients p ON a.patient_id = p.id
+      WHERE a.doctor_id = ? AND (a.status = 'is_in_process' OR (a.status = 'is_occupied' AND a.slot_date >= ?))
       ORDER BY a.slot_date, a.slot_start
-    `, [doctor_id]);
+    `, [doctor_id, today]);
 
     // 2. Past Appointments (No-show: past date and still occupied/in-process)
     const [past] = await db.execute(`
-      SELECT a.*, p.firstname, p.lastname, p.gender, p.dob 
-      FROM appointment_slots a 
-      JOIN patients p ON a.patient_id = p.id 
-      WHERE a.doctor_id = ? AND a.status IN ('is_occupied', 'is_in_process') AND DATE(a.slot_date) < CURDATE()
+      SELECT a.*, p.firstname, p.lastname, p.gender, p.dob
+      FROM appointment_slots a
+      JOIN patients p ON a.patient_id = p.id
+      WHERE a.doctor_id = ? AND a.status IN ('is_occupied', 'is_in_process') AND a.slot_date < ?
       ORDER BY a.slot_date DESC, a.slot_start DESC
-    `, [doctor_id]);
+    `, [doctor_id, today]);
 
     // 3. Completed Appointments (Fulfilled) - Limit to 50 for performance
     const [completed] = await db.execute(`

@@ -746,7 +746,8 @@
                 generateDateButtons();
                 showModal('reschedule-modal');
 
-                const today = new Date().toISOString().split('T')[0];
+                const _t = new Date();
+                const today = _t.getFullYear() + '-' + String(_t.getMonth() + 1).padStart(2, '0') + '-' + String(_t.getDate()).padStart(2, '0');
                 fetchSlotsForDate(document.querySelector('#reschedule-date-grid .date-btn'), today);
             }
 
@@ -758,7 +759,7 @@
                 for (let i = 0; i < 7; i++) {
                     const d = new Date(today);
                     d.setDate(today.getDate() + i);
-                    const dateStr = d.toISOString().split('T')[0];
+                    const dateStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
                     const btn = document.createElement('button');
                     btn.type = 'button';
                     btn.className = `date-btn border-2 ${i === 0 ? 'bg-primary-teal border-primary-teal text-white' : 'bg-white border-gray-200 text-gray-700'} px-4 py-3 rounded-lg font-semibold text-sm transition-all`;
