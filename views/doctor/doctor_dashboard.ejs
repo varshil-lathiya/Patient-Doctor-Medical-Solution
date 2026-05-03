@@ -40,27 +40,33 @@
         .appointment-card {
             animation: slideIn 0.5s ease forwards;
         }
+
+        @media (max-width: 1023px) {
+            .doctor-dashboard-shell > .w-80 {
+                display: none;
+            }
+        }
     </style>
 </head>
 
 <body class="bg-gray-50">
-    <div class="flex min-h-screen">
+    <div class="doctor-dashboard-shell flex min-h-screen">
         <!-- Sidebar Navigation -->
         <%- include('../components/doctor-sidebar', { currentPage: 'dashboard' }) %>
 
             <!-- Main Content Area -->
-            <div class="flex-1 overflow-y-auto">
+            <div class="flex-1 overflow-y-auto min-w-0">
                 <!-- Header -->
                 <div class="bg-white shadow-sm border-b">
-                    <div class="px-8 py-6">
-                        <h1 class="text-3xl font-bold text-gray-800">Dashboard</h1>
+                    <div class="px-4 sm:px-6 lg:px-8 py-5 sm:py-6">
+                        <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Dashboard</h1>
                         <p class="text-gray-500 mt-1">Welcome back, <span id="welcome-name">Dr. <%= user.firstname %>
                                     <%= user.lastname %></span></p>
                     </div>
                 </div>
 
                 <!-- Dashboard Content -->
-                <div class="p-8">
+                <div class="p-4 sm:p-6 lg:p-8">
                     <!-- Statistics Cards -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                         <!-- Pending Appointments Today -->
@@ -122,7 +128,7 @@
                     </div>
 
                     <!-- Today's Pending Appointments Section -->
-                    <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+                    <div class="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-8">
                         <div class="flex items-center gap-3 mb-6">
                             <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
                                 <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor"
@@ -131,12 +137,12 @@
                                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
                             </div>
-                            <h3 class="text-2xl font-bold text-amber-600">Pending Appointments Today</h3>
+                            <h3 class="text-xl sm:text-2xl font-bold text-amber-600">Pending Appointments Today</h3>
                         </div>
                         <div class="border-t-2 border-amber-600 mb-6"></div>
 
                         <div id="pending-appointments" class="overflow-x-auto">
-                            <table class="w-full">
+                            <table class="w-full min-w-[760px]">
                                 <thead>
                                     <tr class="bg-gradient-to-r from-amber-50 to-orange-50">
                                         <th
@@ -232,7 +238,7 @@
                     </div>
 
                     <!-- Upcoming Appointments Today Section -->
-                    <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <div class="bg-white rounded-2xl shadow-lg p-4 sm:p-6">
                         <div class="flex items-center gap-3 mb-6">
                             <div class="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center">
                                 <svg class="w-6 h-6 text-teal-600" fill="none" stroke="currentColor"
@@ -242,12 +248,12 @@
                                     </path>
                                 </svg>
                             </div>
-                            <h3 class="text-2xl font-bold text-teal-600">Upcoming Appointments Today</h3>
+                            <h3 class="text-xl sm:text-2xl font-bold text-teal-600">Upcoming Appointments Today</h3>
                         </div>
                         <div class="border-t-2 border-teal-600 mb-6"></div>
 
                         <div id="upcoming-appointments-today" class="overflow-x-auto">
-                            <table class="w-full">
+                            <table class="w-full min-w-[700px]">
                                 <thead>
                                     <tr class="bg-gradient-to-r from-teal-50 to-cyan-50">
                                         <th

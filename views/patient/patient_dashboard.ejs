@@ -28,6 +28,50 @@
             }
         }
     </script>
+    <style>
+        @media (max-width: 1023px) {
+            body > aside {
+                display: none !important;
+            }
+
+            #right-section {
+                margin-left: 0 !important;
+                padding: 1rem !important;
+            }
+
+            .patient-dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .patient-dashboard-stats {
+                width: 100%;
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 0.75rem;
+            }
+
+            .patient-dashboard-stats a,
+            .patient-dashboard-stats a > div {
+                width: 100%;
+            }
+
+            .patient-dashboard-stats a:hover {
+                transform: none;
+            }
+
+            .specialty-card-title {
+                overflow-wrap: anywhere;
+            }
+        }
+
+        @media (max-width: 639px) {
+            .patient-dashboard-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 
 <body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
@@ -39,7 +83,7 @@
         <main class="ml-64 min-h-screen p-8" id="right-section">
 
             <% if (locals.emergencyCancellations && emergencyCancellations.length > 0) { %>
-                <div class="mb-8 p-6 bg-red-50 border-l-4 border-red-500 rounded-r-xl shadow-sm flex items-start gap-4">
+                <div class="mb-8 p-4 sm:p-6 bg-red-50 border-l-4 border-red-500 rounded-r-xl shadow-sm flex items-start gap-4">
                     <i class="fas fa-exclamation-triangle text-red-500 text-2xl mt-1"></i>
                     <div>
                         <h3 class="text-xl font-bold text-red-800 mb-1">Emergency Cancellation Notice</h3>
@@ -55,13 +99,13 @@
             <% } %>
 
             <!-- Page Header -->
-            <div class="mb-8 flex items-center justify-between">
+            <div class="patient-dashboard-header mb-8 flex items-center justify-between">
                 <div>
-                    <h1 class="text-4xl font-bold text-gray-900 mb-2">Dashboard</h1>
+                    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Dashboard</h1>
                     <p class="text-gray-600">Welcome back, <%= locals.user ? user.firstname : 'Patient' %>! Here's your
                             healthcare overview</p>
                 </div>
-                <div class="flex gap-4">
+                <div class="patient-dashboard-stats flex gap-4">
                     <a href="/patient/appointments" class="hover:scale-105 transition-transform duration-200">
                         <div class="p-4 rounded-2xl shadow-sm border flex items-center gap-4 <%= (locals.emergencyCancellations && emergencyCancellations.length > 0) ? 'bg-red-50 border-red-500 animate-pulse' : 'bg-white border-gray-100' %>">
                             <div class="w-12 h-12 rounded-xl flex items-center justify-center <%= (locals.emergencyCancellations && emergencyCancellations.length > 0) ? 'bg-red-200' : 'bg-blue-100' %>">
@@ -93,8 +137,8 @@
 
             <!-- Browse Specialties Section -->
             <section class="mb-12">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                    <h2 class="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-3">
                         <i class="fas fa-hospital text-primary-teal"></i>
                         Browse Specialties
                     </h2>
@@ -150,7 +194,7 @@
                                                 <i class="fa-solid <%= config.icon %> fa-fw text-2xl <%= config.iconColor %> <%= config.hover %>"></i>
                                             <% } %>
                                         </div>
-                                        <h3 class="text-xl font-bold text-gray-900">
+                                        <h3 class="specialty-card-title text-xl font-bold text-gray-900">
                                             <%= spec.department %>
                                         </h3>
                                     </div>

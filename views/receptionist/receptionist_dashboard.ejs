@@ -32,6 +32,82 @@
             }
         }
     </script>
+    <style>
+        @media (max-width: 1023px) {
+            body > aside {
+                display: none !important;
+            }
+
+            #right-section {
+                margin-left: 0 !important;
+                padding: 1rem !important;
+            }
+
+            .dashboard-tabs {
+                overflow-x: auto;
+                padding-bottom: 0.25rem;
+            }
+
+            .dashboard-tabs > div {
+                min-width: max-content;
+            }
+
+            .appointment-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+
+            .appointment-people {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .appointment-people h3,
+            .appointment-people p {
+                overflow-wrap: anywhere;
+            }
+
+            .appointment-divider {
+                display: none;
+            }
+
+            .appointment-time {
+                border-left: 0;
+                border-right: 0;
+                border-top: 1px solid #e5e7eb;
+                border-bottom: 1px solid #e5e7eb;
+                padding: 1rem 0;
+                text-align: left;
+            }
+
+            .appointment-actions {
+                flex-wrap: wrap;
+            }
+
+            .appointment-actions > button,
+            .appointment-actions > span {
+                width: 100%;
+                justify-content: center;
+            }
+
+            #reschedule-date-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+
+            #reschedule-slot-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 639px) {
+            #reschedule-date-grid,
+            #reschedule-slot-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+    </style>
 </head>
 
 <body class="bg-gray-50 min-h-screen">
@@ -43,7 +119,7 @@
         <main class="ml-64 min-h-screen p-8" id="right-section">
 
             <!-- Tab Buttons -->
-            <div class="mb-8">
+            <div class="dashboard-tabs mb-8">
                 <div class="flex gap-3">
                     <button id="upcoming-btn" onclick="showUpcoming()"
                         class="px-8 py-3 bg-primary-teal text-white font-semibold rounded-lg transition-all hover:bg-teal-700">
@@ -70,8 +146,8 @@
                     <% appointments.upcoming.forEach(app=> { %>
                         <div
                             class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200 p-6">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-6">
+                            <div class="appointment-row flex items-center justify-between">
+                                <div class="appointment-people flex items-center gap-6">
                                     <!-- Doctor -->
                                     <div class="flex items-center gap-3">
                                         <div
@@ -90,7 +166,7 @@
                                         </div>
                                     </div>
                                     <!-- Divider -->
-                                    <div class="h-16 w-px bg-gray-300"></div>
+                                    <div class="appointment-divider h-16 w-px bg-gray-300"></div>
                                     <!-- Patient -->
                                     <div class="flex items-center gap-3">
                                         <div
@@ -111,7 +187,7 @@
                                     </div>
                                 </div>
                                 <!-- Middle: Date & Time -->
-                                <div class="text-center px-6 border-l border-r border-gray-200">
+                                <div class="appointment-time text-center px-6 border-l border-r border-gray-200">
                                     <p class="text-2xl font-bold text-gray-900">
                                         <%= new Date(app.slot_date).toLocaleDateString() %>
                                     </p>
@@ -120,7 +196,7 @@
                                     </p>
                                 </div>
                                 <!-- Right: Action Buttons -->
-                                <div class="flex gap-2">
+                                <div class="appointment-actions flex gap-2">
                                     <button onclick="sendToDoctor('<%= app.id %>')"
                                         <%= appointments.inProcess.some(ip => ip.doctor_id == app.doctor_id) ? 'disabled' : '' %>
                                         class="<%= appointments.inProcess.some(ip => ip.doctor_id == app.doctor_id) ? 'bg-gray-400 cursor-not-allowed' : 'bg-primary-teal hover:bg-teal-700' %> text-white font-semibold px-5 py-2.5 rounded-lg transition-all flex items-center gap-2">
@@ -162,8 +238,8 @@
                                     In Process
                                 </span>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-6">
+                            <div class="appointment-row flex items-center justify-between">
+                                <div class="appointment-people flex items-center gap-6">
                                     <div class="flex items-center gap-3">
                                         <div class="w-16 h-16 rounded-full overflow-hidden border-4 border-primary-teal shadow-lg flex-shrink-0">
                                             <img src="https://ui-avatars.com/api/?name=Dr+<%= app.d_first %>+<%= app.d_last %>&size=64&background=008B8B&color=fff&bold=true" alt="Doctor" class="w-full h-full object-cover" />
@@ -174,7 +250,7 @@
                                             <p class="text-sm text-gray-600"><%= app.department %></p>
                                         </div>
                                     </div>
-                                    <div class="h-16 w-px bg-gray-200"></div>
+                                    <div class="appointment-divider h-16 w-px bg-gray-200"></div>
                                     <div class="flex items-center gap-3">
                                         <div class="w-16 h-16 rounded-full overflow-hidden border-4 border-blue-500 shadow-lg flex-shrink-0">
                                             <img src="https://ui-avatars.com/api/?name=<%= app.p_first %>+<%= app.p_last %>&size=64&background=0066CC&color=fff&bold=true" alt="Patient" class="w-full h-full object-cover" />
@@ -186,11 +262,11 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="text-center px-6 border-l border-r border-gray-200">
+                                <div class="appointment-time text-center px-6 border-l border-r border-gray-200">
                                     <p class="text-2xl font-bold text-gray-900"><%= app.slot_start %></p>
                                     <p class="text-gray-500 text-sm">Session Started</p>
                                 </div>
-                                <div class="flex items-center gap-2">
+                                <div class="appointment-actions flex items-center gap-2">
                                     <span class="flex h-3 w-3 relative">
                                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
                                         <span class="relative inline-flex rounded-full h-3 w-3 bg-teal-500"></span>
@@ -214,8 +290,8 @@
                     <% appointments.completed.forEach(app => { %>
                         <div
                             class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200 p-6 opacity-75">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-6">
+                            <div class="appointment-row flex items-center justify-between">
+                                <div class="appointment-people flex items-center gap-6">
                                     <div class="flex items-center gap-3">
                                         <div
                                             class="w-16 h-16 rounded-full overflow-hidden border-4 border-gray-400 shadow-lg flex-shrink-0">
@@ -233,7 +309,7 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <div class="h-16 w-px bg-gray-300"></div>
+                                    <div class="appointment-divider h-16 w-px bg-gray-300"></div>
                                     <div class="flex items-center gap-3">
                                         <div
                                             class="w-16 h-16 rounded-full overflow-hidden border-4 border-gray-400 shadow-lg flex-shrink-0">
@@ -252,7 +328,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="text-center px-6 border-l border-r border-gray-200">
+                                <div class="appointment-time text-center px-6 border-l border-r border-gray-200">
                                     <p class="text-2xl font-bold text-gray-900">
                                         <%= new Date(app.slot_date).toLocaleDateString() %>
                                     </p>
@@ -260,7 +336,7 @@
                                         <%= app.slot_start %>
                                     </p>
                                 </div>
-                                <div>
+                                <div class="appointment-actions flex">
                                     <span
                                         class="bg-green-500 text-white font-bold px-6 py-3 rounded-lg text-lg">Completed</span>
                                 </div>
@@ -282,8 +358,8 @@
                     <% appointments.absent.forEach(app=> { %>
                         <div
                             class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200 p-6">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-6">
+                            <div class="appointment-row flex items-center justify-between">
+                                <div class="appointment-people flex items-center gap-6">
                                     <div class="flex items-center gap-3">
                                         <div
                                             class="w-16 h-16 rounded-full overflow-hidden border-4 border-yellow-500 shadow-lg flex-shrink-0">
@@ -301,7 +377,7 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <div class="h-16 w-px bg-gray-300"></div>
+                                    <div class="appointment-divider h-16 w-px bg-gray-300"></div>
                                     <div class="flex items-center gap-3">
                                         <div
                                             class="w-16 h-16 rounded-full overflow-hidden border-4 border-yellow-500 shadow-lg flex-shrink-0">
@@ -320,7 +396,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="text-center px-6 border-l border-r border-gray-200">
+                                <div class="appointment-time text-center px-6 border-l border-r border-gray-200">
                                     <p class="text-2xl font-bold text-gray-900">
                                         <%= new Date(app.slot_date).toLocaleDateString() %>
                                     </p>
@@ -328,7 +404,7 @@
                                         <%= app.slot_start %>
                                     </p>
                                 </div>
-                                <div>
+                                <div class="appointment-actions flex">
                                     <span class="bg-yellow-500 text-white font-bold px-6 py-3 rounded-lg text-lg">Not
                                         Attended</span>
                                 </div>
@@ -433,7 +509,7 @@
                 </div>
                 <div class="p-6">
                     <form id="patient-verify-form" class="mb-4">
-                        <div class="flex gap-2">
+                        <div class="flex flex-col sm:flex-row gap-2">
                             <input type="text" id="patientEmail" placeholder="Patient Email Id"
                                 class="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-teal focus:border-transparent" />
                             <button type="button" onclick="verifyPatient()"
@@ -706,7 +782,7 @@
 
             async function fetchSlots(date) {
                 const slotContainer = document.getElementById('reschedule-slot-grid');
-                slotContainer.innerHTML = '<p class="col-span-4 text-center text-gray-500">Loading slots...</p>';
+                slotContainer.innerHTML = '<p class="col-span-full text-center text-gray-500">Loading slots...</p>';
 
                 try {
                     const response = await fetch(`/receptionist/get-slots?doctor_id=${currentDoctorId}&date=${date}`);
@@ -723,10 +799,10 @@
                     `).join('');
                     } else {
                         const msg = data.message || 'No slots available';
-                        slotContainer.innerHTML = `<p class="col-span-4 text-center text-red-500">${msg}</p>`;
+                        slotContainer.innerHTML = `<p class="col-span-full text-center text-red-500">${msg}</p>`;
                     }
                 } catch (err) {
-                    slotContainer.innerHTML = '<p class="col-span-4 text-center text-red-500">Failed to load slots</p>';
+                    slotContainer.innerHTML = '<p class="col-span-full text-center text-red-500">Failed to load slots</p>';
                 }
             }
 
