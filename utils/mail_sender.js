@@ -13,7 +13,7 @@ async function mailSender(to, subject, text, html) {
   logger.info('MAIL', 'Sending email', { to: masked, subject });
 
   const { data, error } = await resend.emails.send({
-    from: process.env.SYSTEM_MAIL_FROM || 'PDMS <noreply@yourdomain.com>',
+    from: process.env.SYSTEM_MAIL_FROM || 'PDMS <onboarding@resend.dev>',
     to,
     subject,
     text: text || '',
