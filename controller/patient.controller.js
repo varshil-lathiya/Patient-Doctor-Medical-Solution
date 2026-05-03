@@ -1,5 +1,6 @@
 const db = require("../config/db.config");
 const mailSender = require("../utils/mail_sender");
+const { otpTemplate } = require("../utils/email_templates");
 const bcrypt = require("bcrypt");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const doctorPricing = require("../config/doctor_pricing");
@@ -412,8 +413,8 @@ const patientEmailVerification = async (req, res) => {
     const otp = generateOTP();
     const hashedOTP = await bcrypt.hash(otp.toString(), 10);
 
-    const subject = "Your OTP for Patient Registration";
-    const html = `<p>Hello,</p><p>Your OTP for registration is: <b>${otp}</b></p><p>This OTP is valid for 10 minutes.</p>`;
+    const subject = "Your OTP for Patient Registration – Kalp Hospital";
+    const html = otpTemplate({ otp, heading: "Verify Your Email", subheading: "Complete your registration at Kalp Hospital", purpose: "patient registration" });
 
     mailSender(email, subject, "", html);
 
@@ -450,8 +451,8 @@ const loginPatientEmailVerification = async (req, res) => {
 
     const hashedOTP = await bcrypt.hash(otp.toString(), 10);
 
-    const subject = "Your OTP for Patient Login";
-    const html = `<p>Hello,</p><p>Your OTP for Login is: <b>${otp}</b></p><p>This OTP is valid for 10 minutes.</p>`;
+    const subject = "Your OTP for Patient Login – Kalp Hospital";
+    const html = otpTemplate({ otp, heading: "Login to Your Account", subheading: "Use the OTP below to sign in to Kalp Hospital", purpose: "patient login" });
 
     mailSender(email, subject, "", html);
 
