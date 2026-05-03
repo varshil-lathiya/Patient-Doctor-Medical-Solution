@@ -160,10 +160,10 @@
                                             <td class="px-6 py-5">
                                                 <div class="text-sm">
                                                     <p class="font-bold text-gray-900">
-                                                        <%= new Date(leave.from_date).toLocaleDateString() %> - <%= new Date(leave.to_date).toLocaleDateString() %>
+                                                        <%= new Date(leave.from_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %> - <%= new Date(leave.to_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %>
                                                     </p>
                                                     <p class="text-xs text-gray-500 italic">
-                                                        Applied: <%= new Date(leave.created_at).toLocaleDateString() %>
+                                                        Applied: <%= new Date(leave.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %>
                                                     </p>
                                                 </div>
                                             </td>

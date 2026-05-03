@@ -80,7 +80,7 @@ async function viewProfile(id) {
                                 <i class="fas fa-birthday-cake text-pink-500 mt-1"></i>
                                 <div>
                                     <p class="text-xs text-gray-500 uppercase font-semibold">Date of Birth</p>
-                                    <p class="text-gray-900 font-medium">${data.dob ? new Date(data.dob).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Not provided'}</p>
+                                    <p class="text-gray-900 font-medium">${data.dob ? new Date(data.dob).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Not provided'}</p>
                                 </div>
                             </div>
                         </div>

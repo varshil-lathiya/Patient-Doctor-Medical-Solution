@@ -143,7 +143,7 @@
                     <div class="flex gap-2 text-sm">
                       <span class="text-primary-teal font-bold min-w-[110px]">Dob :</span>
                       <span class="text-gray-700">
-                        <%= patient.dob ? new Date(patient.dob).toISOString().split('T')[0] : 'N/A' %>
+                        <%= patient.dob ? new Date(patient.dob).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A' %>
                       </span>
                     </div>
                     <div class="flex gap-2 text-sm">

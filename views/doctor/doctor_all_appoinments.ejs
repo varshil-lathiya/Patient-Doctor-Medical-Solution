@@ -160,7 +160,7 @@
                                                             <%= app.gender %>
                                                         </span>
                                                     </td>
-                                                    <td class="px-6 py-4 text-gray-700 font-medium"><%= new Date(app.slot_date).toLocaleDateString('en-GB') %></td>
+                                                    <td class="px-6 py-4 text-gray-700 font-medium"><%= new Date(app.slot_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %></td>
                                                     <td class="px-6 py-4">
                                                         <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 text-green-700 text-sm font-medium">
                                                             <i class="far fa-clock"></i>
@@ -234,7 +234,7 @@
                                                             <span class="font-medium text-gray-700"><%= app.firstname %> <%= app.lastname %></span>
                                                         </div>
                                                     </td>
-                                                    <td class="px-6 py-4 text-gray-600"><%= new Date(app.slot_date).toLocaleDateString('en-GB') %></td>
+                                                    <td class="px-6 py-4 text-gray-600"><%= new Date(app.slot_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %></td>
                                                      <td class="px-6 py-4 text-gray-600 font-medium"><%= app.slot_start %></td>
                                                  </tr>
                                             <% }); %>
@@ -278,7 +278,7 @@
                                             <% completed.forEach((app) => { %>
                                                 <tr class="appointment-row hover:bg-gray-50 transition border-l-4 border-transparent hover:border-green-500">
                                                     <td class="px-6 py-4 text-gray-800 font-semibold"><%= app.firstname %> <%= app.lastname %></td>
-                                                    <td class="px-6 py-4 text-gray-600"><%= new Date(app.slot_date).toLocaleDateString('en-GB') %></td>
+                                                    <td class="px-6 py-4 text-gray-600"><%= new Date(app.slot_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %></td>
                                                     <td class="px-6 py-4 text-gray-600 font-medium"><%= app.slot_start %></td>
                                                     <td class="px-6 py-4">
                                                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800 border border-green-200">

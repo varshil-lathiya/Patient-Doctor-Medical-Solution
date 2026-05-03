@@ -334,7 +334,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                               </svg>
-                              <%= new Date(record.slot_date).toLocaleDateString() %> • Dr. <%= record.doc_first %>
+                              <%= new Date(record.slot_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %> • Dr. <%= record.doc_first %>
                                   <%= record.doc_last %>
                             </p>
                           </div>
@@ -469,7 +469,7 @@
                           <%= report.report_name %>
                         </p>
                         <p class="text-sm text-gray-500">
-                          <%= new Date(report.upload_date).toLocaleDateString() %>
+                          <%= new Date(report.upload_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %>
                         </p>
                       </div>
                     </div>
@@ -812,7 +812,7 @@
 
         if (contentEl && dateEl && docEl && modalEl) {
           contentEl.innerHTML = content;
-          dateEl.innerText = record.slot_date ? new Date(record.slot_date).toLocaleDateString() : 'N/A';
+          dateEl.innerText = record.slot_date ? new Date(record.slot_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A';
           docEl.innerText = `Dr. ${record.doc_first || ''} ${record.doc_last || ''}`;
           modalEl.classList.remove("hidden");
           document.body.style.overflow = "hidden";

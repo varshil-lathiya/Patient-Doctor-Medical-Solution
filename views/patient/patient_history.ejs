@@ -68,7 +68,7 @@
                                 <div class="flex items-center justify-between mb-2">
                                     <p class="text-sm font-bold text-gray-400 uppercase tracking-widest">Diagnosis</p>
                                     <p class="text-xs font-bold text-gray-400">
-                                        <%= new Date(record.slot_date).toLocaleDateString() %> • <%= record.slot_start
+                                        <%= new Date(record.slot_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %> • <%= record.slot_start
                                                 %>
                                     </p>
                                 </div>

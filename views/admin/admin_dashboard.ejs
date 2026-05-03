@@ -59,7 +59,7 @@
                 <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200 animate-in max-w-full">
                     <i class="far fa-calendar-alt text-indigo-600 text-sm"></i>
                     <p class="text-[13px] font-semibold text-slate-700 truncate">
-                        <%= new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %>
+                        <%= new Date().toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'short', year: 'numeric' }) %>
                     </p>
                 </div>
             </header>

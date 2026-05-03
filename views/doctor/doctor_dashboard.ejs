@@ -179,7 +179,7 @@
                                                 <td class="px-6 py-4">
                                                     <div class="flex items-center gap-3">
                                                         <div
-                                                            class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-400 flex items-center justify-center text-white font-semibold">
+                                                            class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-600 to-orange-600 flex items-center justify-center text-white font-semibold">
                                                             <%= app.firstname[0] %>
                                                                 <%= app.lastname[0] %>
                                                         </div>
@@ -196,7 +196,7 @@
                                                     </span>
                                                 </td>
                                                 <td class="px-6 py-4 text-gray-700 font-medium">
-                                                    <%= new Date(app.slot_date).toLocaleDateString('en-GB') %>
+                                                    <%= new Date(app.slot_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %>
                                                 </td>
                                                 <td class="px-6 py-4">
                                                     <span
@@ -287,7 +287,7 @@
                                                 <td class="px-6 py-4">
                                                     <div class="flex items-center gap-3">
                                                         <div
-                                                            class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-400 to-cyan-400 flex items-center justify-center text-white font-semibold">
+                                                            class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-600 to-cyan-600 flex items-center justify-center text-white font-semibold">
                                                             <%= app.firstname[0] %>
                                                                 <%= app.lastname[0] %>
                                                         </div>
@@ -304,7 +304,7 @@
                                                     </span>
                                                 </td>
                                                 <td class="px-6 py-4 text-gray-700 font-medium">
-                                                    <%= new Date(app.slot_date).toLocaleDateString() %>
+                                                    <%= new Date(app.slot_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %>
                                                 </td>
                                                 <td class="px-6 py-4">
                                                     <span

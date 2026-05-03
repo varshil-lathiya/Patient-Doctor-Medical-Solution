@@ -204,7 +204,7 @@
                                     </div>
                                     <div class="detail-row">
                                         <p class="text-xs font-bold text-cyan-600 uppercase tracking-widest mb-1">Gender / DOB</p>
-                                        <p class="text-gray-900 font-bold text-lg"><%= user.gender %> • <%= new Date(user.dob).toLocaleDateString() %></p>
+                                        <p class="text-gray-900 font-bold text-lg"><%= user.gender %> • <%= new Date(user.dob).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %></p>
                                     </div>
                                 </div>
                             </div>

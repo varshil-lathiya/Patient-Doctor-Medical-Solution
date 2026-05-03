@@ -73,7 +73,7 @@
             <% if (user.profile_pic) { %>
                 <img src="<%= user.profile_pic %>" alt="Doctor" class="w-full h-full object-cover">
             <% } else { %>
-                <div class="w-full h-full bg-white/20 flex items-center justify-center text-white text-2xl font-black select-none">
+                <div class="w-full h-full bg-white flex items-center justify-center text-primary-teal text-2xl font-black select-none">
                     <%= user.firstname[0].toUpperCase() %><%= user.lastname[0].toUpperCase() %>
                 </div>
             <% } %>

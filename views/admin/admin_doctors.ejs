@@ -190,8 +190,8 @@
                 </div>
                 
                 <div class="space-y-2" id="password-group">
-                    <label class="text-[12px] font-bold text-slate-400 uppercase tracking-normal ml-1">Account Password</label>
-                    <input type="text" name="password" id="staff-password" value="pdms@123" class="w-full px-6 py-4 bg-slate-50 border-0 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:bg-white outline-none transition-all font-semibold">
+                    <label class="text-[12px] font-bold text-slate-400 uppercase tracking-normal ml-1" id="password-label">Account Password</label>
+                    <input type="password" name="password" id="staff-password" value="pdms@123" placeholder="Leave blank to keep current password" class="w-full px-6 py-4 bg-slate-50 border-0 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:bg-white outline-none transition-all font-semibold">
                 </div>
                 
                 <div class="space-y-2">
@@ -311,6 +311,7 @@
             document.getElementById('staff-email').disabled = false;
             document.getElementById('password-group').style.display = 'block';
             document.getElementById('staff-password').value = 'pdms@123';
+            document.getElementById('password-label').textContent = 'Account Password';
             document.getElementById('staff-form').reset();
             openModal('staff-modal');
         }
@@ -324,7 +325,9 @@
                     document.getElementById('modal-title').textContent = 'Refine Profile';
                     document.getElementById('staff-id').value = data.id;
                     document.getElementById('staff-email').disabled = true;
-                    document.getElementById('password-group').style.display = 'none';
+                    document.getElementById('password-group').style.display = 'block';
+                    document.getElementById('staff-password').value = '';
+                    document.getElementById('password-label').textContent = 'New Password (leave blank to keep current)';
                     const form = document.getElementById('staff-form');
                     form.firstname.value = data.firstname;
                     form.lastname.value = data.lastname;

@@ -90,7 +90,7 @@
                         <p class="text-red-700 font-medium">Unfortunately, the following appointments are affected due to an unforeseen emergency leave by your doctor. Kindly reschedule them as soon as possible:</p>
                         <ul class="list-disc ml-5 mt-2 text-red-600 font-medium">
                             <% emergencyCancellations.forEach(cancel => { %>
-                                <li><strong>Dr. <%= cancel.doc_first %> <%= cancel.doc_last %></strong> on <%= new Date(cancel.slot_date).toLocaleDateString() %> at <%= cancel.slot_start %></li>
+                                <li><strong>Dr. <%= cancel.doc_first %> <%= cancel.doc_last %></strong> on <%= new Date(cancel.slot_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %> at <%= cancel.slot_start %></li>
                             <% }) %>
                         </ul>
                         <p class="mt-3 text-red-700 font-medium">Please accept our apologies and <a href="/patient/appointments" class="underline font-bold hover:text-red-900 transition">click here</a> to reschedule your appointments.</p>
