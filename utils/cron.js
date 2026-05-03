@@ -1,20 +1,14 @@
 const cron = require("node-cron");
 const db = require("../config/db.config");
-
-/**
- * Helper to get local date string (YYYY-MM-DD)
- */
-const getLocalDateString = (date = new Date()) => {
-    return date.toLocaleDateString('en-CA'); // en-CA gives YYYY-MM-DD
-};
+const { nowIST, todayIST, currentTimeIST, TZ } = require("./time");
 
 /**
  * Generates slots for a specific doctor on a specific date if they don't already exist.
  */
 const generateSlotsForDoctor = async (doctor_id, slot_date, start_time, end_time, duration) => {
     try {
-        const now = new Date();
-        const todayStr = getLocalDateString(now);
+        const todayStr = todayIST();
+        const nowTime  = currentTimeIST();
 
         // 1. Skip past dates
         if (slot_date < todayStr) return;
@@ -38,7 +32,7 @@ const generateSlotsForDoctor = async (doctor_id, slot_date, start_time, end_time
             const slot_start = current.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             
             // Skip if slot has already passed (for today)
-            if (slot_date === todayStr && slot_start <= now.toTimeString().split(' ')[0]) {
+            if (slot_date === todayStr && slot_start <= nowTime) {
                 current.setMinutes(current.getMinutes() + parseInt(duration));
                 continue;
             }
@@ -75,9 +69,8 @@ const generateSlotsForDoctor = async (doctor_id, slot_date, start_time, end_time
  */
 const cleanupExpiredSlots = async () => {
     try {
-        const now = new Date();
-        const today = getLocalDateString(now);
-        const currentTime = now.toTimeString().split(' ')[0];
+        const today = todayIST();
+        const currentTime = currentTimeIST();
 
         // 1. Identify slots to be deleted (past dates OR today's past times)
         // Only target slots that are available, as occupied/completed slots should be kept for history
@@ -123,9 +116,7 @@ const syncAllDoctorSlots = async () => {
 
             // Generate for today and next 6 days
             for (let i = 0; i < 7; i++) {
-                const date = new Date();
-                date.setDate(date.getDate() + i);
-                const slot_date = getLocalDateString(date);
+                const slot_date = nowIST().plus({ days: i }).toFormat('yyyy-MM-dd');
 
                 // Generate Morning Slots
                 if (morning_start && morning_end) {
@@ -148,13 +139,18 @@ const syncAllDoctorSlots = async () => {
  * Initialize the cron job to run every day at midnight.
  */
 const initCronJobs = () => {
-    // Run at 00:00 every day
+    // Midnight IST — generate next 7 days of slots + cleanup
     cron.schedule("0 0 * * *", () => {
         syncAllDoctorSlots();
         cleanupExpiredSlots();
-    });
+    }, { timezone: TZ });
 
-    // Also run once on startup to ensure slots are up to date and clean
+    // Every 30 minutes — remove slots that have passed during the day
+    cron.schedule("*/30 * * * *", () => {
+        cleanupExpiredSlots();
+    }, { timezone: TZ });
+
+    // Run once on startup
     cleanupExpiredSlots();
     syncAllDoctorSlots();
 };

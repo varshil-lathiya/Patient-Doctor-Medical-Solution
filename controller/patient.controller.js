@@ -1,6 +1,7 @@
 const db = require("../config/db.config");
 const mailSender = require("../utils/mail_sender");
 const { otpTemplate } = require("../utils/email_templates");
+const { todayIST, currentTimeIST } = require("../utils/time");
 const bcrypt = require("bcrypt");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const doctorPricing = require("../config/doctor_pricing");
@@ -14,14 +15,17 @@ const patientDashboardPage = async (req, res) => {
   try {
     const patientId = req.user.id;
 
+    const today = todayIST();
+    const nowTime = currentTimeIST();
+
     // Get stats
     const [[{ upcomingCount }]] = await db.execute(
-      `SELECT COUNT(*) as upcomingCount 
-       FROM appointment_slots 
-       WHERE patient_id = ? 
-       AND status = 'is_occupied' 
-       AND (slot_date > CURDATE() OR (slot_date = CURDATE() AND slot_start > CURTIME()))`,
-      [patientId]
+      `SELECT COUNT(*) as upcomingCount
+       FROM appointment_slots
+       WHERE patient_id = ?
+       AND status = 'is_occupied'
+       AND (slot_date > ? OR (slot_date = ? AND slot_start > ?))`,
+      [patientId, today, today, nowTime]
     );
 
     const [[{ visitsCount }]] = await db.execute(
@@ -34,8 +38,8 @@ const patientDashboardPage = async (req, res) => {
       `SELECT a.slot_date, a.slot_start, s.firstname as doc_first, s.lastname as doc_last
        FROM appointment_slots a
        JOIN staff s ON a.doctor_id = s.id
-       WHERE a.patient_id = ? AND a.status = 'is_occupied' AND a.reason = 'Doctor on Emergency Leave' AND a.slot_date >= CURDATE()`,
-      [patientId]
+       WHERE a.patient_id = ? AND a.status = 'is_occupied' AND a.reason = 'Doctor on Emergency Leave' AND a.slot_date >= ?`,
+      [patientId, today]
     );
 
     // Get specialties
@@ -56,9 +60,8 @@ const patientDashboardPage = async (req, res) => {
 const getDoctorsBySpecialty = async (req, res) => {
   try {
     const { department } = req.params;
-    const now = new Date();
-    const today = now.toLocaleDateString('en-CA');
-    const nowTime = now.toTimeString().split(' ')[0];
+    const today = todayIST();
+    const nowTime = currentTimeIST();
 
     const [doctors] = await db.execute(`
       SELECT s.id, s.firstname, s.lastname, s.profile_pic, dd.department, dd.qualification, dd.experience, dd.rating_avg,
@@ -100,20 +103,15 @@ const getAvailableSlots = async (req, res) => {
       });
     }
 
-    // Get current date in YYYY-MM-DD format
-    const now = new Date();
-    const today = now.getFullYear() + '-' +
-      String(now.getMonth() + 1).padStart(2, '0') + '-' +
-      String(now.getDate()).padStart(2, '0');
+    const today = todayIST();
 
     let query = "SELECT id, slot_start, slot_end FROM appointment_slots WHERE doctor_id = ? AND slot_date = ? AND status = 'is_available'";
     let params = [doctor_id, date];
 
-    // If the requested date is today, filter out slots that have passed
+    // If the requested date is today, filter out slots that have already passed
     if (date === today) {
-      const cutoffTimeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
       query += " AND slot_start >= ?";
-      params.push(cutoffTimeStr);
+      params.push(currentTimeIST());
     }
 
     const [slots] = await db.execute(query, params);

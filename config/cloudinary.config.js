@@ -10,11 +10,12 @@ cloudinary.config({
 
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
-    params: {
+    params: async (req, file) => ({
         folder: "pdms_reports",
+        resource_type: file.mimetype === "application/pdf" ? "image" : "auto",
+        access_mode: "public",
         allowed_formats: ["jpg", "png", "pdf"],
-        resource_type: "auto",
-    },
+    }),
 });
 
 const upload = multer({ storage: storage });
