@@ -1,33 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Status - PDMS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= status === 'success' ? 'Booking Confirmed' : status === 'cancelled' ? 'Payment Cancelled' : 'Payment Failed' %> – Kalp Hospital</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    .gradient-header { background: linear-gradient(135deg, #0066CC 0%, #008B8B 100%); }
+  </style>
 </head>
-<body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
-    <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center">
-        <% if (success) { %>
-            <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
-                <i class="fas fa-check-circle"></i>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4 font-sans">
+
+  <% if (status === 'success') { %>
+  <!-- SUCCESS STATE -->
+  <div class="w-full max-w-lg">
+
+    <!-- Card -->
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+
+      <!-- Header -->
+      <div class="gradient-header px-8 py-8 text-center">
+        <img src="/assets/logo.png" alt="Kalp Hospital" class="h-12 mx-auto mb-5 object-contain" />
+        <div class="inline-flex items-center gap-2 bg-white/20 border border-white/30 rounded-full px-5 py-1.5 mb-4">
+          <i class="fas fa-check text-white text-xs"></i>
+          <span class="text-white text-xs font-bold tracking-widest uppercase">Payment Successful</span>
+        </div>
+        <h1 class="text-2xl font-bold text-white">Appointment Confirmed</h1>
+        <p class="text-white/80 text-sm mt-1">Your slot has been reserved at Kalp Hospital</p>
+      </div>
+
+      <!-- Body -->
+      <div class="px-8 py-7">
+
+        <p class="text-gray-600 text-sm mb-6">Please arrive <strong>10 minutes early</strong>. Here are your booking details:</p>
+
+        <% if (appointment) { %>
+        <!-- Receipt rows -->
+        <div class="border border-gray-200 rounded-xl overflow-hidden mb-6">
+          <div class="flex border-b border-gray-100">
+            <div class="w-2/5 bg-gray-50 px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wide">Doctor</div>
+            <div class="w-3/5 bg-white px-4 py-3 text-sm font-semibold text-gray-900">Dr. <%= appointment.doc_first %> <%= appointment.doc_last %></div>
+          </div>
+          <div class="flex border-b border-gray-100">
+            <div class="w-2/5 bg-gray-50 px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wide">Department</div>
+            <div class="w-3/5 bg-white px-4 py-3 text-sm font-semibold text-gray-900"><%= appointment.department %></div>
+          </div>
+          <div class="flex border-b border-gray-100">
+            <div class="w-2/5 bg-gray-50 px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wide">Date</div>
+            <div class="w-3/5 bg-white px-4 py-3 text-sm font-semibold text-gray-900">
+              <%= new Date(appointment.slot_date).toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %>
             </div>
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Success!</h1>
-            <p class="text-gray-600 mb-8"><%= message %></p>
-            <a href="/patient/appointments" class="inline-block bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-lg active:scale-95">
-                View My Appointments
-            </a>
-        <% } else { %>
-            <div class="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
-                <i class="fas fa-times-circle"></i>
-            </div>
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Payment Failed</h1>
-            <p class="text-gray-600 mb-8"><%= message %></p>
-            <a href="/patient/dashboard" class="inline-block bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-lg active:scale-95">
-                Back to Dashboard
-            </a>
+          </div>
+          <div class="flex border-b border-gray-100">
+            <div class="w-2/5 bg-gray-50 px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wide">Time</div>
+            <div class="w-3/5 bg-white px-4 py-3 text-sm font-semibold text-gray-900"><%= appointment.slot_start %></div>
+          </div>
+          <div class="flex">
+            <div class="w-2/5 bg-gray-50 px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wide">Amount Paid</div>
+            <div class="w-3/5 bg-white px-4 py-3 text-sm font-bold text-green-700">₹<%= amountPaid %></div>
+          </div>
+        </div>
+
+        <!-- Transaction ID -->
+        <div class="bg-gradient-to-r from-blue-50 to-teal-50 border-2 border-blue-300 rounded-xl px-5 py-4 mb-6">
+          <p class="text-xs font-bold text-blue-600 uppercase tracking-widest mb-1">Transaction ID</p>
+          <p class="text-sm font-bold text-gray-900 font-mono break-all"><%= transactionId %></p>
+        </div>
         <% } %>
+
+        <!-- Actions -->
+        <div class="flex flex-col sm:flex-row gap-3">
+          <a href="/patient/appointments"
+             class="flex-1 text-center gradient-header text-white text-sm font-bold py-3 px-6 rounded-xl hover:opacity-90 transition-opacity">
+            <i class="fas fa-calendar-check mr-2"></i>View My Appointments
+          </a>
+          <a href="/patient/dashboard"
+             class="flex-1 text-center bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-bold py-3 px-6 rounded-xl transition-colors">
+            <i class="fas fa-home mr-2"></i>Dashboard
+          </a>
+        </div>
+
+      </div>
     </div>
+
+  </div>
+
+  <% } else if (status === 'cancelled') { %>
+  <!-- CANCELLED STATE -->
+  <div class="w-full max-w-md">
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+
+      <div class="gradient-header px-8 py-8 text-center">
+        <img src="/assets/logo.png" alt="Kalp Hospital" class="h-12 mx-auto mb-5 object-contain" />
+        <h1 class="text-2xl font-bold text-white">Payment Cancelled</h1>
+        <p class="text-white/80 text-sm mt-1">Kalp Hospital</p>
+      </div>
+
+      <div class="px-8 py-8 text-center">
+        <div class="w-20 h-20 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-5 text-4xl">
+          <i class="fas fa-times"></i>
+        </div>
+        <h2 class="text-xl font-bold text-gray-900 mb-2">No charge was made</h2>
+        <p class="text-gray-500 text-sm mb-7">You cancelled the payment before it was completed. Your slot has not been reserved.</p>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <a href="/patient/dashboard"
+             class="flex-1 text-center gradient-header text-white text-sm font-bold py-3 px-6 rounded-xl hover:opacity-90 transition-opacity">
+            <i class="fas fa-redo mr-2"></i>Try Again
+          </a>
+          <a href="/patient/appointments"
+             class="flex-1 text-center bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-bold py-3 px-6 rounded-xl transition-colors">
+            <i class="fas fa-calendar mr-2"></i>My Appointments
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <% } else { %>
+  <!-- FAILED STATE -->
+  <div class="w-full max-w-md">
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+
+      <div class="gradient-header px-8 py-8 text-center">
+        <img src="/assets/logo.png" alt="Kalp Hospital" class="h-12 mx-auto mb-5 object-contain" />
+        <h1 class="text-2xl font-bold text-white">Payment Failed</h1>
+        <p class="text-white/80 text-sm mt-1">Kalp Hospital</p>
+      </div>
+
+      <div class="px-8 py-8 text-center">
+        <div class="w-20 h-20 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-5 text-4xl">
+          <i class="fas fa-exclamation-circle"></i>
+        </div>
+        <h2 class="text-xl font-bold text-gray-900 mb-2">Something went wrong</h2>
+        <p class="text-gray-500 text-sm mb-7">Your payment could not be processed. You have not been charged. Please try again or contact support.</p>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <a href="/patient/dashboard"
+             class="flex-1 text-center gradient-header text-white text-sm font-bold py-3 px-6 rounded-xl hover:opacity-90 transition-opacity">
+            <i class="fas fa-redo mr-2"></i>Try Again
+          </a>
+          <a href="/patient/appointments"
+             class="flex-1 text-center bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-bold py-3 px-6 rounded-xl transition-colors">
+            <i class="fas fa-calendar mr-2"></i>My Appointments
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <% } %>
+
 </body>
 </html>

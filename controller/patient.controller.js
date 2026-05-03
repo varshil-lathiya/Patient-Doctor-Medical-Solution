@@ -180,14 +180,14 @@ const createCheckoutSession = async (req, res) => {
               name: `Consultation with Dr. ${doctor_name}`,
               description: `Appointment Slot ID: ${slot_id}`,
             },
-            unit_amount: price * 100, // Stripe expects amount in Rupees
+            unit_amount: price * 100, // Stripe expects amount in paise (smallest currency unit)
           },
           quantity: 1,
         },
       ],
       mode: "payment",
-      success_url: `${req.protocol}://${req.get("host")}/patient/payment-success?session_id={CHECKOUT_SESSION_ID}&slot_id=${slot_id}`,
-      cancel_url: `${req.protocol}://${req.get("host")}/patient/dashboard`,
+      success_url: `${req.protocol}://${req.get("host")}/patient/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.protocol}://${req.get("host")}/patient/payment-cancelled`,
       metadata: {
         slot_id: slot_id,
         patient_id: patientId,
@@ -203,26 +203,50 @@ const createCheckoutSession = async (req, res) => {
 };
 
 const paymentSuccess = async (req, res) => {
-  const { session_id, slot_id } = req.query;
+  const { session_id } = req.query;
   const patientId = req.user.id;
 
   try {
     const session = await stripe.checkout.sessions.retrieve(session_id);
 
-    if (session.payment_status === "paid") {
-      // Finalize booking
-      await db.execute(
-        "UPDATE appointment_slots SET patient_id = ?, status = 'is_occupied' WHERE id = ?",
-        [patientId, slot_id]
-      );
-      res.render("patient/payment_status", { success: true, message: "Payment successful! Your appointment is booked." });
-    } else {
-      res.render("patient/payment_status", { success: false, message: "Payment was not successful." });
+    if (session.payment_status !== "paid") {
+      return res.render("patient/payment_status", { status: "failed" });
     }
+
+    const { slot_id } = session.metadata;
+
+    // Idempotent fallback — webhook may have already done this; WHERE guards double-update
+    await db.execute(
+      "UPDATE appointment_slots SET patient_id = ?, status = 'is_occupied' WHERE id = ? AND status = 'is_available'",
+      [patientId, slot_id]
+    );
+
+    const [rows] = await db.execute(
+      `SELECT s.firstname AS doc_first, s.lastname AS doc_last, dd.department,
+              a.slot_date, a.slot_start
+       FROM appointment_slots a
+       JOIN staff s ON a.doctor_id = s.id
+       JOIN doctor_details dd ON s.id = dd.doctor_id
+       WHERE a.id = ?`,
+      [slot_id]
+    );
+
+    const appointment = rows[0] || null;
+
+    res.render("patient/payment_status", {
+      status: "success",
+      appointment,
+      transactionId: session.payment_intent,
+      amountPaid: (session.amount_total / 100).toFixed(2),
+    });
   } catch (error) {
     console.error("Payment Success Error:", error);
-    res.status(500).send("Error processing payment success");
+    res.render("patient/payment_status", { status: "failed" });
   }
+};
+
+const paymentCancelled = (_req, res) => {
+  res.render("patient/payment_status", { status: "cancelled" });
 };
 
 const cancelAppointment = async (req, res) => {
@@ -514,4 +538,5 @@ module.exports = {
   loginPatientOtpVerification,
   createCheckoutSession,
   paymentSuccess,
+  paymentCancelled,
 };

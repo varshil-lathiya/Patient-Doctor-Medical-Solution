@@ -4,7 +4,7 @@ if (process.env.NODE_ENV !== "production") {
 
 const REQUIRED_ENV_VARS = [
   "DB_HOST", "DB_USER", "DB_PASSWORD", "DB_DATABASE",
-  "JWT_SECRET", "STRIPE_SECRET_KEY"
+  "JWT_SECRET", "STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"
 ];
 const missing = REQUIRED_ENV_VARS.filter((key) => !process.env[key]);
 if (missing.length > 0) {
@@ -24,8 +24,12 @@ const doctorRoutes = require("./routes/doctor.route");
 const adminRoutes = require("./routes/admin.route");
 const patientRoutes = require("./routes/patient.route.js");
 const authRoutes = require("./routes/auth.route");
+const webhookRoutes = require("./routes/webhook.route");
 
 const app = express();
+
+// Webhook route MUST be registered before express.json() — Stripe signs raw bytes
+app.use("/stripe", webhookRoutes);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

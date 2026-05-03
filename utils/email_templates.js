@@ -99,4 +99,104 @@ function otpTemplate({ otp, heading, subheading, purpose }) {
 </html>`;
 }
 
-module.exports = { otpTemplate };
+function receiptTemplate({ patientName, doctorName, department, slotDate, slotStart, transactionId, amountPaid }) {
+  const formattedDate = new Date(slotDate).toLocaleDateString('en-IN', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+  });
+
+  const rows = [
+    ['Doctor',       `Dr. ${doctorName}`],
+    ['Department',   department],
+    ['Date',         formattedDate],
+    ['Time',         slotStart],
+    ['Amount Paid',  `&#8377;${Number(amountPaid).toFixed(2)}`],
+  ];
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Appointment Confirmed – Kalp Hospital</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f0f4f8;font-family:'Inter',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f0f4f8;padding:40px 16px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+
+        <!-- Header -->
+        <tr>
+          <td style="background:linear-gradient(135deg,#0066CC 0%,#008B8B 100%);border-radius:16px 16px 0 0;padding:36px 40px;text-align:center;">
+            <img src="${LOGO_URL}" alt="PDMS – Kalp Hospital" width="160" style="display:block;margin:0 auto 20px;max-width:160px;" />
+            <div style="display:inline-block;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:50px;padding:6px 20px;margin-bottom:16px;">
+              <span style="color:#ffffff;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">&#10003; Payment Successful</span>
+            </div>
+            <h1 style="margin:0;font-size:22px;font-weight:700;color:#ffffff;">Appointment Confirmed</h1>
+            <p style="margin:8px 0 0;font-size:14px;color:rgba(255,255,255,0.85);">Your slot has been reserved at Kalp Hospital</p>
+          </td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td style="background:#ffffff;padding:40px 40px 32px;">
+            <p style="margin:0 0 28px;font-size:15px;color:#374151;line-height:1.6;">
+              Hello <strong>${patientName}</strong>,<br/>
+              Your appointment is confirmed. Please arrive 10 minutes early. Here are your booking details:
+            </p>
+
+            <!-- Receipt table -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;margin-bottom:28px;">
+              ${rows.map(([label, value]) => `
+              <tr>
+                <td style="background:#f9fafb;padding:14px 20px;font-size:12px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;width:40%;border-bottom:1px solid #e5e7eb;">${label}</td>
+                <td style="background:#ffffff;padding:14px 20px;font-size:14px;font-weight:600;color:#111827;border-bottom:1px solid #e5e7eb;">${value}</td>
+              </tr>`).join('')}
+            </table>
+
+            <!-- Transaction ID -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
+              <tr>
+                <td style="background:linear-gradient(135deg,#e8f4ff,#e6f7f7);border:2px solid #0066CC;border-radius:10px;padding:16px 20px;">
+                  <p style="margin:0 0 4px;font-size:11px;font-weight:600;color:#0066CC;letter-spacing:2px;text-transform:uppercase;">Transaction ID</p>
+                  <p style="margin:0;font-size:13px;font-weight:700;color:#001F3F;font-family:'Courier New',monospace;word-break:break-all;">${transactionId}</p>
+                </td>
+              </tr>
+            </table>
+
+            <!-- CTA -->
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td align="center">
+                  <a href="${APP_URL}/patient/appointments"
+                     style="display:inline-block;background:linear-gradient(135deg,#0066CC,#008B8B);color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;padding:14px 36px;border-radius:12px;">
+                    View My Appointments
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Divider -->
+        <tr><td style="background:#ffffff;padding:0 40px;"><hr style="border:none;border-top:1px solid #e5e7eb;margin:0;" /></td></tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background:#ffffff;border-radius:0 0 16px 16px;padding:24px 40px;text-align:center;">
+            <p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#001F3F;">Kalp Hospital – Patient Doctor Management System</p>
+            <p style="margin:0 0 16px;font-size:12px;color:#9ca3af;">Premier Healthcare Excellence · Ahmedabad, India</p>
+            <p style="margin:0;font-size:11px;color:#d1d5db;">This is an automated email. Please do not reply directly to this message.</p>
+          </td>
+        </tr>
+        <tr><td style="padding:24px 0;text-align:center;">
+          <p style="margin:0;font-size:11px;color:#9ca3af;">© ${new Date().getFullYear()} Kalp Hospital. All rights reserved.</p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+module.exports = { otpTemplate, receiptTemplate };

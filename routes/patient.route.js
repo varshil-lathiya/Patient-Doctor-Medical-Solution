@@ -35,6 +35,7 @@ router.get("/appointments", patientController.patientAppoinmentPage);
 router.post("/book-appointment", patientController.bookAppointment);
 router.post("/create-checkout-session", patientController.createCheckoutSession);
 router.get("/payment-success", patientController.paymentSuccess);
+router.get("/payment-cancelled", patientController.paymentCancelled);
 router.post("/cancel-appointment", patientController.cancelAppointment);
 router.post("/reschedule-appointment", patientController.rescheduleAppointment);
 
